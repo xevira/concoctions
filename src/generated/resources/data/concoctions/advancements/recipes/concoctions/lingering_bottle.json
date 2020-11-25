@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:linger_bottle"
+		]
+	},
+	"criteria": {
+		"dragon_breath": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "minecraft:dragon_breath"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:linger_bottle"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"dragon_breath",
+			"has_the_recipe"
+		]
+	]
+}

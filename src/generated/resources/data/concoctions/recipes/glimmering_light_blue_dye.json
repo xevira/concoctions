@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"ggg",
+		"gdg",
+		"ggg"
+	],
+	"key": {
+		"g": {
+			"item": "minecraft:gold_nugget"
+		},
+		"d": {
+			"tag": "forge:dyes/light_blue"
+		}
+	},
+	"result": {
+		"item": "concoctions:glimmering_light_blue_dye"
+	}
+}

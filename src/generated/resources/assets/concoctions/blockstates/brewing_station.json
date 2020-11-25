@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "concoctions:block/brewing_station"
+    },
+    "facing=south": {
+      "model": "concoctions:block/brewing_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "concoctions:block/brewing_station",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "concoctions:block/brewing_station",
+      "y": 90
+    }
+  }
+}

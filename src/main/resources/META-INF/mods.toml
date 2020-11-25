@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT License"
+#issueTrackerURL="" #optional
+
+[[mods]] #mandatory
+    modId="concoctions" #mandatory
+    version="${file.jarVersion}" #mandatory
+    displayName="Concoctions" #mandatory
+    # updateJSONURL="" #optional
+    # displayURL="" #optional
+    # logoFile="" #optional
+    authors="xevira" #optional
+    description='''Brewing on steroids.'''
+[[dependencies.concoctions]] #optional
+    modId="forge"
+    mandatory=true
+    versionRange="[34,)" #mandatory
+    ordering="NONE"
+    side="BOTH"

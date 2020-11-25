@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{ "item" : "minecraft:dragon_breath" },
+		{ "item" : "concoctions:splash_bottle" },
+		{ "item" : "concoctions:splash_bottle" },
+		{ "item" : "concoctions:splash_bottle" }
+	],
+	"result": {
+		"item": "concoctions:lingering_bottle",
+		"count": 3
+	}
+}

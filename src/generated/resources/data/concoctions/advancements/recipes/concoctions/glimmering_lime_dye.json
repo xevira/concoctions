@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:glimmering_lime_dye"
+		]
+	},
+	"criteria": {
+		"lime_dye": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"tag": "forge:dyes/lime_dye"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:glimmering_lime_dye"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"lime_dye",
+			"has_the_recipe"
+		]
+	]
+}

@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:glimmering_white_dye"
+		]
+	},
+	"criteria": {
+		"white_dye": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"tag": "forge:dyes/white_dye"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:glimmering_white_dye"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"white_dye",
+			"has_the_recipe"
+		]
+	]
+}

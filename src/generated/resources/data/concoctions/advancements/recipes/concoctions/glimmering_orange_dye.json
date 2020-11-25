@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:glimmering_orange_dye"
+		]
+	},
+	"criteria": {
+		"orange_dye": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"tag": "forge:dyes/orange_dye"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:glimmering_orange_dye"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"orange_dye",
+			"has_the_recipe"
+		]
+	]
+}

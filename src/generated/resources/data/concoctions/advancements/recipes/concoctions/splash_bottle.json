@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:splash_bottle"
+		]
+	},
+	"criteria": {
+		"gunpowder": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "minecraft:gunpowder"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:splash_bottle"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"gunpowder",
+			"has_the_recipe"
+		]
+	]
+}

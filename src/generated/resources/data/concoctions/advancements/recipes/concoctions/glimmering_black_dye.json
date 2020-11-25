@@ -1,0 +1,32 @@
+{
+	"parent": "minecraft:recipes/root",
+	"rewards": {
+		"recipes": [
+			"concoctions:glimmering_black_dye"
+		]
+	},
+	"criteria": {
+		"black_dye": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"tag": "forge:dyes/black_dye"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipe": "concoctions:glimmering_black_dye"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"black_dye",
+			"has_the_recipe"
+		]
+	]
+}

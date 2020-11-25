@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{ "item" : "minecraft:gunpowder" },
+		{ "item" : "minecraft:glass_bottle" },
+		{ "item" : "minecraft:glass_bottle" },
+		{ "item" : "minecraft:glass_bottle" }
+	],
+	"result": {
+		"item": "concoctions:splash_bottle",
+		"count": 3
+	}
+}
