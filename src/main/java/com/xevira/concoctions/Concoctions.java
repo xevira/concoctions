@@ -1,6 +1,7 @@
 package com.xevira.concoctions;
 
 import com.xevira.concoctions.client.gui.screen.BrewingStationScreen;
+import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.setup.*;
 
 import net.minecraft.client.gui.ScreenManager;
@@ -45,6 +46,7 @@ public class Concoctions {
 	}
 	
 	public void setup (final FMLCommonSetupEvent event){
+		PacketHandler.register();
 	}
 	
 	public void clientSetup(final FMLClientSetupEvent event){

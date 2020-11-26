@@ -1,23 +1,40 @@
 package com.xevira.concoctions.common.container;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
+import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile;
+import com.xevira.concoctions.common.block.tile.BrewingStationTile.Slots;
+import com.xevira.concoctions.common.network.PacketHandler;
+import com.xevira.concoctions.common.network.packets.PacketPotionRename;
 import com.xevira.concoctions.setup.Registry;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.IntArray;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -25,11 +42,17 @@ import net.minecraftforge.items.SlotItemHandler;
 public class BrewingStationContainer extends Container {
 	private static final int SLOTS = 4;
 	private static final int DATA_SIZE = 5;
+	private static final int OUTPUT_SLOT = 3;
 	
+	// Annoying hack to allow this container to see the list of listeners as it is private in the parent class and there is no getListeners() function
+    private final List<IContainerListener> copy_listeners = Lists.newArrayList();
+
+	private String newItemName = "";
     public final IIntArray data;
     public ItemStackHandler handler;
     
     public BrewingStationTile tile;
+    
     
 	public BrewingStationContainer(int windowId, PlayerInventory playerInventory, PacketBuffer extraData) {
 		this((BrewingStationTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), new IntArray(DATA_SIZE), windowId, playerInventory, new ItemStackHandler(SLOTS));
@@ -50,10 +73,10 @@ public class BrewingStationContainer extends Container {
 
 	public void setup(PlayerInventory inventory) {
 		// Brewing Station
-		addSlot(new BrewingStationSlot(handler, BrewingStationTile.Slots.FUEL, 17, 17));
-		addSlot(new BrewingStationSlot(handler, BrewingStationTile.Slots.ITEM, 79, 17));
-		addSlot(new BrewingStationSlot(handler, BrewingStationTile.Slots.BOTTLE_IN, 152, 8));
-		addSlot(new BrewingStationSlot(handler, BrewingStationTile.Slots.BOTTLE_OUT, 152, 76));
+		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.FUEL, 17, 17));
+		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.ITEM, 79, 17));
+		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.BOTTLE_IN, 152, 8));
+		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.BOTTLE_OUT, 152, 76));
 
 		// Player Inventory
         //   Hotbar
@@ -99,10 +122,12 @@ public class BrewingStationContainer extends Container {
         BlockPos pos = this.tile.getPos();
         return this.tile != null && !this.tile.isRemoved() && playerIn.getDistanceSq(new Vector3d(pos.getX(), pos.getY(), pos.getZ()).add(0.5D, 0.5D, 0.5D)) <= 64D;
 	}
-
+	
 	static class BrewingStationSlot extends SlotItemHandler {
-		public BrewingStationSlot(IItemHandler itemHandler, BrewingStationTile.Slots slot, int xPos, int yPos) {
+		private final BrewingStationContainer container;
+		public BrewingStationSlot(BrewingStationContainer container, IItemHandler itemHandler, BrewingStationTile.Slots slot, int xPos, int yPos) {
 			super(itemHandler, slot.getId(), xPos, yPos);
+			this.container = container;
 		}
 		
 		@Override
@@ -126,6 +151,23 @@ public class BrewingStationContainer extends Container {
 		
 		    return super.isItemValid(stack);
 		}
+		
+	    @Override
+	    public void onSlotChange(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn)
+	    {
+	    }
+	    
+	    @Override
+	    public void onSlotChanged()
+	    {
+	    	if( this.slotNumber == OUTPUT_SLOT)
+	    	{
+//		    	Concoctions.GetLogger().info("BrewingStationSlot.onSlotChanged called: slot = {} ({})", this.slotNumber, this.container.getWorldSide());
+	    		this.container.renameItemName();
+	    		this.container.detectValidPotionChanges();
+	    	}
+	    }
+
 	}
 	
 	public int getBrewTime() {
@@ -148,4 +190,87 @@ public class BrewingStationContainer extends Container {
 		return this.data.get(4);
 	}
 	
+	private void setCustomPotionName(ItemStack stack, String prefix)
+	{
+		if( StringUtils.isBlank(this.newItemName))
+		{
+			if(stack.hasTag())
+			{
+				CompoundNBT root = stack.getTag();
+				if( root.contains("CustomPotionName") )
+					root.remove("CustomPotionName");
+			}
+			stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
+		}
+		else
+		{
+			CompoundNBT root = stack.getOrCreateTag();
+			root.putString("CustomPotionName", this.newItemName);
+			
+			stack.setDisplayName(new TranslationTextComponent(prefix).appendString(this.newItemName));
+		}
+	}
+
+	@Override
+	public void addListener(IContainerListener listener) {
+		super.addListener(listener);
+		if (!this.copy_listeners.contains(listener)) {
+			this.copy_listeners.add(listener);
+		}
+	}
+
+	/**
+	 * Remove the given Listener. Method name is for legacy.
+	 */
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public void removeListener(IContainerListener listener) {
+		super.removeListener(listener);
+		this.copy_listeners.remove(listener);
+	}
+
+	
+	private boolean hasPotion = false;
+	private boolean isPotionItemStack(ItemStack stack)
+	{
+		if( stack.isEmpty())
+			return false;
+		else
+			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION);
+	}
+	
+	public void detectValidPotionChanges()
+	{
+		ItemStack stack = this.handler.getStackInSlot(OUTPUT_SLOT);
+		boolean isPotion = isPotionItemStack(stack);
+		
+		if( isPotion != hasPotion )
+		{
+			hasPotion = isPotion;
+			
+			for(IContainerListener icontainerlistener : this.copy_listeners)
+			{
+				icontainerlistener.sendSlotContents(this, OUTPUT_SLOT, this.handler.getStackInSlot(OUTPUT_SLOT));
+			}
+		}
+	}
+	
+	public void renameItemName()
+	{
+		this.tile.updatePotionName(this.newItemName);
+	}
+	
+	public void updateItemName(String newName)
+	{
+		if(this.newItemName == null || !newName.equals(this.newItemName))
+		{
+			this.newItemName = newName;
+			this.renameItemName();
+
+			if( this.tile.hasWorld() && this.tile.getWorld().isRemote )
+			{
+				PacketHandler.sendToServer(new PacketPotionRename(this.newItemName));
+			}
+		}
+	}
 }

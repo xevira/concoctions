@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.container.BrewingStationContainer;
 import com.xevira.concoctions.common.fluids.PotionFluid;
@@ -41,6 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -80,6 +83,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	private int brewTime;
 	private int maxBrewTime;
 	private int fuelRemaining;
+	private String newPotionName;
 	
     // Handles tracking changes, kinda messy but apparently this is how the cool kids do it these days
     public final IIntArray brewingStationData = new IIntArray() {
@@ -342,8 +346,6 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		}
 		else
 		{
-			outStack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
-
 			if( inFluid.getTag().contains("CustomPotionEffects", 9))
 			{
 				ListNBT effects = inFluid.getTag().getList("CustomPotionEffects", 10);
@@ -364,6 +366,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			root.putBoolean("DyedPotion", true);
 		}
 
+		renameItemName(outStack);
 	}
 	
 	private boolean areItemStacksEqual(ItemStack a, ItemStack b) {
@@ -788,5 +791,76 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 				this.fluidColor = PotionUtils.getPotionColorFromEffectList(effects);
 			}
 		});
+	}
+	
+	private void setCustomPotionName(ItemStack stack, String prefix)
+	{
+		if( StringUtils.isBlank(this.newPotionName))
+		{
+			boolean isBasePotion = false;
+			if(stack.hasTag())
+			{
+				CompoundNBT root = stack.getTag();
+				if( root.contains("CustomPotionName") )
+					root.remove("CustomPotionName");
+				
+				isBasePotion = root.contains("BasePotion") || root.contains("Potion");
+			}
+			
+			if( isBasePotion )
+			{
+				stack.clearCustomName();
+			}
+			else
+			{
+				stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
+			}
+		}
+		else
+		{
+			CompoundNBT root = stack.getOrCreateTag();
+			root.putString("CustomPotionName", this.newPotionName);
+			
+			stack.setDisplayName(new TranslationTextComponent(prefix).appendString(this.newPotionName));
+		}
+	}
+	
+	private void renameItemName(ItemStack stack)
+	{
+		if( stack.isEmpty() )
+			return;
+		
+		if( stack.getItem() == Items.POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.potion.prefix");
+		}
+		else if( stack.getItem() == Items.SPLASH_POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.splash_potion.prefix");
+		}
+		else if( stack.getItem() == Items.LINGERING_POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.lingering_potion.prefix");
+		}
+	}
+
+	private void renameItemName()
+	{
+		ItemStackHandler inv = inventory.orElse(null);
+		
+		if( inv != null )
+		{
+			ItemStack stack = inv.getStackInSlot(Slots.BOTTLE_OUT.id);
+			renameItemName(stack);
+		}
+	}
+	
+	public void updatePotionName(String name)
+	{
+		if( this.hasWorld() )
+		{
+			this.newPotionName = name;
+			this.renameItemName();
+		}
 	}
 }
