@@ -144,7 +144,8 @@ public class BrewingStationContainer extends Container {
 		    		stack.getItem() == Items.POTION ||
 		    		stack.getItem() == Items.BUCKET ||
 	        		stack.getItem() == Items.LAVA_BUCKET ||
-	        		stack.getItem() == Items.WATER_BUCKET);
+	        		stack.getItem() == Items.WATER_BUCKET ||
+	        		stack.getItem() == Items.SPONGE);
 		
 		    // Output only
 		    if( getSlotIndex() == BrewingStationTile.Slots.BOTTLE_OUT.getId() )

@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.spongepowered.asm.util.throwables.InvalidConstraintException;
 
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.container.BrewingStationContainer;
@@ -328,7 +329,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	private void addPotionEffectsToItemStack(FluidStack inFluid, ItemStack outStack)
 	{
-		if( outStack.getItem() != Items.POTION && outStack.getItem() != Items.SPLASH_POTION && outStack.getItem() != Items.LINGERING_POTION && outStack.getItem() != Items.TIPPED_ARROW )
+		if( !isPotionItemStack(outStack) )
 			return;
 		
 		if( inFluid.getFluid() == Fluids.WATER )
@@ -472,6 +473,15 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		
 		return false;
 	}
+
+	// TODO: move to a utility class
+	private boolean isPotionItemStack(ItemStack stack)
+	{
+		if( stack.isEmpty())
+			return false;
+		else
+			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
+	}
 	
 	private ItemStack emptyTank(ItemStack inStack, ItemStack outStack, FluidStack inFluid, ItemStack resultStack)
 	{
@@ -530,7 +540,12 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		if( tankFluid.isEmpty() )
 			return;
 		
-		if( item == Items.GLASS_BOTTLE ) {
+		if( item == Items.SPONGE)
+		{
+			fluidStack = new FluidStack(Registry.POTION_FLUID.get(), Math.min(tankFluid.getAmount(),FluidAttributes.BUCKET_VOLUME));
+			outputStack = new ItemStack(Items.WET_SPONGE, 1);
+		}
+		else if( item == Items.GLASS_BOTTLE ) {
 			if( tankFluid.getFluid() == Fluids.WATER )
 			{
 				fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
