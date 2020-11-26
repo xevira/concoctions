@@ -140,6 +140,7 @@ public class BrewingStationContainer extends Container {
 		    		stack.getItem() == Items.GLASS_BOTTLE ||
 					stack.getItem() == Registry.SPLASH_BOTTLE.get() ||
 					stack.getItem() == Registry.LINGERING_BOTTLE.get() ||
+					stack.getItem() == Items.ARROW ||
 		    		stack.getItem() == Items.POTION ||
 		    		stack.getItem() == Items.BUCKET ||
 	        		stack.getItem() == Items.LAVA_BUCKET ||
@@ -200,14 +201,18 @@ public class BrewingStationContainer extends Container {
 				if( root.contains("CustomPotionName") )
 					root.remove("CustomPotionName");
 			}
-			stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
+			
+			if( stack.getItem() == Items.TIPPED_ARROW )
+				stack.setDisplayName(new TranslationTextComponent("item.concoctions.tipped_arrow.solution"));
+			else
+				stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
 		}
 		else
 		{
 			CompoundNBT root = stack.getOrCreateTag();
 			root.putString("CustomPotionName", this.newItemName);
 			
-			stack.setDisplayName(new TranslationTextComponent(prefix).appendString(this.newItemName));
+			stack.setDisplayName(new TranslationTextComponent(prefix, this.newItemName));
 		}
 	}
 
@@ -236,7 +241,7 @@ public class BrewingStationContainer extends Container {
 		if( stack.isEmpty())
 			return false;
 		else
-			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION);
+			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
 	}
 	
 	public void detectValidPotionChanges()

@@ -75,9 +75,10 @@
 	"item.minecraft.tipped_arrow.effect.badluck": "Arrow of Bad Luck",
 	"item.minecraft.tipped_arrow.effect.neptune": "Arrow of Neptune",
 	"item.minecraft.tipped_arrow.effect.grace": "Arrow of Grace",
-	"item.concoctions.potion.prefix": "Potion of ",
-	"item.concoctions.splash_potion.prefix": "Splash Potion of ",
-	"item.concoctions.lingering_potion.prefix": "Lingering Potion of ",
-	"item.concoctions.tipped_arrow.prefix": "Arrow of ",
+	"item.concoctions.potion.prefix": "Potion of %s",
+	"item.concoctions.splash_potion.prefix": "Splash Potion of %s",
+	"item.concoctions.lingering_potion.prefix": "Lingering Potion of %s",
+	"item.concoctions.tipped_arrow.prefix": "Arrow of %s",
+	"item.concoctions.tipped_arrow.solution": "Tipped Arrow",
 	"text.concoctions.solution": "Solution"
 }

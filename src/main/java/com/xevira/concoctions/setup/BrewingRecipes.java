@@ -25,7 +25,6 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BrewingRecipes {
 	protected static final int DEFAULT_BREW_TIME = 400;
@@ -35,7 +34,7 @@ public class BrewingRecipes {
 	private static final ArrayList<EffectRecipe> EFFECT_RECIPES = new ArrayList<EffectRecipe>();
 	private static final ArrayList<DyeRecipe> DYE_RECIPES = new ArrayList<DyeRecipe>();
 	
-	public static void init()
+	public static void postInit()
 	{
 		// EXPLICIT BREWING RECIPES:
 		// ================================================================
@@ -595,8 +594,6 @@ public class BrewingRecipes {
 		
 		return brewTime;
 	}
-	
-	
 	
 	
 	public static class BrewingRecipe {

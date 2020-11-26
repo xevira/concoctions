@@ -57,7 +57,7 @@ public class Concoctions {
 	}
 	
 	public void loadComplete(final FMLLoadCompleteEvent event) {
-		BrewingRecipes.init();		// Allow for other mods to add brewing recipes
+		BrewingRecipes.postInit();		// Allow for other mods to add brewing recipes
 	}
 	
 	public static Logger GetLogger() {

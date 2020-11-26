@@ -18,6 +18,9 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.Potion;
@@ -36,7 +39,7 @@ public class Registry {
 	public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Concoctions.MOD_ID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Concoctions.MOD_ID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, Concoctions.MOD_ID);
-    public static final DeferredRegister<TileEntityType<?>>  TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Concoctions.MOD_ID);
+    public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Concoctions.MOD_ID);
 
     public static void init(IEventBus event) {
 		BLOCKS.register(event);

@@ -205,7 +205,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 	private boolean isOutputPotionItemStack(ItemStack stack)
 	{
 		if(stack.isEmpty()) return false;
-		return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION);
+		return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
 	}
 	
 	private boolean isOutputPotionItemStack()

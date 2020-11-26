@@ -328,7 +328,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	private void addPotionEffectsToItemStack(FluidStack inFluid, ItemStack outStack)
 	{
-		if( outStack.getItem() != Items.POTION && outStack.getItem() != Items.SPLASH_POTION && outStack.getItem() != Items.LINGERING_POTION )
+		if( outStack.getItem() != Items.POTION && outStack.getItem() != Items.SPLASH_POTION && outStack.getItem() != Items.LINGERING_POTION && outStack.getItem() != Items.TIPPED_ARROW )
 			return;
 		
 		if( inFluid.getFluid() == Fluids.WATER )
@@ -480,17 +480,21 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 
 		FluidStack tankFluid = this.tankStorage.getFluid();
 		
-		if( !tankFluid.isEmpty() && !inFluid.isEmpty() && !tankFluid.isFluidEqual(inFluid))
+		if( !tankFluid.isEmpty() && !inFluid.isEmpty() && tankFluid.getFluid() != inFluid.getFluid())
 			return null;	// Not the same fluid
 		
-		FluidStack result = this.tankStorage.drain(FluidAttributes.BUCKET_VOLUME, FluidAction.SIMULATE);
-		if( result.isEmpty() || result.getAmount() < FluidAttributes.BUCKET_VOLUME )
+		int volume = FluidAttributes.BUCKET_VOLUME;
+		if( !inFluid.isEmpty() )
+			volume = inFluid.getAmount();
+		
+		FluidStack result = this.tankStorage.drain(volume, FluidAction.SIMULATE);
+		if( result.isEmpty() || result.getAmount() < volume )
 			return null;	// Not enough room
 		
 		addPotionEffectsToItemStack(result, resultStack);
 
 		// Check if result and current output stack are compatible
-		if( !outStack.isEmpty() && !ItemStack.areItemStacksEqual(outStack, resultStack))
+		if( !outStack.isEmpty() && !areItemStacksEqual(outStack, resultStack))
 			return null;	// Not the same result
 		
 		// Check if the output pile can handle more items
@@ -502,7 +506,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		if( !outStack.isEmpty() && (!outStack.isStackable() || !resultStack.isStackable()))
 			return null;
 		
-		this.tankStorage.drain(FluidAttributes.BUCKET_VOLUME, FluidAction.EXECUTE);
+		this.tankStorage.drain(volume, FluidAction.EXECUTE);
 
 		inStack.shrink(1);
 		if( outStack.isEmpty())
@@ -557,6 +561,18 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			else if( tankFluid.getFluid() == Registry.POTION_FLUID.get())
 			{
 				outputStack = new ItemStack(Items.LINGERING_POTION, 1);
+			}
+			
+		} else if( item == Items.ARROW ) {
+			if( tankFluid.getFluid() == Fluids.WATER )
+			{
+				fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+				outputStack = new ItemStack(Items.LINGERING_POTION, 1);
+			}
+			else if( tankFluid.getFluid() == Registry.POTION_FLUID.get())
+			{
+				fluidStack = new FluidStack(Registry.POTION_FLUID.get(), 125);	// BUCKET_VOLUME / 8
+				outputStack = new ItemStack(Items.TIPPED_ARROW, 1);
 			}
 			
 		} else if( item == Items.BUCKET ) {
@@ -811,6 +827,10 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			{
 				stack.clearCustomName();
 			}
+			else if (stack.getItem() == Items.TIPPED_ARROW )
+			{
+				stack.setDisplayName(new TranslationTextComponent("item.concoctions.tipped_arrow.solution"));
+			}
 			else
 			{
 				stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
@@ -821,7 +841,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			CompoundNBT root = stack.getOrCreateTag();
 			root.putString("CustomPotionName", this.newPotionName);
 			
-			stack.setDisplayName(new TranslationTextComponent(prefix).appendString(this.newPotionName));
+			stack.setDisplayName(new TranslationTextComponent(prefix, this.newPotionName));
 		}
 	}
 	
@@ -841,6 +861,10 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		else if( stack.getItem() == Items.LINGERING_POTION )
 		{
 			setCustomPotionName(stack, "item.concoctions.lingering_potion.prefix");
+		}
+		else if( stack.getItem() == Items.TIPPED_ARROW )
+		{
+			setCustomPotionName(stack, "item.concoctions.tipped_arrow.prefix");
 		}
 	}
 
