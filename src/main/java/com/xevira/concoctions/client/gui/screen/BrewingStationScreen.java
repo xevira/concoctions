@@ -176,10 +176,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 
 	@Override
 	public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList) {
-		Concoctions.GetLogger().info("sendAllContents");
-
 		this.sendSlotContents(containerToSend, OUTPUT_SLOT, containerToSend.getSlot(OUTPUT_SLOT).getStack());
-		
 	}
 
 	@Override
@@ -188,8 +185,6 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 	 * contents of that slot.
 	 */
 	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
-		Concoctions.GetLogger().info("sendSlotContents: slotInd = {}", slotInd);
-
 		if (slotInd == OUTPUT_SLOT) {
 			this.nameField.setEnabled(isOutputPotionItemStack(stack));
 			this.setListener(this.nameField);

@@ -1,12 +1,20 @@
 package com.xevira.concoctions.common.fluids;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.Effect;
@@ -23,6 +31,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -108,14 +117,8 @@ public class PotionFluid extends Fluid {
 	{
 		if(fluidStack!=null&&fluidStack.hasTag())
 		{
-			/*
-			if( fluidStack.getTag().contains("BasePotion"))
-			{
-				tooltip.add(new TranslationTextComponent(fluidStack.getTag().getString("BasePotion")));
-			}
-			*/
-		
 			List<EffectInstance> effects = PotionUtils.getEffectsFromTag(fluidStack.getTag());
+			List<Pair<Attribute, AttributeModifier>> attrPairs = Lists.newArrayList();
 			if(effects.isEmpty())
 				tooltip.add(new TranslationTextComponent("effect.none").mergeStyle(TextFormatting.GRAY));
 			else
@@ -124,6 +127,16 @@ public class PotionFluid extends Fluid {
 				{
 					IFormattableTextComponent itextcomponent = new TranslationTextComponent(instance.getEffectName());
 					Effect effect = instance.getPotion();
+					
+		            Map<Attribute, AttributeModifier> map = effect.getAttributeModifierMap();
+		            if (!map.isEmpty()) {
+		               for(Entry<Attribute, AttributeModifier> entry : map.entrySet()) {
+		                  AttributeModifier attributemodifier = entry.getValue();
+		                  AttributeModifier attributemodifier1 = new AttributeModifier(attributemodifier.getName(), effect.getAttributeModifierAmount(instance.getAmplifier(), attributemodifier), attributemodifier.getOperation());
+		                  attrPairs.add(new Pair<>(entry.getKey(), attributemodifier1));
+		               }
+		            }
+
 					if(instance.getAmplifier() > 0)
 						itextcomponent.appendString(" ").append(new TranslationTextComponent("potion.potency."+instance.getAmplifier()));
 					if(instance.getDuration() > 20)
@@ -137,7 +150,30 @@ public class PotionFluid extends Fluid {
 			{
 				tooltip.add(new TranslationTextComponent("item.dyed").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
 			}
+			
+			// Add attributes
+			
+			if (!attrPairs.isEmpty())
+			{
+				tooltip.add(StringTextComponent.EMPTY);
+				tooltip.add((new TranslationTextComponent("potion.whenDrank")).mergeStyle(TextFormatting.DARK_PURPLE));
 
+				for(Pair<Attribute, AttributeModifier> pair : attrPairs)
+				{
+					AttributeModifier attributemodifier2 = pair.getSecond();
+					double d0 = attributemodifier2.getAmount();
+					double d1;
+					if (attributemodifier2.getOperation() != AttributeModifier.Operation.MULTIPLY_BASE && attributemodifier2.getOperation() != AttributeModifier.Operation.MULTIPLY_TOTAL)
+						d1 = attributemodifier2.getAmount();
+					else
+						d1 = attributemodifier2.getAmount() * 100.0D;
+
+					if (d0 > 0.0D)
+						tooltip.add((new TranslationTextComponent("attribute.modifier.plus." + attributemodifier2.getOperation().getId(), ItemStack.DECIMALFORMAT.format(d1), new TranslationTextComponent(pair.getFirst().getAttributeName()))).mergeStyle(TextFormatting.BLUE));
+					else if (d0 < 0.0D)
+						tooltip.add((new TranslationTextComponent("attribute.modifier.take." + attributemodifier2.getOperation().getId(), ItemStack.DECIMALFORMAT.format(-d1), new TranslationTextComponent(pair.getFirst().getAttributeName()))).mergeStyle(TextFormatting.RED));
+				}
+			}
 		}
 	}
 
