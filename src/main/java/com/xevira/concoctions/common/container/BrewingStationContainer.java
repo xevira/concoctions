@@ -11,8 +11,10 @@ import com.google.common.collect.Lists;
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile.Slots;
+import com.xevira.concoctions.common.handlers.*;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketPotionRename;
+import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.Registry;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,34 +38,42 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class BrewingStationContainer extends Container {
-	private static final int SLOTS = 4;
-	private static final int DATA_SIZE = 5;
-	private static final int OUTPUT_SLOT = 3;
+	private static final int SLOTS = BrewingStationTile.INV_SLOTS;
+	private static final int DATA_SIZE = 6;
+	private static final int OUTPUT_SLOT = BrewingStationTile.Slots.BOTTLE_OUT.getId();
 	
 	// Annoying hack to allow this container to see the list of listeners as it is private in the parent class and there is no getListeners() function
     private final List<IContainerListener> copy_listeners = Lists.newArrayList();
 
-	private String newItemName = "";
+	private String newPotionName = "";
     public final IIntArray data;
-    public ItemStackHandler handler;
+    public BrewingFuelItemStackHandler invFuel;
+    public BrewingQueueItemStackHandler invItems;
+    public BrewingBottleInItemStackHandler invBottleIn;
+    public BrewingBottleOutItemStackHandler invBottleOut;
+	private boolean hasPotion = false;
     
     public BrewingStationTile tile;
     
-    
 	public BrewingStationContainer(int windowId, PlayerInventory playerInventory, PacketBuffer extraData) {
-		this((BrewingStationTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), new IntArray(DATA_SIZE), windowId, playerInventory, new ItemStackHandler(SLOTS));
+		this((BrewingStationTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), new IntArray(DATA_SIZE), windowId, playerInventory, new BrewingFuelItemStackHandler(), new BrewingQueueItemStackHandler(), new BrewingBottleInItemStackHandler(), new BrewingBottleOutItemStackHandler());
 	}
 	
-	public BrewingStationContainer(@Nullable BrewingStationTile tile, IIntArray brewingStationData, int windowId, PlayerInventory playerInventory, ItemStackHandler handler) {
+	public BrewingStationContainer(@Nullable BrewingStationTile tile, IIntArray brewingStationData, int windowId, PlayerInventory playerInventory, BrewingFuelItemStackHandler invFuel, BrewingQueueItemStackHandler invItems, BrewingBottleInItemStackHandler invBottleIn, BrewingBottleOutItemStackHandler invBottleOut) {
 		super(Registry.BREWING_STATION_CONTAINER.get(), windowId);
 		assert(brewingStationData.size() == DATA_SIZE);
 		
-        this.handler = handler;
+        this.invFuel = invFuel;
+        this.invItems = invItems;
+        this.invBottleIn = invBottleIn;
+        this.invBottleOut = invBottleOut;
         this.tile = tile;
+        this.newPotionName = tile.getPotionName();
 
         this.data = brewingStationData;
         this.setup(playerInventory);
@@ -73,10 +83,15 @@ public class BrewingStationContainer extends Container {
 
 	public void setup(PlayerInventory inventory) {
 		// Brewing Station
-		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.FUEL, 17, 17));
-		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.ITEM, 79, 17));
-		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.BOTTLE_IN, 152, 8));
-		addSlot(new BrewingStationSlot(this, handler, BrewingStationTile.Slots.BOTTLE_OUT, 152, 76));
+		addSlot(new BrewingStationFuelSlot(invFuel, 0, 17, 41));
+		addSlot(new BrewingStationQueueSlot(invItems, 0, 79, 41));
+		addSlot(new BrewingStationQueueSlot(invItems, 1, 89, 17));
+		addSlot(new BrewingStationQueueSlot(invItems, 2, 71, 17));
+		addSlot(new BrewingStationQueueSlot(invItems, 3, 53, 17));
+		addSlot(new BrewingStationQueueSlot(invItems, 4, 35, 17));
+		addSlot(new BrewingStationQueueSlot(invItems, 5, 17, 17));
+		addSlot(new BrewingStationBottleInSlot(invBottleIn, 0, 152, 8));
+		addSlot(new BrewingStationBottleOutSlot(invBottleOut, 0, 152, 76, this));
 
 		// Player Inventory
         //   Hotbar
@@ -124,52 +139,59 @@ public class BrewingStationContainer extends Container {
 	}
 	
 	static class BrewingStationSlot extends SlotItemHandler {
-		private final BrewingStationContainer container;
-		public BrewingStationSlot(BrewingStationContainer container, IItemHandler itemHandler, BrewingStationTile.Slots slot, int xPos, int yPos) {
-			super(itemHandler, slot.getId(), xPos, yPos);
-			this.container = container;
+		protected final ItemStackHandlerEx itemHandlerEx;
+		
+		public BrewingStationSlot(ItemStackHandlerEx itemHandler, int slot, int xPos, int yPos) {
+			super(itemHandler, slot, xPos, yPos);
+			this.itemHandlerEx = itemHandler;
 		}
-		
-		@Override
-		public boolean isItemValid(@Nonnull ItemStack stack) {
-			if( getSlotIndex() == BrewingStationTile.Slots.FUEL.getId() )
-				return super.isItemValid(stack) && stack.getItem() == Items.BLAZE_POWDER;
-			
-			if( getSlotIndex() == BrewingStationTile.Slots.BOTTLE_IN.getId() )
-				return super.isItemValid(stack) && (
-		    		stack.getItem() == Items.GLASS_BOTTLE ||
-					stack.getItem() == Registry.SPLASH_BOTTLE.get() ||
-					stack.getItem() == Registry.LINGERING_BOTTLE.get() ||
-					stack.getItem() == Items.ARROW ||
-		    		stack.getItem() == Items.POTION ||
-		    		stack.getItem() == Items.BUCKET ||
-	        		stack.getItem() == Items.LAVA_BUCKET ||
-	        		stack.getItem() == Items.WATER_BUCKET ||
-	        		stack.getItem() == Items.SPONGE);
-		
-		    // Output only
-		    if( getSlotIndex() == BrewingStationTile.Slots.BOTTLE_OUT.getId() )
-		    	return false;
-		
-		    return super.isItemValid(stack);
-		}
-		
+
 	    @Override
-	    public void onSlotChange(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn)
+	    public boolean canTakeStack(PlayerEntity playerIn)
 	    {
+	        return true;
 	    }
 	    
 	    @Override
+	    @Nonnull
+	    public ItemStack decrStackSize(int amount)
+	    {
+	        return this.itemHandlerEx.forceExtractItem(this.getSlotIndex(), amount, false);
+	    }
+	}
+	
+	static class BrewingStationFuelSlot extends BrewingStationSlot {
+		public BrewingStationFuelSlot(ItemStackHandlerEx itemHandler, int slot, int xPos, int yPos) {
+			super(itemHandler, slot, xPos, yPos);
+		}
+	}
+	
+	static class BrewingStationQueueSlot extends BrewingStationSlot {
+		public BrewingStationQueueSlot(ItemStackHandlerEx itemHandler, int slot, int xPos, int yPos) {
+			super(itemHandler, slot, xPos, yPos);
+		}
+	}
+	
+	static class BrewingStationBottleInSlot extends BrewingStationSlot {
+		public BrewingStationBottleInSlot(ItemStackHandlerEx itemHandler, int slot, int xPos, int yPos) {
+			super(itemHandler, slot, xPos, yPos);
+		}
+	}
+	
+	static class BrewingStationBottleOutSlot extends BrewingStationSlot {
+		private final BrewingStationContainer container;
+
+		public BrewingStationBottleOutSlot(ItemStackHandlerEx itemHandler, int slot, int xPos, int yPos, BrewingStationContainer container) {
+			super(itemHandler, slot, xPos, yPos);
+			this.container = container;
+		}
+		
+	    @Override
 	    public void onSlotChanged()
 	    {
-	    	if( this.slotNumber == OUTPUT_SLOT)
-	    	{
-//		    	Concoctions.GetLogger().info("BrewingStationSlot.onSlotChanged called: slot = {} ({})", this.slotNumber, this.container.getWorldSide());
-	    		this.container.renameItemName();
-	    		this.container.detectValidPotionChanges();
-	    	}
+    		this.container.renameItemName();
+    		this.container.detectValidPotionChanges();
 	    }
-
 	}
 	
 	public int getBrewTime() {
@@ -192,31 +214,16 @@ public class BrewingStationContainer extends Container {
 		return this.data.get(4);
 	}
 	
-	private void setCustomPotionName(ItemStack stack, String prefix)
+	public boolean hasPotionFluid()
 	{
-		if( StringUtils.isBlank(this.newItemName))
-		{
-			if(stack.hasTag())
-			{
-				CompoundNBT root = stack.getTag();
-				if( root.contains("CustomPotionName") )
-					root.remove("CustomPotionName");
-			}
-			
-			if( stack.getItem() == Items.TIPPED_ARROW )
-				stack.setDisplayName(new TranslationTextComponent("item.concoctions.tipped_arrow.solution"));
-			else
-				stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
-		}
-		else
-		{
-			CompoundNBT root = stack.getOrCreateTag();
-			root.putString("CustomPotionName", this.newItemName);
-			
-			stack.setDisplayName(new TranslationTextComponent(prefix, this.newItemName));
-		}
+		return this.data.get(5) > 0;
 	}
-
+	
+	public String getPotionName()
+	{
+		return this.newPotionName;
+	}
+	
 	@Override
 	public void addListener(IContainerListener listener) {
 		super.addListener(listener);
@@ -236,19 +243,10 @@ public class BrewingStationContainer extends Container {
 	}
 
 	
-	private boolean hasPotion = false;
-	private boolean isPotionItemStack(ItemStack stack)
-	{
-		if( stack.isEmpty())
-			return false;
-		else
-			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
-	}
-	
 	public void detectValidPotionChanges()
 	{
-		ItemStack stack = this.handler.getStackInSlot(OUTPUT_SLOT);
-		boolean isPotion = isPotionItemStack(stack);
+		ItemStack stack = this.invBottleOut.getStackInSlot(0);
+		boolean isPotion = Utils.isPotionItemStack(stack);
 		
 		if( isPotion != hasPotion )
 		{
@@ -256,26 +254,26 @@ public class BrewingStationContainer extends Container {
 			
 			for(IContainerListener icontainerlistener : this.copy_listeners)
 			{
-				icontainerlistener.sendSlotContents(this, OUTPUT_SLOT, this.handler.getStackInSlot(OUTPUT_SLOT));
+				icontainerlistener.sendSlotContents(this, OUTPUT_SLOT, this.invBottleOut.getStackInSlot(0));
 			}
 		}
 	}
 	
 	public void renameItemName()
 	{
-		this.tile.updatePotionName(this.newItemName);
+		this.tile.updatePotionName(this.newPotionName);
 	}
 	
 	public void updateItemName(String newName)
 	{
-		if(this.newItemName == null || !newName.equals(this.newItemName))
+		if(this.newPotionName == null || !newName.equals(this.newPotionName))
 		{
-			this.newItemName = newName;
+			this.newPotionName = newName;
 			this.renameItemName();
 
 			if( this.tile.hasWorld() && this.tile.getWorld().isRemote )
 			{
-				PacketHandler.sendToServer(new PacketPotionRename(this.newItemName));
+				PacketHandler.sendToServer(new PacketPotionRename(this.newPotionName));
 			}
 		}
 	}

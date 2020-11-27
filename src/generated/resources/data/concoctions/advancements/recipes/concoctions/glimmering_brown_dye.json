@@ -11,7 +11,7 @@
 			"conditions": {
 				"items": [
 					{
-						"tag": "forge:dyes/brown_dye"
+						"tag": "forge:dyes/brown"
 					}
 				]
 			}

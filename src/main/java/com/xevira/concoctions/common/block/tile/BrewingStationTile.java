@@ -1,3 +1,8 @@
+/*
+ * TODO: Add fluid handling support (need a way to transport them)
+ * 
+ * TODO: Get the custom potion name to propagate when the potion fluid changes either from using a bottled potion or via fluid input
+*/
 package com.xevira.concoctions.common.block.tile;
 
 import java.util.List;
@@ -6,11 +11,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.spongepowered.asm.util.throwables.InvalidConstraintException;
 
-import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.container.BrewingStationContainer;
 import com.xevira.concoctions.common.fluids.PotionFluid;
+import com.xevira.concoctions.common.handlers.*;
+import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.BrewingRecipes;
 import com.xevira.concoctions.setup.Registry;
 
@@ -19,7 +24,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -27,7 +31,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -37,32 +40,40 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class BrewingStationTile extends TileEntity implements ITickableTileEntity, ISidedInventory, INamedContainerProvider {
-	public static final int INV_SLOTS = 4;
+public class BrewingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+	public static final int INV_SLOTS = Slots.TOTAL.getId();
+	public static final int FUEL_SLOTS = 1;
+	public static final int ITEM_SLOTS = Slots.QUEUE5.getId() - Slots.ITEM.getId() + 1;
+	public static final int BOTTLE_IN_SLOTS = 1;
+	public static final int BOTTLE_OUT_SLOTS = 1;
+	
 	public enum Slots {
 		FUEL(0),
 		ITEM(1),
-		BOTTLE_IN(2),
-		BOTTLE_OUT(3);
+		QUEUE1(2),
+		QUEUE2(3),
+		QUEUE3(4),
+		QUEUE4(5),
+		QUEUE5(6),
+		BOTTLE_IN(7),
+		BOTTLE_OUT(8),
+		TOTAL(9);
 		
 		int id;
 		
@@ -78,7 +89,13 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	public int fluidColor;
 	public LazyOptional<FluidTank> tank;
 	public FluidTank tankStorage;
-	private LazyOptional<ItemStackHandler> inventory  = LazyOptional.of(() -> new ItemStackHandler(BrewingStationTile.INV_SLOTS));
+//	private LazyOptional<ItemStackHandler> inventory  = LazyOptional.of(() -> new ItemStackHandler(BrewingStationTile.INV_SLOTS));
+	
+	private LazyOptional<BrewingFuelItemStackHandler> invFuel = LazyOptional.of(() -> new BrewingFuelItemStackHandler());
+	private LazyOptional<BrewingQueueItemStackHandler> invItems = LazyOptional.of(() -> new BrewingQueueItemStackHandler());
+	private LazyOptional<BrewingBottleInItemStackHandler> invBottleIn = LazyOptional.of(() -> new BrewingBottleInItemStackHandler());
+	private LazyOptional<BrewingBottleOutItemStackHandler> invBottleOut = LazyOptional.of(() -> new BrewingBottleOutItemStackHandler());
+	
 	
 	private ItemStack ingredient = ItemStack.EMPTY;
 	private int brewTime;
@@ -101,6 +118,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
                 	return BrewingStationTile.this.tankStorage.getFluidAmount();
                 case 4:
                 	return BrewingStationTile.this.maxBrewTime;
+                case 5:
+                	return (BrewingStationTile.this.tankStorage.getFluid().getFluid() == Registry.POTION_FLUID.get()) ? 1 : 0;
                 default:
                     throw new IllegalArgumentException("Invalid index: " + index);
             }
@@ -113,7 +132,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 
         @Override
         public int size() {
-            return 5;
+            return 6;
         }
     };
 	
@@ -124,113 +143,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		this.tank = LazyOptional.of(() -> this.tankStorage);
 		this.brewTime = 0;
 		this.maxBrewTime = 0;
-
-		// Make sure inventory has empty stacks
-		clear();
 	}
 
-	@Override
-	public int getSizeInventory() {
-		return INV_SLOTS;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		if(h != null ) 
-		{
-			for(int i = h.getSlots() - 1; i >= 0; i--)
-			{
-				ItemStack stack = h.getStackInSlot(i);
-				if( stack != null && !stack.isEmpty())
-					return false;
-			}
-		}
-		
-		return true;
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int index) {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		return (h != null && index >= 0 && index < h.getSlots()) ? h.getStackInSlot(index) : null;
-	}
-
-	@Override
-	public ItemStack decrStackSize(int index, int count) {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		if( h == null || index < 0 || index >= h.getSlots())
-			return ItemStack.EMPTY;
-		
-		ItemStack stack = h.getStackInSlot(index);
-		if( stack == null || stack.isEmpty())
-			return ItemStack.EMPTY;
-		
-		return stack.split(count);
-	}
-
-	@Override
-	public ItemStack removeStackFromSlot(int index) {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		if( h == null || index < 0 || index >= h.getSlots())
-			return ItemStack.EMPTY;
-		
-		ItemStack stack = h.getStackInSlot(index);
-		if( stack == null || stack.isEmpty())
-			return ItemStack.EMPTY;
-
-		h.setStackInSlot(index, ItemStack.EMPTY);
-		return stack;
-	}
-
-	@Override
-	public void setInventorySlotContents(int index, ItemStack stack) {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		if( h == null || index < 0 || index >= h.getSlots())
-			return;
-
-		h.setStackInSlot(index, stack);
-	}
-
-	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
-		return true;
-	}
-
-	@Override
-	public void clear() {
-		ItemStackHandler h = inventory.orElse(null);
-		
-		if( h == null )
-			return;
-
-		for(int i = h.getSlots() - 1; i >= 0; i--)
-			h.setStackInSlot(i, ItemStack.EMPTY);
-	}
-
-	@Override
-	public int[] getSlotsForFace(Direction side) {
-		// TODO Add hopper support
-		return null;
-	}
-
-	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, Direction direction) {
-		// TODO: Add hopper support
-		return false;
-	}
-
-	@Override
-	public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
-		// TODO: Add hopper support
-		return false;
-	}
-	
 	private FluidStack getPotionFluidFromNBT(CompoundNBT root)
 	{
 		FluidStack fluidStack = new FluidStack(Registry.POTION_FLUID.get(), FluidAttributes.BUCKET_VOLUME);
@@ -273,63 +187,17 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			}
 		}
 		
+		if( root.contains("CustomPotionName") )
+			tag.putString("CustomPotionName", root.getString("CustomPotionName"));
 
 		fluidStack.setTag(tag);
 		return fluidStack;
 
 	}
-	
-	/*
-	private FluidStack _getPotionFluidFromItemStack(ItemStack stack)
-	{
-		FluidStack fluidStack = new FluidStack(Registry.POTION_FLUID.get(), FluidAttributes.BUCKET_VOLUME);
-		
-		if(!stack.hasTag()) return fluidStack;
-		
-		CompoundNBT root = stack.getTag();
-		
-		// Add NBT data
-		List<EffectInstance> effects = PotionUtils.getEffectsFromTag(root);
-		CompoundNBT tag = new CompoundNBT();
-
-		if( root.contains("Potion")) {
-			String basePotion = root.getString("Potion");
-			
-			Potion potion = Potion.getPotionTypeForName(basePotion);
-			if( potion == Potions.WATER)
-			{
-				// This is water... have it as water, instead of the "potion" water
-				return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
-			}
-			
-			tag.putString("BasePotion", basePotion);
-		}
-		ListNBT listNBT = new ListNBT();
-		for(EffectInstance effect : effects) {
-			CompoundNBT tagEffect = new CompoundNBT();
-				
-//				Concoctions.GetLogger().info("Potion: {} {} {}", effect.getEffectName(), effect.getAmplifier(), effect.getDuration());
-			
-			effect.write(tagEffect);
-			listNBT.add(tagEffect);
-		}
-		tag.put("CustomPotionEffects", listNBT);
-		
-		if( root.contains("DyedPotion") && root.contains("CustomPotionColor"))
-		{
-			if( root.getBoolean("DyedPotion"))
-				tag.putInt("CustomPotionColor", root.getInt("CustomPotionColor"));
-		}
-		
-
-		fluidStack.setTag(tag);
-		return fluidStack;
-	}
-	*/
 	
 	private void addPotionEffectsToItemStack(FluidStack inFluid, ItemStack outStack)
 	{
-		if( !isPotionItemStack(outStack) )
+		if( !Utils.isPotionItemStack(outStack) )
 			return;
 		
 		if( inFluid.getFluid() == Fluids.WATER )
@@ -463,7 +331,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			
 			if( outStack != null )
 			{
-				inv.setStackInSlot(Slots.BOTTLE_OUT.id, outStack);
+				inv.setStackInSlot(0, outStack);
 				this.markDirty();
 				this.markContainingBlockForUpdate(null);
 				
@@ -474,15 +342,6 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		return false;
 	}
 
-	// TODO: move to a utility class
-	private boolean isPotionItemStack(ItemStack stack)
-	{
-		if( stack.isEmpty())
-			return false;
-		else
-			return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
-	}
-	
 	private ItemStack emptyTank(ItemStack inStack, ItemStack outStack, FluidStack inFluid, ItemStack resultStack)
 	{
 		if( resultStack.isEmpty())
@@ -605,7 +464,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			outStack = emptyTank(inStack, outStack, fluidStack, outputStack);
 			
 			if( outStack != null ) {
-				inv.setStackInSlot(Slots.BOTTLE_OUT.id, outStack);
+				inv.setStackInSlot(0, outStack);
 				this.markDirty();
 				this.markContainingBlockForUpdate(null);
 
@@ -616,18 +475,17 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	private int canBrew(ItemStackHandler inv)
 	{
-		ItemStack stack = inv.getStackInSlot(Slots.ITEM.id);
+		ItemStack stack = inv.getStackInSlot(0);
 		FluidStack fluid = this.tankStorage.getFluid();
 		
 		if( stack.isEmpty() || fluid.isEmpty() ) return 0;
-		
 		
 		return BrewingRecipes.canBrew(stack, fluid);
 	}
 	
 	private void brewPotion(ItemStackHandler inv)
 	{
-		ItemStack stack = inv.getStackInSlot(Slots.ITEM.id);
+		ItemStack stack = inv.getStackInSlot(0);
 		FluidStack fluid = this.tankStorage.getFluid();
 		
 		FluidStack result = BrewingRecipes.getBrewingRecipe(stack, fluid);
@@ -636,6 +494,14 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		{
 			result = getPotionFluidFromNBT(result.getTag());
 			result.setAmount(fluid.getAmount());
+			
+			if( fluid.hasTag() )
+			{
+				CompoundNBT root = fluid.getTag();
+				
+				if(root.contains("CustomPotionName"))
+					result.getOrCreateTag().putString("CustomPotionName", root.getString("CustomPotionName"));
+			}
 			
 			this.tankStorage.drain(this.tankStorage.getCapacity(), FluidAction.EXECUTE);
 			this.tankStorage.fill(result, FluidAction.EXECUTE);
@@ -652,7 +518,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			} else
 				stack.shrink(1);
 		      
-			inv.setStackInSlot(Slots.ITEM.id, stack);
+			inv.setStackInSlot(0, stack);
 			this.world.playEvent(1035, blockpos, 0);		// Play brewing sound
 		}
 		
@@ -660,10 +526,13 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	@Override
 	public void tick() {
-		ItemStackHandler inv = inventory.orElse(null);
+		BrewingFuelItemStackHandler invF = this.invFuel.orElse(null); 
+		BrewingQueueItemStackHandler invQ = this.invItems.orElse(null);
+		BrewingBottleInItemStackHandler invBIn = this.invBottleIn.orElse(null);
+		BrewingBottleOutItemStackHandler invBOut = this.invBottleOut.orElse(null);
 		// Check for Blaze Powder
-		if( inv != null ) {
-			ItemStack stack = inv.getStackInSlot(Slots.FUEL.id);
+		if( invF != null ) {
+			ItemStack stack = invF.getStackInSlot(0);
 			if( this.fuelRemaining <= 0 && stack != null && !stack.isEmpty() && stack.getItem() == Items.BLAZE_POWDER) {
 				this.fuelRemaining = 20;
 				stack.shrink(1);
@@ -671,34 +540,37 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			}
 		}
 		
+		
+		if( invQ != null)
+			invQ.collapseQueue();
+		
 		// Check for Fluid Inputs, only process fluids if nothing is being brewed
-		if( inv != null && this.brewTime <= 0) {
-			ItemStack inStack = inv.getStackInSlot(Slots.BOTTLE_IN.id);
-			ItemStack outStack = inv.getStackInSlot(Slots.BOTTLE_OUT.id);
+		if( invBIn != null && invBOut != null && this.brewTime <= 0) {
+			ItemStack inStack = invBIn.getStackInSlot(0);
+			ItemStack outStack = invBOut.getStackInSlot(0);
 			
 			if( inStack != null && !inStack.isEmpty()) {
-				if( !tryFillTank(inv, inStack, outStack))
-					tryEmptyTank(inv, inStack, outStack);
+				if( !tryFillTank(invBOut, inStack, outStack))
+					tryEmptyTank(invBOut, inStack, outStack);
 			}
 		}
 		
-		// TODO: Attempt to brew
-		if( inv != null )
+		if( invQ != null )
 		{
-			int cb = canBrew(inv);				// Can Brew?
+			int cb = canBrew(invQ);				// Can Brew?
 			boolean ib = this.brewTime > 0;			// Is Brewing?
 			if( ib ) {
 				--this.brewTime;
 				boolean db = this.brewTime == 0;	// Done Brewing?
 				if( cb > 0 && db ) {
-					this.brewPotion(inv);
+					this.brewPotion(invQ);
 					this.markDirty();
 					this.markContainingBlockForUpdate(null);
 				} else if( cb <= 0 ) {
 					this.brewTime = 0;
 					this.markDirty();
 					this.markContainingBlockForUpdate(null);
-				} else if ( !this.ingredient.isItemEqual(inv.getStackInSlot(Slots.ITEM.id)) ) {
+				} else if ( !this.ingredient.isItemEqual(invQ.getStackInSlot(0)) ) {
 					this.brewTime = 0;
 					this.markDirty();
 					this.markContainingBlockForUpdate(null);
@@ -707,7 +579,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 				--this.fuelRemaining;
 				this.brewTime = cb;
 				this.maxBrewTime = cb;
-				this.ingredient = inv.getStackInSlot(Slots.ITEM.id).copy();
+				this.ingredient = invQ.getStackInSlot(0).copy();
 				this.markDirty();
 				this.markContainingBlockForUpdate(null);
 			}
@@ -736,8 +608,20 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
         this.brewTime = compound.getInt("brew");
         this.maxBrewTime = compound.getInt("maxbrew");
         this.fuelRemaining = compound.getInt("fuel");
-        this.inventory.ifPresent(h -> h.deserializeNBT(compound.getCompound("inv")));
-        this.tank.ifPresent(h -> h.readFromNBT(compound.getCompound("tank")));
+        this.invFuel.ifPresent(h -> h.deserializeNBT(compound.getCompound("invF")));
+        this.invItems.ifPresent(h -> h.deserializeNBT(compound.getCompound("invQ")));
+        this.invBottleIn.ifPresent(h -> h.deserializeNBT(compound.getCompound("invBIn")));
+        this.invBottleOut.ifPresent(h -> h.deserializeNBT(compound.getCompound("invBOut")));
+        this.tank.ifPresent(h -> {
+        	h.readFromNBT(compound.getCompound("tank"));
+        	
+        	FluidStack fluid = h.getFluid();
+        	if( fluid.getFluid() == Registry.POTION_FLUID.get() && fluid.hasTag() )
+        	{
+        		if(fluid.getTag().contains("CustomPotionName"))
+        			this.newPotionName = fluid.getTag().getString("CustomPotionName");
+        	}
+        });
     	updateFluidColor();
     }
     
@@ -748,7 +632,10 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
         compound.putInt("maxbrew", this.maxBrewTime);
         compound.putInt("fuel", this.fuelRemaining);
         
-        inventory.ifPresent(h ->  compound.put("inv", h.serializeNBT()));
+        invFuel.ifPresent(h ->  compound.put("invF", h.serializeNBT()));
+        invItems.ifPresent(h ->  compound.put("invI", h.serializeNBT()));
+        invBottleIn.ifPresent(h ->  compound.put("invBIn", h.serializeNBT()));
+        invBottleOut.ifPresent(h ->  compound.put("invBOut", h.serializeNBT()));
         
         this.tank.ifPresent(h -> {
         	CompoundNBT tag = new CompoundNBT();
@@ -768,14 +655,32 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		assert world != null;
-		return new BrewingStationContainer(this, this.brewingStationData, i, playerInventory, this.inventory.orElse(new ItemStackHandler(BrewingStationTile.INV_SLOTS)));
+		return new BrewingStationContainer(this, this.brewingStationData, i, playerInventory,
+				this.invFuel.orElse(new BrewingFuelItemStackHandler()),
+				this.invItems.orElse(new BrewingQueueItemStackHandler()),
+				this.invBottleIn.orElse(new BrewingBottleInItemStackHandler()),
+				this.invBottleOut.orElse(new BrewingBottleOutItemStackHandler()));
 	}
 	
 	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, final @Nullable Direction side) {
 		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
-			return inventory.cast();
+		{
+			if( side == Direction.UP )
+				return invItems.cast();
+			
+			else if( side == Direction.SOUTH)
+				return invFuel.cast();
+			
+			else if( side == Direction.EAST || side == Direction.WEST )
+				return invBottleIn.cast();
+			
+			else if( side == Direction.DOWN)
+				return invBottleOut.cast();
+		
+			return LazyOptional.empty();
+		}
 		
 		if( cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY )
 			return this.tank.cast();
@@ -806,7 +711,10 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	@Override
 	public void remove() {
-		inventory.invalidate();
+		invFuel.invalidate();
+		invItems.invalidate();
+		invBottleIn.invalidate();
+		invBottleOut.invalidate();
 		super.remove();
 	}
 	
@@ -885,11 +793,11 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 
 	private void renameItemName()
 	{
-		ItemStackHandler inv = inventory.orElse(null);
+		ItemStackHandler inv = invBottleOut.orElse(null);
 		
 		if( inv != null )
 		{
-			ItemStack stack = inv.getStackInSlot(Slots.BOTTLE_OUT.id);
+			ItemStack stack = inv.getStackInSlot(0);
 			renameItemName(stack);
 		}
 	}
@@ -900,6 +808,31 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		{
 			this.newPotionName = name;
 			this.renameItemName();
+			
+			this.tank.ifPresent(t -> {
+				FluidStack fluid = t.getFluid();
+				
+				if(fluid.getFluid() == Registry.POTION_FLUID.get())
+				{
+					CompoundNBT root = fluid.getTag();
+					if(StringUtils.isBlank(name))
+					{
+						if(root.contains("CustomPotionName"))
+							root.remove("CustomPotionName");
+					}
+					else
+					{
+						root.putString("CustomPotionName", name);
+					}
+				}
+				
+			});
+			
 		}
+	}
+	
+	public String getPotionName()
+	{
+		return this.newPotionName;
 	}
 }

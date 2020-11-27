@@ -80,5 +80,6 @@
 	"item.concoctions.lingering_potion.prefix": "Lingering Potion of %s",
 	"item.concoctions.tipped_arrow.prefix": "Arrow of %s",
 	"item.concoctions.tipped_arrow.solution": "Tipped Arrow",
-	"text.concoctions.solution": "Solution"
+	"item.concoctions.solution": "Solution",
+	"item.concoctions.solution.prefix": "Solution of %s"
 }

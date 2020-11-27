@@ -5,9 +5,11 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.client.ClientUtils;
+import com.xevira.concoctions.common.block.tile.BrewingStationTile;
 import com.xevira.concoctions.common.container.BrewingStationContainer;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketPotionRename;
+import com.xevira.concoctions.common.utils.Utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -39,11 +41,13 @@ import java.util.List;
 public class BrewingStationScreen extends ContainerScreen<BrewingStationContainer> implements IContainerListener {
 	private static final ResourceLocation background = new ResourceLocation(Concoctions.MOD_ID, "textures/gui/brewing_station.png");
 	private static final int[] BUBBLELENGTHS = new int[]{29, 24, 20, 16, 11, 6, 0};
-	private static final int OUTPUT_SLOT = 3; 
+	private static final int OUTPUT_SLOT = BrewingStationTile.Slots.BOTTLE_OUT.getId(); 
 
 	private final BrewingStationContainer container;
 	private TextFieldWidget nameField;
 	private String nameText;
+	
+	private boolean hadPotion = false;
 	
 	
 	public BrewingStationScreen(BrewingStationContainer container, PlayerInventory playerInventory, ITextComponent title) {
@@ -65,8 +69,9 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 		this.nameField.setDisabledTextColour(-1);
 		this.nameField.setEnableBackgroundDrawing(false);
 		this.nameField.setMaxStringLength(35);
+		this.nameField.setText(this.container.getPotionName());
 		this.nameField.setResponder(this::renameItem);
-		this.nameText = "";
+		this.nameText = this.container.getPotionName();
 		this.children.add(this.nameField);
 		this.setFocusedDefault(this.nameField);
 	}
@@ -83,6 +88,15 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 	public void tick() {
 		super.tick();
 		this.nameField.tick();
+		
+		boolean hasPotion = this.container.hasPotionFluid();
+		
+		if( hasPotion != this.hadPotion )
+		{
+			this.hadPotion = hasPotion;
+			this.nameField.setEnabled(hasPotion);
+			this.setListener(this.nameField);
+		}
 	}
 	
 	public void onClose() {
@@ -122,7 +136,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
         int fuel = this.container.getRemainingFuel();
         int l = MathHelper.clamp((18 * fuel + 20 - 1) / 20, 0, 18);
         if (l > 0) {
-           this.blit(stack, left + 60, top + 44, 176, 29, l, 4);
+           this.blit(stack, left + 60, top + 68, 176, 29, l, 4);
         }
         
         // Draw Name Field background
@@ -134,12 +148,12 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
         if( brew > 0 && maxbrew > 0 ) {
         	int w = (int)(28.0F * (1.0F - (float)brew / (float)maxbrew));
         	if( w > 0 ) {
-        		this.blit(stack, left + 97, top + 21, 209, 0, w, 9);
+        		this.blit(stack, left + 97, top + 49, 209, 0, w, 9);
         	}
         	
         	int h = BUBBLELENGTHS[(brew / 2 ) % 7];
         	if( h > 0) {
-        		this.blit(stack, left + 63, top + 14 + 29 - h, 185, 29 - h, 12, h);
+        		this.blit(stack, left + 63, top + 38 + 29 - h, 185, 29 - h, 12, h);
         	}
         }
         
@@ -171,7 +185,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 	
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack stack, int mouseX, int mouseY) {
-        Minecraft.getInstance().fontRenderer.drawString(stack, I18n.format("block.concoctions.brewing_station"), 6, 6, Color.DARK_GRAY.getRGB());
+        Minecraft.getInstance().fontRenderer.drawString(stack, I18n.format("block.concoctions.brewing_station"), 17, 6, Color.DARK_GRAY.getRGB());
     }
 
 	@Override
@@ -186,7 +200,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 	 */
 	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
 		if (slotInd == OUTPUT_SLOT) {
-			this.nameField.setEnabled(isOutputPotionItemStack(stack));
+			this.nameField.setEnabled(Utils.isPotionItemStack(stack));
 			this.setListener(this.nameField);
 		}
 	}
@@ -196,20 +210,15 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 		// Do Nothing
 	}
 
-	// TODO: Move to a central utility class
-	private boolean isOutputPotionItemStack(ItemStack stack)
-	{
-		if(stack.isEmpty()) return false;
-		return (stack.getItem() == Items.POTION || stack.getItem() == Items.SPLASH_POTION || stack.getItem() == Items.LINGERING_POTION || stack.getItem() == Items.TIPPED_ARROW);
-	}
-	
 	private boolean isOutputPotionItemStack()
 	{
+		if( this.container.hasPotionFluid()) return true;
+		
 		Slot slot = this.container.getSlot(OUTPUT_SLOT); 
 		
 		if(!slot.getHasStack()) return false;
 		
-		return isOutputPotionItemStack(slot.getStack());
+		return Utils.isPotionItemStack(slot.getStack());
 	}
 
 }
