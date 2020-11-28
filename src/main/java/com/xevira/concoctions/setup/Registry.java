@@ -2,16 +2,18 @@ package com.xevira.concoctions.setup;
 
 
 import com.xevira.concoctions.Concoctions;
-import com.xevira.concoctions.common.block.BrewingStationBlock;
+import com.xevira.concoctions.common.block.*;
 import com.xevira.concoctions.common.block.tile.*;
 import com.xevira.concoctions.common.container.BrewingStationContainer;
+import com.xevira.concoctions.common.entities.*;
 import com.xevira.concoctions.common.fluids.PotionFluid;
-import com.xevira.concoctions.common.items.BrewingStationItem;
-import com.xevira.concoctions.common.items.GlimmeringDyeItem;
-import com.xevira.concoctions.common.items.LingeringBottleItem;
-import com.xevira.concoctions.common.items.SplashBottleItem;
+import com.xevira.concoctions.common.items.*;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.DyeColor;
@@ -36,6 +38,7 @@ public class Registry {
 	
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Concoctions.MOD_ID);
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Concoctions.MOD_ID);
+	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Concoctions.MOD_ID);
 	public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Concoctions.MOD_ID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Concoctions.MOD_ID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, Concoctions.MOD_ID);
@@ -55,14 +58,21 @@ public class Registry {
     
     // Blocks
     public static final RegistryObject<BrewingStationBlock> BREWING_STATION = BLOCKS.register("brewing_station", BrewingStationBlock::new);
+    public static final RegistryObject<FilledCauldronBlock> FILLED_CAULDRON = BLOCKS.register("filled_cauldron", FilledCauldronBlock::new);
     
     // Containers
     public static final RegistryObject<ContainerType<BrewingStationContainer>> BREWING_STATION_CONTAINER = CONTAINERS.register("brewing_station_container", () -> IForgeContainerType.create(BrewingStationContainer::new));
+    
+    // Entities
+    public static final RegistryObject<EntityType<ItemEntityNoImbue>> ITEM_ENTITY_NO_IMBUE = ENTITIES.register("item_no_imbue", () -> EntityType.Builder.<ItemEntityNoImbue>create(ItemEntityNoImbue::new, EntityClassification.MISC).build("item_no_imbue"));
     
     // Fluids
     public static final RegistryObject<Fluid> POTION_FLUID = FLUIDS.register("potion_fluid", () -> new PotionFluid(Resources.POTION_FLUID_STILL, Resources.POTION_FLUID_FLOWING));
     
     // Items
+    public static final RegistryObject<Item> APOTHECARY_GUIDE = ITEMS.register("apothecary_guide", () -> new ApothecaryGuide());
+    public static final RegistryObject<Item> BOTTLE_FIRE = ITEMS.register("bottle_fire", () -> new BottleFireItem((new Item.Properties()).group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> BOTTLE_SOUL_FIRE = ITEMS.register("bottle_soul_fire", () -> new BottleFireItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BREWING_STATION_ITEM = ITEMS.register("brewing_station", () -> new BrewingStationItem(BREWING_STATION.get(), Registry.PROPS_BREWING));
     public static final RegistryObject<Item> DOLPHIN_FIN = ITEMS.register("dolphin_fin", () -> new Item((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> GLIMMERING_WHITE_DYE = ITEMS.register("glimmering_white_dye", () -> new GlimmeringDyeItem(DyeColor.WHITE, (new Item.Properties()).group(ItemGroup.MATERIALS)));
@@ -137,4 +147,5 @@ public class Registry {
     
     // Tile Entities
 	public static final RegistryObject<TileEntityType<BrewingStationTile>> BREWING_STATION_TILE = TILES.register("brewing_station", () -> TileEntityType.Builder.create(BrewingStationTile::new, BREWING_STATION.get()).build(null));
+	public static final RegistryObject<TileEntityType<FilledCauldronTile>> FILLED_CAULDRON_TILE = TILES.register("filled_cauldron", () -> TileEntityType.Builder.create(FilledCauldronTile::new, FILLED_CAULDRON.get()).build(null));
 }

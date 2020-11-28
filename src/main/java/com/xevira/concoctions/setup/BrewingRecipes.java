@@ -26,7 +26,8 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 
-public class BrewingRecipes {
+public class BrewingRecipes
+{
 	protected static final int DEFAULT_BREW_TIME = 400;
 	protected static final int MIN_BREW_TIME = 20;
 	

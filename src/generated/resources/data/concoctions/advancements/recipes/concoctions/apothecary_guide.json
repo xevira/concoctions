@@ -2,16 +2,16 @@
 	"parent": "minecraft:recipes/root",
 	"rewards": {
 		"recipes": [
-			"concoctions:brewing_station"
+			"concoctions:apothecary_guide"
 		]
 	},
 	"criteria": {
-		"apothecary_guide": {
+		"brewing_stand": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [
 					{
-						"item": "concoctions:apothecary_guide"
+						"item": "minecraft:brewing_stand"
 					}
 				]
 			}
@@ -19,13 +19,13 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "concoctions:brewing_station"
+				"recipe": "concoctions:apothecary_guide"
 			}
 		}
 	},
 	"requirements": [
 		[
-			"apothecary_guide",
+			"brewing_stand",
 			"has_the_recipe"
 		]
 	]

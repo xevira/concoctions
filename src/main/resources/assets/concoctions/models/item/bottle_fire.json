@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "concoctions:item/glimmering_yellow_dye"
+    "layer0": "concoctions:item/bottle_fire"
   }
 }

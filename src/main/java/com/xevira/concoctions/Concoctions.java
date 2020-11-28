@@ -1,17 +1,32 @@
 package com.xevira.concoctions;
 
-import com.xevira.concoctions.client.gui.screen.BrewingStationScreen;
+import com.xevira.concoctions.client.gui.screen.*;
+import com.xevira.concoctions.client.ter.*;
+import com.xevira.concoctions.common.block.FilledCauldronBlock;
+import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
+import com.xevira.concoctions.common.events.RightClickEventHandler;
 import com.xevira.concoctions.common.network.PacketHandler;
+import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.*;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.Event.Result;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -41,6 +56,7 @@ public class Concoctions {
 	    event.addListener(this::loadComplete);
 	   
 	    MinecraftForge.EVENT_BUS.register(this);
+	    MinecraftForge.EVENT_BUS.register(new RightClickEventHandler());
 	
 	    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_CONFIG);
 	}
@@ -51,6 +67,7 @@ public class Concoctions {
 	
 	public void clientSetup(final FMLClientSetupEvent event){
 		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
+		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
 	}
 	
 	public void sendImc(InterModEnqueueEvent evt) {

@@ -145,99 +145,6 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		this.maxBrewTime = 0;
 	}
 
-	private FluidStack getPotionFluidFromNBT(CompoundNBT root)
-	{
-		FluidStack fluidStack = new FluidStack(Registry.POTION_FLUID.get(), FluidAttributes.BUCKET_VOLUME);
-		
-		if(root == null) return fluidStack;
-		
-		// Add NBT data
-		List<EffectInstance> effects = PotionUtils.getEffectsFromTag(root);
-		CompoundNBT tag = new CompoundNBT();
-
-		if( root.contains("Potion")) {
-			String basePotion = root.getString("Potion");
-			
-			Potion potion = Potion.getPotionTypeForName(basePotion);
-			if( potion == Potions.WATER)
-			{
-				// This is water... have it as water, instead of the "potion" water
-				return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
-			}
-			
-			tag.putString("BasePotion", basePotion);
-		}
-		ListNBT listNBT = new ListNBT();
-		for(EffectInstance effect : effects) {
-			CompoundNBT tagEffect = new CompoundNBT();
-				
-//				Concoctions.GetLogger().info("Potion: {} {} {}", effect.getEffectName(), effect.getAmplifier(), effect.getDuration());
-			
-			effect.write(tagEffect);
-			listNBT.add(tagEffect);
-		}
-		tag.put("CustomPotionEffects", listNBT);
-		
-		if( root.contains("DyedPotion") && root.contains("CustomPotionColor"))
-		{
-			if( root.getBoolean("DyedPotion"))
-			{
-				tag.putInt("CustomPotionColor", root.getInt("CustomPotionColor"));
-				tag.putBoolean("DyedPotion", true);
-			}
-		}
-		
-		if( root.contains("CustomPotionName") )
-			tag.putString("CustomPotionName", root.getString("CustomPotionName"));
-
-		fluidStack.setTag(tag);
-		return fluidStack;
-
-	}
-	
-	private void addPotionEffectsToItemStack(FluidStack inFluid, ItemStack outStack)
-	{
-		if( !Utils.isPotionItemStack(outStack) )
-			return;
-		
-		if( inFluid.getFluid() == Fluids.WATER )
-		{
-			// Shortcut if the fluid is water and the output is to be a potion (ie. water bottle)
-			PotionUtils.addPotionToItemStack(outStack, Potions.WATER);
-			return;
-		}
-		
-		CompoundNBT root = outStack.getOrCreateTag();
-		
-		if( inFluid.getTag().contains("BasePotion")) {
-			String basePotion = inFluid.getTag().getString("BasePotion");
-			root.putString("Potion", basePotion);
-		}
-		else
-		{
-			if( inFluid.getTag().contains("CustomPotionEffects", 9))
-			{
-				ListNBT effects = inFluid.getTag().getList("CustomPotionEffects", 10);
-				root.put("CustomPotionEffects", effects.copy());
-				
-				Fluid fluid = inFluid.getFluid();
-				if(fluid instanceof PotionFluid) {
-					int col = fluid.getAttributes().getColor(inFluid);
-					
-					root.putInt("CustomPotionColor", col);
-					root.putBoolean("DyedPotion", false);	// Used to differentiate between raw custom potions and dyed potions 
-				}
-			}
-		}
-
-		if( inFluid.getTag().contains("CustomPotionColor")) {
-			root.putInt("CustomPotionColor", inFluid.getTag().getInt("CustomPotionColor"));
-			root.putBoolean("DyedPotion", true);
-		}
-
-		renameItemName(outStack);
-	}
-	
 	private boolean areItemStacksEqual(ItemStack a, ItemStack b) {
 		// same functionality as ItemStack.areItemStackEqual(a,b) but ignoring item count
 		if( a.isEmpty() && b.isEmpty() ) {
@@ -321,7 +228,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			fluidStack = new FluidStack(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME);
 			outputStack = new ItemStack(Items.BUCKET, 1);
 		} else if( item == Items.POTION ) {
-			fluidStack = getPotionFluidFromNBT(inStack.getTag());
+			fluidStack = Utils.getPotionFluidFromNBT(inStack.getTag());
 			outputStack = new ItemStack(Items.GLASS_BOTTLE, 1);
 		}
 
@@ -360,7 +267,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		if( result.isEmpty() || result.getAmount() < volume )
 			return null;	// Not enough room
 		
-		addPotionEffectsToItemStack(result, resultStack);
+		Utils.addPotionEffectsToItemStack(result, resultStack);
+		renameItemName(resultStack);
 
 		// Check if result and current output stack are compatible
 		if( !outStack.isEmpty() && !areItemStacksEqual(outStack, resultStack))
@@ -492,7 +400,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		
 		if( result != null )
 		{
-			result = getPotionFluidFromNBT(result.getTag());
+			result = Utils.getPotionFluidFromNBT(result.getTag());
 			result.setAmount(fluid.getAmount());
 			
 			if( fluid.hasTag() )

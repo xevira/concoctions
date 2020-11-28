@@ -1,0 +1,26 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"232",
+		"232",
+		"414"
+	],
+	"key": {
+		"1": {
+			"item": "minecraft:brewing_stand"
+		},
+		"2": {
+			"item": "minecraft:glass"
+		},
+		"3": {
+			"item": "minecraft:blaze_rod"
+		},
+		"4": {
+			"item": "minecraft:cauldron"
+		}
+		
+	},
+	"result": {
+		"item": "concoctions:brewing_station"
+	}
+}
