@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.utility.invisibility",
+	"category": "concoctions:potions/utility",
+	"icon": "minecraft:potion{Potion:\"minecraft:invisibility\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.utility.invisibility",
+			"header": "concoctions.header.potions.utility.invisibility",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:night_vision\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:invisibility\"}"
+		}
+	]
+}

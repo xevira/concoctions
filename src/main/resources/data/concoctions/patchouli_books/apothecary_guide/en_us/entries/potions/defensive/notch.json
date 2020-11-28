@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.defensive.notch",
+	"category": "concoctions:potions/defensive",
+	"icon": "minecraft:potion{Potion:\"concoctions:notch\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.defensive.notch",
+			"header": "concoctions.entry.potions.defensive.notch",
+			"ingredient": "minecraft:golden_apple",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:notch\"}"
+		}
+	]
+}

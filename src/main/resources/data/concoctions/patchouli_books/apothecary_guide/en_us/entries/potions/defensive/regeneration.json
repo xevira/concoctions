@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.defensive.regeneration",
+	"category": "concoctions:potions/defensive",
+	"icon": "minecraft:potion{Potion:\"minecraft:regeneration\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.defensive.regeneration",
+			"header": "concoctions.entry.potions.defensive.regeneration",
+			"ingredient": "minecraft:ghast_tear",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:regeneration\"}"
+		}
+	]
+}

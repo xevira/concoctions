@@ -1,0 +1,63 @@
+{
+  "components": [
+    {
+      "type": "header",
+      "text": "#header",
+      "x": -1,
+      "y": -1
+    },
+    {
+      "type": "separator",
+      "x": -1,
+      "y": -1
+    },
+    {
+      "type": "text",
+      "text": "#text",
+      "x": 5,
+      "y": 50
+    },
+    {
+      "type": "item",
+      "item": "#ingredient1",
+      "framed": true,
+      "x": 20,
+      "y": 20
+    },
+    {
+      "type": "item",
+      "item": "#base1",
+      "framed": true,
+      "x": 50,
+      "y": 20
+    },
+    {
+      "type": "item",
+      "item": "#result1",
+      "framed": true,
+      "x": 75,
+      "y": 20
+    },
+    {
+      "type": "item",
+      "item": "#ingredient2",
+      "framed": true,
+      "x": 20,
+      "y": 40
+    },
+    {
+      "type": "item",
+      "item": "#base2",
+      "framed": true,
+      "x": 50,
+      "y": 40
+    },
+    {
+      "type": "item",
+      "item": "#result2",
+      "framed": true,
+      "x": 75,
+      "y": 40
+    }
+  ]
+}

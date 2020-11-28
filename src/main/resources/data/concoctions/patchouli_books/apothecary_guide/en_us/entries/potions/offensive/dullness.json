@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.offensive.dullness",
+	"category": "concoctions:potions/offensive",
+	"icon": "minecraft:potion{Potion:\"concoctions:dullness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.offensive.dullness",
+			"header": "concoctions.entry.potions.offensive.dullness",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"concoctions:haste\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:dullness\"}"
+		}
+	]
+}

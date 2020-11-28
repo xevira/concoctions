@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.defensive.swiftness",
+	"category": "concoctions:potions/defensive",
+	"icon": "minecraft:potion{Potion:\"minecraft:swiftness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.defensive.swiftness",
+			"header": "concoctions.entry.potions.defensive.swiftness",
+			"ingredient": "minecraft:sugar",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:swiftness\"}"
+		}
+	]
+}

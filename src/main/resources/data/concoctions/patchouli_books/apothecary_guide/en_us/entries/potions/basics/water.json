@@ -1,0 +1,13 @@
+{
+	"name": "concoctions.entry.potions.basics.water",
+	"category": "concoctions:potions/basics",
+	"icon": "minecraft:water_bucket",
+	"sortnum": 0,
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "minecraft:water_bucket",
+			"text": "concoctions.page.potions.basics.water"
+		}
+	]
+}

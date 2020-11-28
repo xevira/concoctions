@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.utility.haste",
+	"category": "concoctions:potions/utility",
+	"icon": "minecraft:potion{Potion:\"concoctions:haste\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.utility.haste",
+			"header": "concoctions.header.potions.utility.haste",
+			"ingredient": "minecraft:golden_pickaxe",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:haste\"}"
+		}
+	]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "concoctions.category.potions.defensive",
+  "description": "concoctions.category.potions.defensive.text",
+  "parent": "potions",
+  "icon": "minecraft:potion{Potion:\"concoctions:resistance\"}",
+  "sortnum": 2
+}

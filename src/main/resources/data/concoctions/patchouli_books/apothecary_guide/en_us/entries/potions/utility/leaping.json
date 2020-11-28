@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.utility.leaping",
+	"category": "concoctions:potions/utility",
+	"icon": "minecraft:potion{Potion:\"minecraft:leaping\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.utility.leaping",
+			"header": "concoctions.header.potions.utility.leaping",
+			"ingredient": "minecraft:rabbit_foot",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:leaping\"}"
+		}
+	]
+}

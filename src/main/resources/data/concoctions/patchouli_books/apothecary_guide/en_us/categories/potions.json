@@ -1,0 +1,6 @@
+{
+  "name": "concoctions.category.potions",
+  "description": "concoctions.category.potions.text",
+  "icon": "minecraft:potion{Potion:\"minecraft:fire_resistance\"}",
+  "sortnum": 1
+}

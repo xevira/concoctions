@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.offensive.poison",
+	"category": "concoctions:potions/offensive",
+	"icon": "minecraft:potion{Potion:\"minecraft:poison\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.offensive.poison",
+			"header": "concoctions.entry.potions.offensive.poison",
+			"ingredient": "minecraft:spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:poison\"}"
+		}
+	]
+}

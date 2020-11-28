@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.utility.grace",
+	"category": "concoctions:potions/utility",
+	"icon": "minecraft:potion{Potion:\"concoctions:grace\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.utility.grace",
+			"header": "concoctions.header.potions.utility.grace",
+			"ingredient": "concoctions:dolphin_fin",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:grace\"}"
+		}
+	]
+}

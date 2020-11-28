@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.offensive.strength",
+	"category": "concoctions:potions/offensive",
+	"icon": "minecraft:potion{Potion:\"minecraft:strength\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.offensive.strength",
+			"header": "concoctions.entry.potions.offensive.strength",
+			"ingredient": "minecraft:blaze_powder",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:strength\"}"
+		}
+	]
+}

@@ -18,3 +18,9 @@ license="MIT License"
     versionRange="[34,)" #mandatory
     ordering="NONE"
     side="BOTH"
+[[dependencies.patchouli]]
+    modId="patchouli"
+    mandatory=true
+    versionRange="[1.16.2-47]"
+    ordering="NONE"
+    side="BOTH"

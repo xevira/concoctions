@@ -1,0 +1,12 @@
+{
+  "name": "item.concoctions.apothecary_guide",
+  "landing_text": "patchouli.concoctions.book.landing",
+  "model": "concoctions:apothecary_guide",
+  "book_texture": "patchouli:textures/gui/book_green.png",
+  "i18n": true,
+  "dont_generate_book": true,
+  "custom_book_item": "concoctions:apothecary_guide",
+  "creative_tab": "brewing",
+  "version": 1,
+  "show_progress": false
+}

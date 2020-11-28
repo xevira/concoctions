@@ -1,0 +1,16 @@
+{
+	"name": "concoctions.entry.potions.basics.awkward",
+	"category": "concoctions:potions/basics",
+	"icon": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.entry.potions.basics.awkward",
+			"header": "concoctions.header.potions.basics.awkward",
+			"ingredient": "minecraft:nether_wart",
+			"base": "minecraft:water_bucket",
+			"result": "minecraft:potion{Potion:\"minecraft:awkward\"}"
+		}
+	]
+}

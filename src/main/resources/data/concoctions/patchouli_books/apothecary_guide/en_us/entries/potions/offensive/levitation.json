@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.offensive.levitation",
+	"category": "concoctions:potions/offensive",
+	"icon": "minecraft:potion{Potion:\"concoctions:levitation\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.offensive.levitation",
+			"header": "concoctions.entry.potions.offensive.levitation",
+			"ingredient": "minecraft:chorus_fruit",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:levitation\"}"
+		}
+	]
+}

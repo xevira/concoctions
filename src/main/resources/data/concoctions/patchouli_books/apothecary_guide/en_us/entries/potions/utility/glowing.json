@@ -1,0 +1,15 @@
+{
+	"name": "concoctions.entry.potions.utility.glowing",
+	"category": "concoctions:potions/utility",
+	"icon": "minecraft:potion{Potion:\"concoctions:glowing\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"text": "concoctions.page.potions.utility.glowing",
+			"header": "concoctions.header.potions.utility.glowing",
+			"ingredient": "minecraft:glowstone",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:glowing\"}"
+		}
+	]
+}
