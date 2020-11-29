@@ -11,15 +11,4 @@ public class BouncyEffect extends EffectBase
 	public BouncyEffect(EffectType typeIn, int liquidColorIn) {
 		super(typeIn, liquidColorIn, 10);
 	}
-
-	/*
-	@Override
-	public void performEffect(LivingEntity entityLivingBaseIn, int amplifier)
-	{
-		Vector3d motion = entityLivingBaseIn.getMotion();
-		
-		if( motion.y < -0.2D || motion.y > 0.2D)
-			Concoctions.GetLogger().info("Bouncy: motion = {}", motion);
-	}
-	*/
 }

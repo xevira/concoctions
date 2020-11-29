@@ -78,6 +78,7 @@ public class Registry {
     // Effects
     public static final RegistryObject<Effect> GRAVITY_EFFECT = EFFECTS.register("gravity", () -> new GravityEffect(EffectType.HARMFUL, 0x7998d7/*16410214*/));
     public static final RegistryObject<Effect> BOUNCY_EFFECT = EFFECTS.register("bouncy", () -> new BouncyEffect(EffectType.NEUTRAL, 0x20ff00));
+    public static final RegistryObject<Effect> INTANGIBLE_EFFECT = EFFECTS.register("intangible", () -> new IntangibleEffectSpectator(EffectType.NEUTRAL, 0x999999));
     
     // Fluids
     public static final RegistryObject<Fluid> POTION_FLUID = FLUIDS.register("potion_fluid", () -> new PotionFluid(Resources.POTION_FLUID_STILL, Resources.POTION_FLUID_FLOWING));

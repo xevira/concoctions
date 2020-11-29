@@ -24,9 +24,12 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
@@ -144,10 +147,23 @@ public class EventHandler
 		World world = event.getWorld();
 		if(world == null)
 			return;
+
+		/*
+		Vector3d lookAt = player.getLookVec().normalize();
+		if( lookAt.y >= 0)
+		{
+			float angle = world.getCelestialAngleRadians(0);
+			Vector3d sun = new Vector3d(-Math.sin(angle), Math.cos(angle), 0).normalize();
+			double dot = lookAt.x * sun.x + lookAt.y * sun.y + lookAt.z * sun.z;
+			Concoctions.GetLogger().info("dot = {}", dot);
+		}
+		*/
 		
+
 		BlockState state = world.getBlockState(pos);
 		if(state != null)
 		{
+			
 			//Concoctions.GetLogger().info("Right Clicked on {}", state.getBlock().getRegistryName().toString());
 			
 			if( state.getBlock() == Blocks.CAULDRON && state.get(CauldronBlock.LEVEL) == 0 )
@@ -240,5 +256,10 @@ public class EventHandler
 				}
 			}
 		}
+	}
+	
+	public void handleLivingUpdate(LivingUpdateEvent event)
+	{
+		
 	}
 }

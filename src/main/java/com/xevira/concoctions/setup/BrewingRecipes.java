@@ -221,13 +221,17 @@ public class BrewingRecipes
 		
 		// Block of Redstone: extends from 5 minutes up to 10 minutes
 		EFFECT_RECIPES.add(new EffectRecipe(Items.REDSTONE_BLOCK, null, null, 6000, 12000, 1.5f, 0.0f, 0, -1, 1.0f, 0.0f, EffectVisibilityEnum.KEEP).setBrewTime(2*DEFAULT_BREW_TIME));
-		
+
+		// Add something to SHORTEN the span of a spell's duration for those potions you DON'T want to be up for very long
+
 		// Glowstone Dust: amplifies by one level up to level 3
 		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE_DUST, null, null, 200, -1, 0.5f, 0.0f, 1, 2, 1.0f, 1.0f, EffectVisibilityEnum.KEEP));
 
 		// Glowstone: amplifies by one level from level 3 up to level 5
 		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE, null, null, 100, -1, 0.45f, 0.0f, 2, 4, 1.0f, 1.0f, EffectVisibilityEnum.KEEP).setBrewTime(2*DEFAULT_BREW_TIME));
 
+		
+		
 		// ================================================================
 		
 		// DYE RECIPES:
