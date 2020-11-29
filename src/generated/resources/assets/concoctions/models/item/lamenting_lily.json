@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "concoctions:block/lamenting_lily_stage0"
+  }
+}

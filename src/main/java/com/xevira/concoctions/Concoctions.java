@@ -2,9 +2,9 @@ package com.xevira.concoctions;
 
 import com.xevira.concoctions.client.gui.screen.*;
 import com.xevira.concoctions.client.ter.*;
+import com.xevira.concoctions.common.EventHandler;
 import com.xevira.concoctions.common.block.FilledCauldronBlock;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
-import com.xevira.concoctions.common.events.RightClickEventHandler;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.*;
@@ -13,6 +13,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -56,7 +58,7 @@ public class Concoctions {
 	    event.addListener(this::loadComplete);
 	   
 	    MinecraftForge.EVENT_BUS.register(this);
-	    MinecraftForge.EVENT_BUS.register(new RightClickEventHandler());
+	    MinecraftForge.EVENT_BUS.register(new EventHandler());
 	
 	    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_CONFIG);
 	}
@@ -66,15 +68,22 @@ public class Concoctions {
 	}
 	
 	public void clientSetup(final FMLClientSetupEvent event){
+		// Screens
 		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
+		
+		// Tile Entity Renderers
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
+		
+		// Block Render Types
+		RenderTypeLookup.setRenderLayer(Registry.LAMENTING_LILY.get(), RenderType.getCutout());
 	}
 	
 	public void sendImc(InterModEnqueueEvent evt) {
 	}
 	
 	public void loadComplete(final FMLLoadCompleteEvent event) {
-		BrewingRecipes.postInit();		// Allow for other mods to add brewing recipes
+		BrewingRecipes.postInit();
+		ImbuingRecipes.postInit();
 	}
 	
 	public static Logger GetLogger() {

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "concoctions:block/lamenting_lily_stage0"
+  }
+}

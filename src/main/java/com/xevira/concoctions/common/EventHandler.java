@@ -1,4 +1,4 @@
-package com.xevira.concoctions.common.events;
+package com.xevira.concoctions.common;
 
 import java.util.Random;
 
@@ -11,15 +11,19 @@ import com.xevira.concoctions.setup.Registry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -27,8 +31,55 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Mod;
 
-public class RightClickEventHandler
+public class EventHandler
 {
+	private void handleLivingJump_LeadFoot(LivingEntity entity)
+	{
+		Vector3d motion = entity.getMotion();
+		EffectInstance effect = entity.getActivePotionEffect(Registry.LEAD_FOOT.get()); 
+		if( effect != null )
+		{
+			if( entity instanceof PlayerEntity)
+			{
+				PlayerEntity player = (PlayerEntity)entity;
+				
+				// Creative flight negates the effect of Lead Foot entirely
+				if( player.abilities.isCreativeMode && player.abilities.isFlying )
+					return;
+			}
+
+			// Only affect it if you are trying to go UP
+			if( motion.y > 0)
+			{
+				motion = motion.subtract(0, (effect.getAmplifier()+1)*0.1F, 0);
+
+				// Prevent lead foot from causing you to drop fast than you should
+				if( motion.y < 0)
+					motion = new Vector3d(motion.x, 0, motion.z);
+				entity.setMotion(motion);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void handleLivingJump(LivingJumpEvent event)
+	{
+		handleLivingJump_LeadFoot(event.getEntityLiving());
+	}
+
+	/*
+	@SubscribeEvent
+	public void onLivingJump(LivingJumpEvent event)
+	{
+		Vector3d motion = event.getEntity().getMotion();
+		if(event.getEntityLiving().getActivePotionEffect(IEPotions.sticky)!=null)
+			motion = motion.subtract(0, (event.getEntityLiving().getActivePotionEffect(IEPotions.sticky).getAmplifier()+1)*0.3F, 0);
+		else if(event.getEntityLiving().getActivePotionEffect(IEPotions.concreteFeet)!=null)
+			motion = Vector3d.ZERO;
+		event.getEntity().setMotion(motion);
+	}
+	*/
+	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void handleRightClick(PlayerInteractEvent.RightClickBlock event)
 	{

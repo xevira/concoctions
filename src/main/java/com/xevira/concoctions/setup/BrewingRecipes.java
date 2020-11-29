@@ -200,6 +200,14 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Registry.DOLPHIN_FIN.get(), Potions.AWKWARD, Registry.GRACE_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.GRACE_POTION.get(), Registry.LONG_GRACE_POTION.get()));
 
+		// Custom Potions
+		//   Lead Foot
+		RECIPES.add(new BrewingRecipe(Items.IRON_BOOTS, Potions.AWKWARD, Registry.LEADFOOT_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.LEADFOOT_POTION.get(), Registry.LONG_LEADFOOT_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LEADFOOT_POTION.get(), Registry.STRONG_LEADFOOT_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_LEADFOOT_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.LEAD_FOOT.get(),800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_LEADFOOT_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.LEAD_FOOT.get(),800,1))));
+		
 		// ================================================================
 	
 		// EFFECT RECIPES:

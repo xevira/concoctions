@@ -85,6 +85,8 @@
 	"concoctions.page.potions.misc.arrow": "Arrows can be turned into Tipped arrows inside the Brewing Station",
 
 	"block.concoctions.brewing_station": "Brewing Station",
+	"block.concoctions.filled_cauldron": "Filled Cauldron",
+	"block.concoctions.lamenting_lily": "Lamenting Lily",
 	"gui.concoctions.empty": "Empty",
 	"item.concoctions.bottle_fire": "Bottle of Fire",
 	"item.concoctions.bottle_soul_fire": "Bottle of Soul Fire",
@@ -120,6 +122,7 @@
 	"item.minecraft.potion.effect.badluck": "Potion of Bad Luck",
 	"item.minecraft.potion.effect.neptune": "Potion of Neptune",
 	"item.minecraft.potion.effect.grace": "Potion of Grace",
+	"item.minecraft.potion.effect.lead_foot": "Potion of Lead Feet",
 	"item.minecraft.splash_potion.effect.haste": "Splash Potion of Haste",
 	"item.minecraft.splash_potion.effect.dullness": "Splash Potion of Dullness",
 	"item.minecraft.splash_potion.effect.confusion": "Splash Potion of Confusion",
@@ -134,6 +137,7 @@
 	"item.minecraft.splash_potion.effect.badluck": "Splash Potion of Bad Luck",
 	"item.minecraft.splash_potion.effect.neptune": "Splash Potion of Neptune",
 	"item.minecraft.splash_potion.effect.grace": "Splash Potion of Grace",
+	"item.minecraft.splash_potion.effect.lead_foot": "Splash Potion of Lead Feet",
 	"item.minecraft.lingering_potion.effect.haste": "Lingering Potion of Haste",
 	"item.minecraft.lingering_potion.effect.dullness": "Lingering Potion of Dullness",
 	"item.minecraft.lingering_potion.effect.confusion": "Lingering Potion of Confusion",
@@ -148,6 +152,7 @@
 	"item.minecraft.lingering_potion.effect.badluck": "Lingering Potion of Bad Luck",
 	"item.minecraft.lingering_potion.effect.neptune": "Lingering Potion of Neptune",
 	"item.minecraft.lingering_potion.effect.grace": "Lingering Potion of Grace",
+	"item.minecraft.lingering_potion.effect.lead_foot": "Lingering Potion of Lead Feet",
 	"item.minecraft.tipped_arrow.effect.haste": "Arrow of Haste",
 	"item.minecraft.tipped_arrow.effect.dullness": "Arrow of Dullness",
 	"item.minecraft.tipped_arrow.effect.confusion": "Arrow of Confusion",
@@ -162,12 +167,13 @@
 	"item.minecraft.tipped_arrow.effect.badluck": "Arrow of Bad Luck",
 	"item.minecraft.tipped_arrow.effect.neptune": "Arrow of Neptune",
 	"item.minecraft.tipped_arrow.effect.grace": "Arrow of Grace",
+	"item.minecraft.tipped_arrow.effect.lead_foot": "Arrow of Lead Feet",
 	"item.concoctions.potion.prefix": "Potion of %s",
 	"item.concoctions.splash_potion.prefix": "Splash Potion of %s",
 	"item.concoctions.lingering_potion.prefix": "Lingering Potion of %s",
 	"item.concoctions.tipped_arrow.prefix": "Arrow of %s",
 	"item.concoctions.tipped_arrow.solution": "Tipped Arrow",
 	"item.concoctions.solution": "Solution",
-	"item.concoctions.solution.prefix": "Solution of %s"
-	
+	"item.concoctions.solution.prefix": "Solution of %s",
+	"effect.concoctions.lead_foot": "Lead Foot"
 }

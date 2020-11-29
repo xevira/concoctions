@@ -44,7 +44,6 @@ public class BrewingStationBlock extends ModBlock {
 	
     public BrewingStationBlock() {
         super(defaultProperties().notSolid().harvestTool(ToolType.PICKAXE));
-        
         setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH));
     }
     

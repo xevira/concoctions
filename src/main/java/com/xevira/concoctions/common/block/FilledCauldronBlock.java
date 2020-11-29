@@ -9,6 +9,8 @@ import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
 import com.xevira.concoctions.common.entities.ItemEntityNoImbue;
 import com.xevira.concoctions.common.utils.Utils;
+import com.xevira.concoctions.setup.ImbuingRecipes;
+import com.xevira.concoctions.setup.ImbuingRecipes.ImbuingRecipe;
 import com.xevira.concoctions.setup.Registry;
 
 import net.minecraft.block.AbstractBlock;
@@ -122,8 +124,34 @@ public class FilledCauldronBlock extends Block
 				
 				ItemEntity itemEntity = (ItemEntity)entityIn;
 				ItemStack itemStack = itemEntity.getItem();
+				
+				ImbuingRecipe recipe = ImbuingRecipes.findImbuingRecipe(itemStack, fluid, level);
+				
+				if( recipe != null )
+				{
+					ItemStack result = recipe.getResult().copy();
+					
+					int created;
+					
+					if( recipe.getCost() > 0)
+						created = Math.min(level / recipe.getCost(), itemStack.getCount());
+					else
+						created = itemStack.getCount();
+					
+					result.setCount(created);
+					ItemEntityNoImbue resultEntity = new ItemEntityNoImbue(itemEntity.getEntityWorld(),
+							itemEntity.getPosX(), itemEntity.getPosY(), itemEntity.getPosZ(), result);
+					resultEntity.setPickupDelay(20);
+					itemEntity.getEntityWorld().addEntity(resultEntity);
+					
+					itemStack.shrink(created);
+					if(itemStack.isEmpty())
+						itemEntity.remove();
+					
+					this.setCauldronLevel(worldIn, pos, state, level - created * recipe.getCost());
+				}
 
-				// TODO: Add Imbuing full recipe system 
+				/*
 
 				if(itemStack.getItem() == Items.LILY_OF_THE_VALLEY) 
 				{
@@ -168,6 +196,7 @@ public class FilledCauldronBlock extends Block
 						}
 					}
 				}
+				*/
 			}
 		}
 	}
