@@ -27,7 +27,8 @@ public class PacketHandler {
     {
     	int id = 0;
     	
-    	 HANDLER.registerMessage(id++, PacketPotionRename.class, PacketPotionRename::encode, PacketPotionRename::decode, PacketPotionRename.Handler::handle);
+    	HANDLER.registerMessage(id++, PacketPotionRename.class,	PacketPotionRename::encode,		PacketPotionRename::decode,		PacketPotionRename.Handler::handle);
+    	HANDLER.registerMessage(id++, PacketBounce.class,			PacketBounce::encode,			PacketBounce::decode,			PacketBounce.Handler::handle);
     }
     
     public static void sendTo(Object msg, ServerPlayerEntity player) {

@@ -20,6 +20,7 @@ import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
@@ -79,6 +80,23 @@ public class LamentingLilyBlock extends BushBlock
 		return AbstractBlock.OffsetType.XZ;
 	}
 	
+	private int getLightLevel(World world, BlockPos pos)
+	{
+		if (world.getDimensionType().hasSkyLight()) {
+			int lighti = world.getLightFor(LightType.SKY, pos) - world.getSkylightSubtracted();
+			float f = world.getCelestialAngleRadians(1.0F);
+			if(lighti > 0)
+			{
+				float f1 = f < (float)Math.PI ? 0.0F : ((float)Math.PI * 2F);
+				f = f + (f1 - f) * 0.2F;
+				lighti = Math.round((float)lighti * MathHelper.cos(f));
+			}
+			return MathHelper.clamp(lighti, 0, 15);
+		}
+
+		return 0;
+	}
+	
 	@Override
 	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random)
 	{
@@ -86,9 +104,14 @@ public class LamentingLilyBlock extends BushBlock
 		
 		if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
 		
-		int light = worldIn.getLightFor(LightType.BLOCK, pos);
+		int light = getLightLevel(worldIn, pos);
+		int lightBlock = worldIn.getLightFor(LightType.BLOCK, pos);
+		boolean seeSky = worldIn.canSeeSky(pos); 
 		
-//		Concoctions.GetLogger().info("Lamenting Lily: stage {}, light {}", state.get(STAGE), light);
+		if( !seeSky || lightBlock > light )
+			light = lightBlock;
+		
+		//Concoctions.GetLogger().info("Lamenting Lily: stage {}, light {}, seeSky {}", state.get(STAGE), light, seeSky);
 		
 		switch(state.get(STAGE))
 		{
@@ -104,13 +127,13 @@ public class LamentingLilyBlock extends BushBlock
 			
 			break;
 		case 2:
-			if(light == 0/* && worldIn.canSeeSky(pos)*/)
+			if(light <= 0 && seeSky)
 				worldIn.setBlockState(pos, state.with(STAGE, Integer.valueOf(3)));
 			else if(light >= 4)
-				worldIn.setBlockState(pos, state.with(STAGE, Integer.valueOf(2)));
+				worldIn.setBlockState(pos, state.with(STAGE, Integer.valueOf(1)));
 			break;
 		case 3:
-			if( light > 0/* || !worldIn.canSeeSky(pos)*/)
+			if( light > 0 || !seeSky)
 				worldIn.setBlockState(pos, state.with(STAGE, Integer.valueOf(2)));
 			else
 			{
@@ -131,6 +154,9 @@ public class LamentingLilyBlock extends BushBlock
 
 					worldIn.addEntity(itemEntity);
 				}
+				
+				if( !worldIn.isRemote )
+					worldIn.getPendingBlockTicks().scheduleTick(pos, this, random.nextInt(300) + 900);
 			}
 			break;
 		}
@@ -140,8 +166,9 @@ public class LamentingLilyBlock extends BushBlock
 	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
 	{
 		int level = stateIn.get(STAGE);
+		int light = getLightLevel(worldIn, pos);
 		
-		if( level == BLOOMING_STAGE)
+		if( level == BLOOMING_STAGE && light <= 0)
 		{
 			VoxelShape voxelshape = this.getFlowerShape(stateIn, worldIn, pos, ISelectionContext.dummy());
 			Vector3d vector3d = voxelshape.getBoundingBox().getCenter();

@@ -5,6 +5,9 @@ import java.util.Random;
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.FilledCauldronBlock;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
+import com.xevira.concoctions.common.events.BouncingHandler;
+import com.xevira.concoctions.common.network.PacketHandler;
+import com.xevira.concoctions.common.network.packets.PacketBounce;
 import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.Registry;
 
@@ -24,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -33,10 +37,10 @@ import net.minecraftforge.fml.common.Mod;
 
 public class EventHandler
 {
-	private void handleLivingJump_LeadFoot(LivingEntity entity)
+	private void handleLivingJump_Gravity(LivingEntity entity)
 	{
 		Vector3d motion = entity.getMotion();
-		EffectInstance effect = entity.getActivePotionEffect(Registry.LEAD_FOOT.get()); 
+		EffectInstance effect = entity.getActivePotionEffect(Registry.GRAVITY_EFFECT.get()); 
 		if( effect != null )
 		{
 			if( entity instanceof PlayerEntity)
@@ -64,7 +68,55 @@ public class EventHandler
 	@SubscribeEvent
 	public void handleLivingJump(LivingJumpEvent event)
 	{
-		handleLivingJump_LeadFoot(event.getEntityLiving());
+		handleLivingJump_Gravity(event.getEntityLiving());
+	}
+	
+	@SubscribeEvent
+	public void handleLivingFall(LivingFallEvent event)
+	{
+		LivingEntity living = event.getEntityLiving();
+		
+		EffectInstance gravity = living.getActivePotionEffect(Registry.GRAVITY_EFFECT.get());
+		EffectInstance bouncy = living.getActivePotionEffect(Registry.BOUNCY_EFFECT.get());
+		
+		if( gravity != null )
+		{
+			event.setDamageMultiplier(event.getDamageMultiplier() * 1.5F * (gravity.getAmplifier() + 1));
+//			event.setDistance(Math.max(event.getDistance(), gravity.getAmplifier() + 4.0f));
+		}
+		
+		if( bouncy != null )
+		{
+			World world = living.getEntityWorld();
+			boolean isClient = world.isRemote;
+			
+			if(!living.isCrouching() && event.getDistance() > 2)
+			{
+				event.setDamageMultiplier(0);
+				living.fallDistance = 0;
+				
+				if(isClient)
+				{
+					Vector3d motion = living.getMotion();
+					living.setMotion(motion.x, -0.9 * motion.y, motion.z);
+					living.isAirBorne = true;
+					living.setOnGround(false);
+					
+					double f = 0.95D;	// Fudge factor
+					motion = living.getMotion();
+					living.setMotion(motion.x / f, motion.y, motion.z / f);
+
+					PacketHandler.sendToServer(new PacketBounce());
+				}
+				else
+					event.setCanceled(true);
+				
+				living.playSound(SoundEvents.ENTITY_SLIME_SQUISH, 1f, 1f);
+				BouncingHandler.addBounceHandler(living, living.getMotion().y);
+			}
+			else if(!isClient && living.isCrouching())
+				event.setDamageMultiplier(0.2f);
+		}
 	}
 
 	/*

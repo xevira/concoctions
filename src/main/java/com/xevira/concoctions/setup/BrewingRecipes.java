@@ -201,12 +201,16 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.GRACE_POTION.get(), Registry.LONG_GRACE_POTION.get()));
 
 		// Custom Potions
-		//   Lead Foot
-		RECIPES.add(new BrewingRecipe(Items.IRON_BOOTS, Potions.AWKWARD, Registry.LEADFOOT_POTION.get()));
-		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.LEADFOOT_POTION.get(), Registry.LONG_LEADFOOT_POTION.get()));
-		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LEADFOOT_POTION.get(), Registry.STRONG_LEADFOOT_POTION.get()));
-		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_LEADFOOT_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.LEAD_FOOT.get(),800,1))));
-		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_LEADFOOT_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.LEAD_FOOT.get(),800,1))));
+		//   Gravity
+		RECIPES.add(new BrewingRecipe(Items.IRON_BOOTS, Potions.AWKWARD, Registry.GRAVITY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.GRAVITY_POTION.get(), Registry.LONG_GRAVITY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.GRAVITY_POTION.get(), Registry.STRONG_GRAVITY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_GRAVITY_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.GRAVITY_EFFECT.get(),800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_GRAVITY_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.GRAVITY_EFFECT.get(),800,1))));
+		
+		//  Bouncy
+		RECIPES.add(new BrewingRecipe(Items.SLIME_BLOCK, Potions.AWKWARD, Registry.BOUNCY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.BOUNCY_POTION.get(), Registry.LONG_BOUNCY_POTION.get()));
 		
 		// ================================================================
 	
@@ -826,7 +830,7 @@ public class BrewingRecipes
 			int oldAmplifier = effectInstIn.getAmplifier();
 			int newAmplifier = (int)(oldAmplifier * this.amplifierMultiplier + this.amplifierModifier);
 			newAmplifier = MathHelper.clamp(newAmplifier, 0, 255);
-			Concoctions.GetLogger().info("Amp: Old {} vs New {}, *{} +{}", oldAmplifier, newAmplifier, this.amplifierMultiplier, this.amplifierModifier);
+			//Concoctions.GetLogger().info("Amp: Old {} vs New {}, *{} +{}", oldAmplifier, newAmplifier, this.amplifierMultiplier, this.amplifierModifier);
 			
 			List<ItemStack> curativeItems;
 			Effect newEffect;

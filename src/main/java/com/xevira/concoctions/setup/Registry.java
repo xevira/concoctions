@@ -76,7 +76,8 @@ public class Registry {
     public static final RegistryObject<EntityType<ItemEntityNoImbue>> ITEM_ENTITY_NO_IMBUE = ENTITIES.register("item_no_imbue", () -> EntityType.Builder.<ItemEntityNoImbue>create(ItemEntityNoImbue::new, EntityClassification.MISC).build("item_no_imbue"));
     
     // Effects
-    public static final RegistryObject<Effect> LEAD_FOOT = EFFECTS.register("lead_foot", () -> new LeadFootEffect(EffectType.HARMFUL, 0x7998d7/*16410214*/));
+    public static final RegistryObject<Effect> GRAVITY_EFFECT = EFFECTS.register("gravity", () -> new GravityEffect(EffectType.HARMFUL, 0x7998d7/*16410214*/));
+    public static final RegistryObject<Effect> BOUNCY_EFFECT = EFFECTS.register("bouncy", () -> new BouncyEffect(EffectType.NEUTRAL, 0x20ff00));
     
     // Fluids
     public static final RegistryObject<Fluid> POTION_FLUID = FLUIDS.register("potion_fluid", () -> new PotionFluid(Resources.POTION_FLUID_STILL, Resources.POTION_FLUID_FLOWING));
@@ -159,10 +160,13 @@ public class Registry {
     public static final RegistryObject<Potion> LONG_GRACE_POTION = POTIONS.register("long_grace", () -> new Potion("grace", new EffectInstance(Effects.DOLPHINS_GRACE, 1600)));
     
     // Potions - Custom Effects
-    public static final RegistryObject<Potion> LEADFOOT_POTION = POTIONS.register("lead_foot", () -> new Potion(new EffectInstance(Registry.LEAD_FOOT.get(), 600)));
-    public static final RegistryObject<Potion> LONG_LEADFOOT_POTION = POTIONS.register("long_lead_foot", () -> new Potion("lead_foot", new EffectInstance(Registry.LEAD_FOOT.get(), 1600)));
-    public static final RegistryObject<Potion> STRONG_LEADFOOT_POTION = POTIONS.register("strong_lead_foot", () -> new Potion("lead_foot", new EffectInstance(Registry.LEAD_FOOT.get(), 300, 1)));
+    public static final RegistryObject<Potion> GRAVITY_POTION = POTIONS.register("gravity", () -> new Potion(new EffectInstance(Registry.GRAVITY_EFFECT.get(), 600)));
+    public static final RegistryObject<Potion> LONG_GRAVITY_POTION = POTIONS.register("long_gravity", () -> new Potion("gravity", new EffectInstance(Registry.GRAVITY_EFFECT.get(), 1600)));
+    public static final RegistryObject<Potion> STRONG_GRAVITY_POTION = POTIONS.register("strong_gravity", () -> new Potion("gravity", new EffectInstance(Registry.GRAVITY_EFFECT.get(), 300, 1)));
     
+    public static final RegistryObject<Potion> BOUNCY_POTION = POTIONS.register("bouncy", () -> new Potion(new EffectInstance(Registry.BOUNCY_EFFECT.get(), 1200)));
+    public static final RegistryObject<Potion> LONG_BOUNCY_POTION = POTIONS.register("long_bouncy", () -> new Potion("bouncy", new EffectInstance(Registry.BOUNCY_EFFECT.get(), 3200)));
+
     
     // Properties
     public static final IntegerProperty STAGE_0_3 = IntegerProperty.create("stage", 0, 3);
