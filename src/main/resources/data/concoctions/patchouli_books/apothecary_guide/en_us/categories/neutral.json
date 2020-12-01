@@ -1,0 +1,6 @@
+{
+  "name": "Neutral potions",
+  "description": "Neutral potions",
+  "icon": "minecraft:potion{Potion:\"minecraft:leaping\"}",
+  "sortnum": 3
+}

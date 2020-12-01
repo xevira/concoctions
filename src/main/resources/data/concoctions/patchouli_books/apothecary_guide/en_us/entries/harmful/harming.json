@@ -1,0 +1,18 @@
+{
+	"name": "Potion of Harming",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"minecraft:harming\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe2",
+			"header": "Potion of Harming",
+			"text": "Instantly damages 3hp, doubling with each subsequent level.  Undead mobs, including the Wither, are damaged as if with Instant Health, instead.  When applied using a lingering potion, the entity is damaged every second.",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:healing\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:harming\"}",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:poison\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:harming\"}"
+		}
+	]
+}

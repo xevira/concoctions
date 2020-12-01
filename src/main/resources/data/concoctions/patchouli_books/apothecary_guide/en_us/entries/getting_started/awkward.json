@@ -1,0 +1,16 @@
+{
+	"name": "Awkward Potion",
+	"category": "concoctions:getting_started",
+	"icon": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+	"sortnum": 3,
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Awkward Potion",
+			"text": "The very first ingredient for virtually every potion is the netherwart, found primarily in Nether Fortresses.  Apothecaries have been known to collect some, but they seldom venture into the Nether in search of the strange fungus.",
+			"ingredient": "minecraft:nether_wart",
+			"base": "minecraft:water_bucket",
+			"result": "minecraft:potion{Potion:\"minecraft:awkward\"}"
+		}
+	]
+}

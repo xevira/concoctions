@@ -1,7 +1,0 @@
-{
-  "name": "concoctions.category.potions.basics",
-  "description": "concoctions.category.potions.basics.text",
-  "parent": "potions",
-  "icon": "minecraft:potion{Potion:\"minecraft:fire_resistance\"}",
-  "sortnum": 0
-}

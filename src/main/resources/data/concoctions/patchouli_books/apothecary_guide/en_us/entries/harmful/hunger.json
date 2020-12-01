@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Hunger",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:hunger\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Hunger",
+			"text": "Hunger increases food exhaustion by 0.005 × level per game tick (removes 1 hunger haunch per 80/level seconds if target has no saturation).  It also turns the hunger bar a yellow-green color.  Only players can be affected by Hunger.",
+			"ingredient": "minecraft:rotten_flesh",
+			"base": "minecraft:potion{Potion:\"minecraft:weakness\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:hunger\"}"
+		}
+	]
+}

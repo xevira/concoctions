@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Regeneration",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:regeneration\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Regeneration",
+			"text": "Regenerations 1hp every 2.5 seconds.  The rate doubles for each successive level, with Regeneration VI reaching the maximum possible rate.  After that, higher levels give no further benefit.",
+			"ingredient": "minecraft:ghast_tear",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:regeneration\"}"
+		}
+	]
+}

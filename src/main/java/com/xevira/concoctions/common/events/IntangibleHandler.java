@@ -14,6 +14,7 @@ import net.minecraft.world.GameType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class IntangibleHandler
@@ -21,15 +22,33 @@ public class IntangibleHandler
 	private static final IdentityHashMap<PlayerEntity, IntangibleHandler> intangibleEntities = new IdentityHashMap<>();
 	
 	public final PlayerEntity player;
+	private int lastTick;
 	
 	public IntangibleHandler(PlayerEntity player)
 	{
 		this.player = player;
+		this.lastTick = 0;
+		
+		intangibleEntities.put(player, this);
+	}
+	
+	private void remove()
+	{
+		MinecraftForge.EVENT_BUS.unregister(this);
+		intangibleEntities.remove(this.player);
 	}
 
 	@SubscribeEvent
 	public void playerTickPost(TickEvent.PlayerTickEvent event)
 	{
+		if( this.lastTick == 0 || (this.player.ticksExisted - this.lastTick) < 10)
+			this.lastTick = this.player.ticksExisted;
+		else
+		{
+			this.remove();
+			return;
+		}
+		
 		if (event.phase == TickEvent.Phase.END && event.player == this.player )
 		{
 			if( this.player instanceof ServerPlayerEntity )
@@ -66,12 +85,18 @@ public class IntangibleHandler
 				this.player.abilities.allowFlying = false;
 				this.player.abilities.isFlying = false;
 				this.player.abilities.disableDamage = false;
-				
-				MinecraftForge.EVENT_BUS.unregister(this);
-				intangibleEntities.remove(this.player);
+
+				this.remove();
 			}
 		}
 	}
+	
+	@SubscribeEvent
+	public void handleWorldUnload(WorldEvent.Unload event)
+	{
+		this.remove();
+	}
+
 
 	public static void addIntangibleHandler(LivingEntity entity)
 	{

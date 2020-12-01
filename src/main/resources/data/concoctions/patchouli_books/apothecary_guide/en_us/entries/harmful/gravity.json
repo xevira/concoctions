@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Gravity",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:gravity\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Gravity",
+			"text": "Pulls the target down to the ground faster than normal, increasing fall damage accordingly.  The pull grows stronger with each level of the potion.",
+			"ingredient": "minecraft:iron_boots",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:gravity\"}"
+		}
+	]
+}

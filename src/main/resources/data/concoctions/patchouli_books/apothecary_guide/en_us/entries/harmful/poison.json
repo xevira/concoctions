@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Poison",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"minecraft:poison\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Poison",
+			"text": "Poison inflicts damage over time, reducing the player's health to 1hp, but cannot kill.  The rate of damage is effectively doubled with each level.",
+			"ingredient": "minecraft:spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:poison\"}"
+		}
+	]
+}

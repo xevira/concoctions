@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "concoctions:item/bottle_void_essence"
+  }
+}

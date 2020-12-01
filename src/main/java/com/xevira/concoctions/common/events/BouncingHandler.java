@@ -16,6 +16,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class BouncingHandler
@@ -45,7 +46,6 @@ public class BouncingHandler
 
 		bouncingEntities.put(entityLiving, this);
 	}
-	
 	
 	@SubscribeEvent
 	public void playerTickPost(TickEvent.PlayerTickEvent event)
@@ -92,6 +92,13 @@ public class BouncingHandler
 				this.wasInAir = true;
 			}
 		}
+	}
+	
+	@SubscribeEvent
+	public void handleWorldUnload(WorldEvent.Unload event)
+	{
+		MinecraftForge.EVENT_BUS.unregister(this);
+		bouncingEntities.remove(this.entityLiving);
 	}
 	
 	public static void addBounceHandler(LivingEntity entity)

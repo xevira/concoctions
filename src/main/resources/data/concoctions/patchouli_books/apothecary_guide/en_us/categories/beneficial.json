@@ -1,0 +1,6 @@
+{
+  "name": "Beneficial Potions",
+  "description": "Beneficial potions",
+  "icon": "minecraft:potion{Potion:\"concoctions:resistance\"}",
+  "sortnum": 2
+}

@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Water Breathing",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:water_breathing\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Water Breathing",
+			"text": "Water breathing prevents or delays drowning.  This effect will not stack with Conduit Power.",
+			"ingredient": "minecraft:pufferfish",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:water_breathing\"}"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Intangibility",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"concoctions:intangibility\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Intangibility",
+			"text": "Intangibility is simultaneously both a powerful potion... and a dangerous one.  While under the effect of Intangibility, players will be in spectator mode, unable to interact with the world.  The effect cannot be removed as players cannot use items from their inventory.  The primary source of danger lies in being within solid blocks when the potion effect wears off with the likelihood of suffocation.",
+			"ingredient": "minecraft:phantom_membrane",
+			"base": "minecraft:potion{Potion:\"minecraft:invisibility\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:intangibility\"}"
+		}
+	]
+}

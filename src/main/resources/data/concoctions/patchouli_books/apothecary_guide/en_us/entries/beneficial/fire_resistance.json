@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Fire Resistance",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:fire_resistance\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Fire Resistance",
+			"text": "Grants immunity to damage from fire, blaze fireballs, fire charges, magma blocks, and lava, but not ghast fireballs and blaze touch attacks.  Negates the fire damage from bows enchanted with Flame and swords enchanted with Fire Aspect, but does not affect the attacks themselves.  Players also see better under lava when they have the Fire Resistance effect.",
+			"ingredient": "minecraft:magma_cream",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:fire_resistance\"}"
+		}
+	]
+}

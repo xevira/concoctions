@@ -1,7 +1,0 @@
-{
-  "name": "concoctions.category.potions.offensive",
-  "description": "concoctions.category.potions.offensive.text",
-  "parent": "potions",
-  "icon": "minecraft:potion{Potion:\"minecraft:strength\"}",
-  "sortnum": 1
-}

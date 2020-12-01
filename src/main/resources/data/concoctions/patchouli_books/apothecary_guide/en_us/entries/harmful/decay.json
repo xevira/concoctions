@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Decay",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:decay\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Decay",
+			"text": "Gives the Wither effect that inflicts 20hp  over time.  Unlike Poison, it can affect undead mobs, and can kill. It is usually difficult for the player to see how much health they have left, as it turns the player's health bar black.  The rate of damage is affected by potion level",
+			"ingredient": "minecraft:wither_rose",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:decay\"}"
+		}
+	]
+}

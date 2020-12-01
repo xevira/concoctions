@@ -1,0 +1,15 @@
+{
+	"name": "Potion of the Void",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:badluck\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of the Void",
+			"text": "The Devouring Void begins attacking the target, causes unblockable Void damage.  Higher level potions will deal more damage and faster.",
+			"ingredient": "concoctions:bottle_void_essence",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:void\"}"
+		}
+	]
+}

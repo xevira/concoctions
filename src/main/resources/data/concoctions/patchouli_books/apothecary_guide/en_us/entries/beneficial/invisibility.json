@@ -1,0 +1,19 @@
+{
+	"name": "Potion of Invisibility",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:invisibility\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Invisibility",
+			"text": "Invisibility causes the affected mob to disappear from view although it is still present.  Mobs do not attack or sense invisible player until the player is much closer than normal.  Detection range drops down to 7% of normal distance.  Any single piece of armor increases this to 17.5% of the usual distance, and each additional piece increases this by another 17.5%.  Once detected, however, a mob will continue as if it sees the player.",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:night_vision\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:invisibility\"}"
+		},
+		{
+			"type": "text",
+			"text": "Sneaking and/or wearing the corresponding mob head for skeletons, creepers and zombies will reduce detection range, stacking with Invisibility's range reduction. Cats can see through invisibility.  Boss mobs are outright immune to invisibility.  Dolphins will not grant Dolphin's Grace to any invisible player."
+		}
+	]
+}

@@ -164,6 +164,9 @@ public class BrewingRecipes
 		//   Levitation
 		RECIPES.add(new BrewingRecipe(Items.CHORUS_FRUIT, Potions.AWKWARD, Registry.LEVITATION_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.LEVITATION_POTION.get(), Registry.LONG_LEVITATION_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_LEVITATION_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Effects.LEVITATION, 800, 1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LEVITATION_POTION.get(), Registry.STRONG_LEVITATION_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_LEVITATION_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Effects.LEVITATION, 800, 1))));
 		
 		//   Nausea
 		RECIPES.add(new BrewingRecipe(Items.FERMENTED_SPIDER_EYE, Registry.LEVITATION_POTION.get(), Registry.NAUSEA_POTION.get()));
@@ -201,16 +204,62 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.GRACE_POTION.get(), Registry.LONG_GRACE_POTION.get()));
 
 		// Custom Potions
+		//   Bouncy
+		RECIPES.add(new BrewingRecipe(Items.SLIME_BLOCK, Potions.AWKWARD, Registry.BOUNCY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.BOUNCY_POTION.get(), Registry.LONG_BOUNCY_POTION.get()));
+
+		//   Danger Sense
+		RECIPES.add(new BrewingRecipe(Items.ENDER_EYE, Potions.AWKWARD, Registry.DANGER_SENSE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.DANGER_SENSE_POTION.get(), Registry.LONG_DANGER_SENSE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.DANGER_SENSE_POTION.get(), Registry.STRONG_DANGER_SENSE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),800,1))));
+
 		//   Gravity
 		RECIPES.add(new BrewingRecipe(Items.IRON_BOOTS, Potions.AWKWARD, Registry.GRAVITY_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.GRAVITY_POTION.get(), Registry.LONG_GRAVITY_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.GRAVITY_POTION.get(), Registry.STRONG_GRAVITY_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_GRAVITY_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.GRAVITY_EFFECT.get(),800,1))));
 		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_GRAVITY_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.GRAVITY_EFFECT.get(),800,1))));
+
+		//   Intangibility
+		RECIPES.add(new BrewingRecipe(Items.PHANTOM_MEMBRANE, Potions.INVISIBILITY, Registry.INTANGIBILITY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.PHANTOM_MEMBRANE, Potions.LONG_INVISIBILITY, Registry.LONG_INTANGIBILITY_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.INTANGIBILITY_POTION.get(), Registry.LONG_INTANGIBILITY_POTION.get()));
 		
-		//  Bouncy
-		RECIPES.add(new BrewingRecipe(Items.SLIME_BLOCK, Potions.AWKWARD, Registry.BOUNCY_POTION.get()));
-		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.BOUNCY_POTION.get(), Registry.LONG_BOUNCY_POTION.get()));
+		//   Love
+		RECIPES.add(new BrewingRecipe(Items.GOLDEN_CARROT, Potions.HEALING, Registry.LOVE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.LOVE_POTION.get(), Registry.LONG_LOVE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LOVE_POTION.get(), Registry.STRONG_LOVE_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_LOVE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.AMOROUS_EFFECT.get(),4800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_LOVE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.AMOROUS_EFFECT.get(),4800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GOLDEN_CARROT, Potions.STRONG_HEALING, Registry.STRONG_LOVE_POTION.get()));
+
+		//   Recall
+		RECIPES.add(new BrewingRecipe(Items.BLACK_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.BLUE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.BROWN_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.CYAN_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GRAY_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GREEN_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.LIGHT_GRAY_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.LIGHT_BLUE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.LIME_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.MAGENTA_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.ORANGE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.PINK_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.PURPLE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.RED_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.WHITE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.YELLOW_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
+		
+		//   Void
+		RECIPES.add(new BrewingRecipe(Registry.BOTTLE_VOID_ESSENCE.get(), Potions.AWKWARD, Registry.VOID_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.VOID_POTION.get(), Registry.LONG_VOID_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.VOID_POTION.get(), Registry.STRONG_VOID_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_VOID_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.VOID_EFFECT.get(),800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_VOID_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.VOID_EFFECT.get(),800,1))));
+
 		
 		// ================================================================
 	

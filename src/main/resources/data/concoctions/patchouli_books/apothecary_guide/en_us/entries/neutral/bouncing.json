@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Bouncing",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"concoctions:bouncy\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Bouncing",
+			"text": "Besides negating fall damage, it will harness the power of Slimes, allowing the players to bounce.  Sneaking will prevent the bouncing action from occurring, which can be dangerous as fall damage is no longer fully negated.",
+			"ingredient": "minecraft:slime_block",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:bouncy\"}"
+		}
+	]
+}

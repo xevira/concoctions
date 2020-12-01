@@ -1,0 +1,6 @@
+{
+  "name": "Harmful potions",
+  "description": "Harmful potions",
+  "icon": "minecraft:potion{Potion:\"minecraft:strength\"}",
+  "sortnum": 1
+}

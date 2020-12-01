@@ -1,0 +1,20 @@
+{
+	"name": "Potion of Grace",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:grace\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Grace",
+			"text": "Allows you to swim around with a Dolphin's Grace.  All you need is to murder dolphins for their fins, you monster.",
+			"ingredient": "concoctions:dolphin_fin",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:grace\"}"
+		},
+		{
+			"type": "entity",
+			"entity": "minecraft:dolphin",
+			"text": "What did Flipper ever do to you?"
+		}
+	]
+}

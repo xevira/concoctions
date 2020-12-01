@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Leaping",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:leaping\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Leaping",
+			"text": "Jump Boost allows the player to jump higher than the normal 1.25 blocks. Each level adds 50% to the jump height. It also reduces fall damage by 1hp each level.",
+			"ingredient": "minecraft:rabbit_foot",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:leaping\"}"
+		}
+	]
+}

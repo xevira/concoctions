@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Glowing",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"concoctions:glowing\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Glowing",
+			"text": "Causes mobs to glow (aka Spectral Arrows in potion form).",
+			"ingredient": "minecraft:glowstone",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:glowing\"}"
+		}
+	]
+}

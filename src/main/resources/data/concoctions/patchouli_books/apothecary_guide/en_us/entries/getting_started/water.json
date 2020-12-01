@@ -1,0 +1,13 @@
+{
+	"name": "Water",
+	"category": "concoctions:getting_started",
+	"icon": "minecraft:water_bucket",
+	"sortnum": 1,
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "minecraft:water_bucket,minecraft:potion{Potion:\"minecraft:water\"}",
+			"text": "Most potions you will ever need to make will start off by collecting water.  The most common method will be via water buckets.  You can also use water bottles as well."
+		}
+	]
+}

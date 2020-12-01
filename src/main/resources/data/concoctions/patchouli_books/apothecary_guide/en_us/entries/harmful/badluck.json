@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Bad Luck",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:badluck\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Bad Luck",
+			"text": "Bad Luck will decrease the chance of the player getting high-quality loot, contrary to Luck.  It makes loot table entries with a high quality score less likely, and entries with negative quality more likely.  It also makes the chance of bonus rolls occurring less likely.  Fishing is the only mechanism that uses quality. ",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"concoctions:luck\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:badluck\"}"
+		}
+	]
+}

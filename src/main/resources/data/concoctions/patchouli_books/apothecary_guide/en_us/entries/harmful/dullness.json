@@ -1,0 +1,19 @@
+{
+	"name": "Potion of Dullness",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:dullness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Dullness",
+			"text": "Causes Mining Fatigue, decreasing attack speed by 10% per level, equivalent to the attack speed cooldown attribute decreasing by 0.2 per level. Time taken to destroy blocks is multiplied by 3^level. That means, for the in-game default level III given by Elder Guardians, attack speed decreases by 30% (attack speed cooldown attribute decreases by 0.6), and it takes 27 times longer than usual to break a block with the proper tool for that block.",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"concoctions:haste\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:dullness\"}"
+		},
+		{
+			"type": "entity",
+			"entity": "minecraft:elder_guardian"
+		}
+	]
+}

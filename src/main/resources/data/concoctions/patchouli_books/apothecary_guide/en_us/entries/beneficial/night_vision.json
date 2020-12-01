@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Night Vision",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:night_vision\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Night Vision",
+			"text": "Night vision greatly increases the brightness, so the player can easily see in a light level of 0. However, it is not as bright as a light level of 15, similar to sky light level 14, and as such the player can distinguish between light levels.",
+			"ingredient": "minecraft:golden_carrot",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:night_vision\"}"
+		}
+	]
+}

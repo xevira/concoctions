@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Love",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"concoctions:love\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Love",
+			"text": "Gives the Amorous effect that will pulse every 2 seconds, regardless of potency.  For players, this will look for fertile adult animals within a 21 by 11 by 21 box centered on the player's position and make them ready for breeding as if fed their respective food item.  When applied to fertile adult animals, it merely put them in the amorous state.  Potency extends the duration of this amorous state.",
+			"ingredient": "minecraft:golden_carrot",
+			"base": "minecraft:potion{Potion:\"minecraft:healing\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:love\"}"
+		}
+	]
+}

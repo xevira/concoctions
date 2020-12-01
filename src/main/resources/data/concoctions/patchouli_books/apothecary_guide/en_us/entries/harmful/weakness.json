@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Weakness",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"minecraft:weakness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Weakness",
+			"text": "Melee damage inflicted by the affected entity is reduced by 2 hearts per level.  Weakeness is also used to cure zombie villagers, preceding the Golden Apple.",
+			"ingredient": "minecraft:blaze_powder",
+			"base": "minecraft:water_bucket",
+			"result": "minecraft:potion{Potion:\"minecraft:weakness\"}"
+		}
+	]
+}

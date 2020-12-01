@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Levitation",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:levitation\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Levitation",
+			"text": "Levitation causes the affected entity to float upwards at a rate of 0.9 blocks per level per second.  This does not affect swimming or flying. $(br2)An affected entity does not take fall damage until the effect wears off, after which the entity falls and takes damage as usual from falling.$(br2)Levitation has no effect on players riding entities. It also has no effect on entities that are in water or lava.",
+			"ingredient": "minecraft:chorus_fruit",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:levitation\"}"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"name": "Potions of Confusion",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:confusion\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potions of Confusion",
+			"text": "Blindness impairs the player's vision as if a thick black fog were surrounding them, with only the immediate area being visible (this means that only a few blocks directly around the player are visible to them). However, the sun and moon can be seen as normal.  Additionally, liquids do not fade into the fog perfectly. The effect also prevents sprinting and the ability to inflict critical hits.  If combined with Night Vision, the screen appears completely black aside from the sun and moon.",
+			"ingredient": "minecraft:ink_sac",
+			"base": "minecraft:potion{Potion:\"minecraft:night_vision\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:confusion\"}"
+		}
+	]
+}

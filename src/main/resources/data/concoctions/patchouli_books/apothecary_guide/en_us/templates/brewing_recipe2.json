@@ -12,52 +12,52 @@
       "y": -1
     },
     {
+      "type": "image",
+      "image": "textures/patchouli/page_elements.png",
+      "x": 16,
+      "y": 20,
+      "width": 84,
+      "height": 51,
+      "u": 0,
+      "v": 38,
+      "texture_width": 256,
+      "texture_height": 256
+    },
+    {
       "type": "text",
       "text": "#text",
-      "x": 5,
-      "y": 50
+      "x": 2,
+      "y": 73
     },
     {
       "type": "item",
       "item": "#ingredient1",
-      "framed": true,
-      "x": 20,
-      "y": 20
+      "x": 48,
+      "y": 24
     },
     {
       "type": "item",
       "item": "#base1",
-      "framed": true,
-      "x": 50,
-      "y": 20
-    },
-    {
-      "type": "item",
-      "item": "#result1",
-      "framed": true,
-      "x": 75,
+      "x": 20,
       "y": 20
     },
     {
       "type": "item",
       "item": "#ingredient2",
-      "framed": true,
-      "x": 20,
-      "y": 40
+      "x": 48,
+      "y": 51
     },
     {
       "type": "item",
       "item": "#base2",
-      "framed": true,
-      "x": 50,
-      "y": 40
+      "x": 20,
+      "y": 51
     },
     {
       "type": "item",
-      "item": "#result2",
-      "framed": true,
-      "x": 75,
-      "y": 40
+      "item": "#result",
+      "x": 80,
+      "y": 38
     }
   ]
 }

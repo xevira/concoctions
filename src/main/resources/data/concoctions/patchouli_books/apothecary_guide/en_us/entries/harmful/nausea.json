@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Nausea",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"concoctions:nausea\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Nausea",
+			"text": "Nausea warps and wobbles the player's vision similarly to a nether portal. The effect does not change its power as its potency changes.",
+			"ingredient": "minecraft:fermented_spider_eye",
+			"base": "minecraft:potion{Potion:\"concoctions:levitation\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:nausea\"}"
+		}
+	]
+}

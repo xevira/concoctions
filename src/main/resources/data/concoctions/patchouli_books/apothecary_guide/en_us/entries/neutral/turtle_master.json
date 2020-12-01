@@ -1,0 +1,15 @@
+{
+	"name": "Potion of the Turtle Master",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"minecraft:turtle_master\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of the Turtle Master",
+			"text": "Grants both Slowness and Resistance.",
+			"ingredient": "minecraft:turtle_helmet",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:turtle_master\"}"
+		}
+	]
+}

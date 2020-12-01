@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Notch",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:notch\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Notch",
+			"text": "Grants the target both Absorption and Saturation.  Unlike eating Golden Apples, the Saturation effect is persistent during the entire duration, restoring saturation, rather than giving a one-time application you'd normally get.",
+			"ingredient": "minecraft:golden_apple",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:notch\"}"
+		}
+	]
+}

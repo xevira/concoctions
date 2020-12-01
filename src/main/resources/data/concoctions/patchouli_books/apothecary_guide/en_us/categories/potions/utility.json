@@ -1,7 +1,0 @@
-{
-  "name": "concoctions.category.potions.utility",
-  "description": "concoctions.category.potions.utility.text",
-  "parent": "potions",
-  "icon": "minecraft:potion{Potion:\"minecraft:leaping\"}",
-  "sortnum": 3
-}

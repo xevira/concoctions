@@ -1,0 +1,17 @@
+{
+	"name": "Potion of Slowness",
+	"category": "concoctions:harmful",
+	"icon": "minecraft:potion{Potion:\"minecraft:slowness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe2",
+			"header": "Potion of Slowness",
+			"text": "Slowness decreases walking speed by 15% per level and contracts the player's field of view accordingly.",
+			"ingredient1": "minecraft:fermented_spider_eye",
+			"base1": "minecraft:potion{Potion:\"minecraft:swiftness\"}",
+			"ingredient2": "minecraft:fermented_spider_eye",
+			"base2": "minecraft:potion{Potion:\"minecraft:leaping\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:slowness\"}"
+		}
+	]
+}

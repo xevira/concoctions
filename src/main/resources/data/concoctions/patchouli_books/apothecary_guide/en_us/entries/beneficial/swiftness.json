@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Swiftness",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:swiftness\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Swiftness",
+			"text": "Swiftness increases an entity's walking speed by 20% per level.  It expands a player's field of view (FOV) accordingly.",
+			"ingredient": "minecraft:sugar",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:swiftness\"}"
+		}
+	]
+}

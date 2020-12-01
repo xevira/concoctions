@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Resistance",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:resistance\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Resistance",
+			"text": "Resistance is a powerful effect that reduces incoming damage from all sources (except starvation and the void) by 20% per level.  Upon reaching Resistance V, all reducable damage is completely negated meaning further amplification is pointless.",
+			"ingredient": "minecraft:shield",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:resistance\"}"
+		}
+	]
+}

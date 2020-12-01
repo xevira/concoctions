@@ -1,0 +1,13 @@
+{
+	"name": "Lava",
+	"category": "concoctions:getting_started",
+	"icon": "minecraft:lava_bucket",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "minecraft:lava_bucket",
+			"text": "Some rare potions will require the power of the Nether.  In case of that, there is the lava bucket.  However, only the brewing station can process lava based potions."
+		}
+	]
+}

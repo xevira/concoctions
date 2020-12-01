@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Neptune",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:neptune\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Neptune",
+			"text": "Grants the target Conduit Power.  Players under the effect of Conduit Power receive all of the effects of the Water Breathing, Night Vision, and Haste status effects, meaning that their breath meter does not decrease, they are able to see underwater, and their underwater mining speed increases for the duration of the effect.  Despite Conduit Power being able to prevent drowning, it does not stack with Water Breathing, which means if the player has both effects, the Water Breathing still ticks down.",
+			"ingredient": "minecraft:nautilus_shell",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:neptune\"}"
+		}
+	]
+}

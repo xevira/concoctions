@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Luck",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:luck\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Luck",
+			"text": "Increasing Luck will make it more likely to receive better loot from certain loot tables.  It makes loot table entries with a high quality score more likely, and entries with negative quality less likely.  It also increases the chances of bonus rolls occurring.  Currently, only fishing uses quality.",
+			"ingredient": "minecraft:lapis_block",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:luck\"}"
+		}
+	]
+}

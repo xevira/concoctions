@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Instant Health",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"minecraft:healing\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Instant Health",
+			"text": "Instantly heals 1 heart, doubling with each subsequent level.  Undead mobs, including the Wither, are damaged as if with Instant Damage, instead.  When applied using a lingering potion, the entity is healed every second.",
+			"ingredient": "minecraft:glistering_melon_slice",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"minecraft:healing\"}"
+		}
+	]
+}

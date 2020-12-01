@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Recall",
+	"category": "concoctions:neutral",
+	"icon": "minecraft:potion{Potion:\"concoctions:recall\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Recall",
+			"text": "Teleports the player back to their spawn point.",
+			"ingredient": "minecraft:black_bed,minecraft:blue_bed,minecraft:brown_bed,minecraft:cyan_bed,minecraft:gray_bed,minecraft:green_bed,minecraft:light_blue_bed,minecraft:light_gray_bed,minecraft:lime_bed,minecraft:magenta_bed,minecraft:orange_bed,minecraft:pink_bed,minecraft:purple_bed,minecraft:red_bed,minecraft:white_bed,minecraft:yellow_bed",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:recall\"}"
+		}
+	]
+}

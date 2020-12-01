@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Danger Sensing",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:danger_sense\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Danger Sensing",
+			"text": "Danger Sense illuminates nearby hostile monsters within a 13 by 7 by 13 box centered on the player's position, increasing by 6 by 2 by 6 per additional level.  Only the player will see the illuminated monsters.",
+			"ingredient": "minecraft:ender_eye",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:danger_sense\"}"
+		}
+	]
+}

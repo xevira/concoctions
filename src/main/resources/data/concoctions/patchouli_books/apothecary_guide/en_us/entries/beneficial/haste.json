@@ -1,0 +1,15 @@
+{
+	"name": "Potion of Haste",
+	"category": "concoctions:beneficial",
+	"icon": "minecraft:potion{Potion:\"concoctions:haste\"}",
+	"pages": [
+		{
+			"type": "concoctions:brewing_recipe",
+			"header": "Potion of Haste",
+			"text": "Haste increases attack speed by 10% per level and increases mining speed by 20% per level.  Mining Fatigue III inflicted by elder guardians prevents the player from instant mining most blocks regardless of the Haste effect, along with a huge decrease of mining speed.  However, lower levels of Mining Fatigue can be overcome by Haste of level III or greater, with a resultant reduced Haste effect.",
+			"ingredient": "minecraft:golden_pickaxe",
+			"base": "minecraft:potion{Potion:\"minecraft:awkward\"}",
+			"result": "minecraft:potion{Potion:\"concoctions:haste\"}"
+		}
+	]
+}
