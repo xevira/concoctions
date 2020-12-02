@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "concoctions:item/filled_cauldron",
+    "layer1": "concoctions:item/filled_cauldron_fluid"
+  }
+}

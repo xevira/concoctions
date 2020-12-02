@@ -264,9 +264,9 @@ public class FilledCauldronBlock extends Block
 							((ServerPlayerEntity)player).sendContainerToPlayer(player.container);
 						player.addStat(Stats.USE_CAULDRON);
 						player.addStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
-						worldIn.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					}
 					
+					worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 					this.setCauldronLevel(worldIn, pos, state, level - LEVELS_PER_POTION);
 				}
 				return ActionResultType.func_233537_a_(worldIn.isRemote);	// Returns SUCCESS for client, CONSUME for server
@@ -303,7 +303,7 @@ public class FilledCauldronBlock extends Block
 	{
 		level = MathHelper.clamp(level, 0, 15);
 		
-		if( level > 0)
+		if(level > 0)
 		{
 			worldIn.setBlockState(pos, state.with(LEVEL, Integer.valueOf(level)), 2);
 			worldIn.updateComparatorOutputLevel(pos, this);

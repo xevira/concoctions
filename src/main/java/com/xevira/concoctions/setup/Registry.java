@@ -99,6 +99,7 @@ public class Registry {
     public static final RegistryObject<Item> BOTTLE_VOID_ESSENCE = ITEMS.register("bottle_void_essence", () -> new BottleVoidEssenceItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BREWING_STATION_ITEM = ITEMS.register("brewing_station", () -> new BrewingStationItem(BREWING_STATION.get(), Registry.PROPS_BREWING));
     public static final RegistryObject<Item> DOLPHIN_FIN = ITEMS.register("dolphin_fin", () -> new Item((new Item.Properties()).group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> FILLED_CAULDRON_ITEM = ITEMS.register("filled_cauldron", () -> new FilledCauldronItem(FILLED_CAULDRON.get(), new Item.Properties()));
     public static final RegistryObject<Item> GLIMMERING_WHITE_DYE = ITEMS.register("glimmering_white_dye", () -> new GlimmeringDyeItem(DyeColor.WHITE, (new Item.Properties()).group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> GLIMMERING_ORANGE_DYE = ITEMS.register("glimmering_orange_dye", () -> new GlimmeringDyeItem(DyeColor.ORANGE, (new Item.Properties()).group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> GLIMMERING_MAGENTA_DYE = ITEMS.register("glimmering_magenta_dye", () -> new GlimmeringDyeItem(DyeColor.MAGENTA, (new Item.Properties()).group(ItemGroup.MATERIALS)));

@@ -41,7 +41,7 @@ public class FilledCauldronTile extends TileEntity {
 		}
 		return false;
 	}
-
+	
 	public FluidStack getPotionFluid()
 	{
 		return this.potionFluid;

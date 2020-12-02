@@ -6,6 +6,7 @@ import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.FilledCauldronBlock;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
 import com.xevira.concoctions.common.events.BouncingHandler;
+import com.xevira.concoctions.common.items.FilledCauldronItem;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketBounce;
 import com.xevira.concoctions.common.utils.Utils;
@@ -30,6 +31,7 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
@@ -262,4 +264,16 @@ public class EventHandler
 	{
 		
 	}
+
+	/*
+	@SubscribeEvent
+	public void handleColorEvent(ColorHandlerEvent.Item event)
+	{
+		Concoctions.GetLogger().info("handleColorEvent called");
+		event.getItemColors().register((stack, tintIndex) -> {
+			return FilledCauldronItem.getFluidColor(stack, tintIndex);
+		}, Registry.FILLED_CAULDRON_ITEM.get());
+	}
+	*/
+
 }

@@ -266,7 +266,7 @@ public class BrewingRecipes
 		// EFFECT RECIPES:
 		// ================================================================
 		// Redstone Dust: extends up to 5 minutes
-		EFFECT_RECIPES.add(new EffectRecipe(Items.REDSTONE, null, null, 0, 6000, 1.5f, 0.0f, 0, -1, 1.0f, 0.0f, EffectVisibilityEnum.KEEP));
+		EFFECT_RECIPES.add(new EffectRecipe(Items.REDSTONE, null, null, 20, 6000, 1.5f, 0.0f, 0, -1, 1.0f, 0.0f, EffectVisibilityEnum.KEEP));
 		
 		// Block of Redstone: extends from 5 minutes up to 10 minutes
 		EFFECT_RECIPES.add(new EffectRecipe(Items.REDSTONE_BLOCK, null, null, 6000, 12000, 1.5f, 0.0f, 0, -1, 1.0f, 0.0f, EffectVisibilityEnum.KEEP).setBrewTime(2*DEFAULT_BREW_TIME));
@@ -874,8 +874,8 @@ public class BrewingRecipes
 			int oldDuration = effectInstIn.getDuration();
 			
 			int newDuration = (int)(oldDuration * this.durationMultiplier + this.durationModifier);
-			if (oldDuration > 1 && newDuration <= 1 )
-				newDuration = Math.min(oldDuration, 10);
+			if (oldDuration > 1 && newDuration < 20 )
+				newDuration = 20;
 			// Prevent "instant" effects from changing
 			if( oldDuration <= 1 && newDuration > 1)
 				newDuration = oldDuration;
