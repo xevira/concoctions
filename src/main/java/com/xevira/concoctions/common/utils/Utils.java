@@ -51,18 +51,21 @@ public class Utils
 				return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
 			}
 			
-			tag.putString("BasePotion", basePotion);
+			tag.putString("Potion", basePotion);
 		}
-		ListNBT listNBT = new ListNBT();
-		for(EffectInstance effect : effects) {
-			CompoundNBT tagEffect = new CompoundNBT();
+		else
+		{
+			ListNBT listNBT = new ListNBT();
+			for(EffectInstance effect : effects) {
+				CompoundNBT tagEffect = new CompoundNBT();
 				
 //				Concoctions.GetLogger().info("Potion: {} {} {}", effect.getEffectName(), effect.getAmplifier(), effect.getDuration());
 			
-			effect.write(tagEffect);
-			listNBT.add(tagEffect);
+				effect.write(tagEffect);
+				listNBT.add(tagEffect);
+			}
+			tag.put("CustomPotionEffects", listNBT);
 		}
-		tag.put("CustomPotionEffects", listNBT);
 		
 		if( root.contains("DyedPotion") && root.contains("CustomPotionColor"))
 		{
@@ -95,11 +98,7 @@ public class Utils
 		
 		CompoundNBT root = outStack.getOrCreateTag();
 		
-		if( inFluid.getTag().contains("BasePotion")) {
-			String basePotion = inFluid.getTag().getString("BasePotion");
-			root.putString("Potion", basePotion);
-		}
-		else
+		if(!inFluid.getTag().contains("Potion"))
 		{
 			if( inFluid.getTag().contains("CustomPotionEffects", 9))
 			{

@@ -1,0 +1,12 @@
+{
+	"name": "Filled Cauldron",
+	"category": "concoctions:imbuing",
+	"icon": "concoctions:filled_cauldron{BlockEntityTag:{fluid:{Potion:\"minecraft:strength\"}},BlockStateTag:{level:\"15\"}}",
+	"sortnum": 0,
+	"pages": [
+		{
+			"type": "text",
+			"text": "WIP"
+		}
+	]
+}

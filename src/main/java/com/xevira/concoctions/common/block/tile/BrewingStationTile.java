@@ -651,7 +651,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 				if( root.contains("CustomPotionName") )
 					root.remove("CustomPotionName");
 				
-				isBasePotion = root.contains("BasePotion") || root.contains("Potion");
+				isBasePotion = root.contains("Potion");
 			}
 			
 			if( isBasePotion )

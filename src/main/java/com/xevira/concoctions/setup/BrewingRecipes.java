@@ -333,7 +333,7 @@ public class BrewingRecipes
 		
 		if( basePotion != null )
 		{
-			root.putString(isBase ? "BasePotion" : "Potion", basePotion.getRegistryName().toString());
+			root.putString("Potion", basePotion.getRegistryName().toString());
 		}
 		
 		if( effectsIn.size() > 0 )
@@ -383,9 +383,9 @@ public class BrewingRecipes
 		{
 			if( a.getFluid() == Registry.POTION_FLUID.get() )
 			{
-				if( tagA.contains("BasePotion") && tagB.contains("BasePotion") )
+				if( tagA.contains("Potion") && tagB.contains("Potion") )
 				{
-					return tagA.getString("BasePotion").compareTo(tagB.getString("BasePotion")) == 0;
+					return tagA.getString("Potion").compareTo(tagB.getString("Potion")) == 0;
 				}
 			}
 		}
@@ -407,11 +407,8 @@ public class BrewingRecipes
 		CompoundNBT root = baseFluid.getTag();
 		
 		List<EffectInstance> baseEffects = new ArrayList<EffectInstance>();;
-		if( root.contains("BasePotion") )
+		if( root.contains("Potion") )
 		{
-			String potionName = root.getString("BasePotion");
-			root.putString("Potion", potionName);
-			
 			baseEffects.addAll(PotionUtils.getPotionTypeFromNBT(root).getEffects());
 		}
 		else
@@ -439,9 +436,6 @@ public class BrewingRecipes
 			newEffects.add(newEffect);
 		}
 		
-		if( root.contains("Potion") )
-			root.remove("Potion");
-
 		if( found )
 		{
 			CompoundNBT newRoot = new CompoundNBT();
@@ -484,11 +478,8 @@ public class BrewingRecipes
 		CompoundNBT root = baseFluid.getTag();
 		
 		List<EffectInstance> baseEffects = new ArrayList<EffectInstance>();;
-		if( root.contains("BasePotion") )
+		if( root.contains("Potion") )
 		{
-			String potionName = root.getString("BasePotion");
-			root.putString("Potion", potionName);
-			
 			baseEffects.addAll(PotionUtils.getPotionTypeFromNBT(root).getEffects());
 		}
 		else
@@ -513,9 +504,6 @@ public class BrewingRecipes
 			if( bt > 0 )
 				brewTime = Math.max(brewTime, bt);
 		}
-		
-		if( root.contains("Potion") )
-			root.remove("Potion");
 
 		return brewTime;
 	}
@@ -548,13 +536,9 @@ public class BrewingRecipes
 			
 			Potion basePotion = Potions.EMPTY;
 			
-			if( newRoot.contains("BasePotion"))
+			if( newRoot.contains("Potion"))
 			{
-				String baseName = newRoot.getString("BasePotion");
-				newRoot.putString("Potion", baseName);
-				newRoot.remove("BasePotion");
-				
-				basePotion = Potion.getPotionTypeForName(baseName);
+				basePotion = Potion.getPotionTypeForName(newRoot.getString("Potion"));
 				
 				if( newRoot.contains("CustomPotionEffects"))
 					newRoot.remove("CustomPotionEffects");
@@ -622,7 +606,7 @@ public class BrewingRecipes
 		
 		for(BrewingRecipe recipe : RECIPES)
 		{
-			//Concoctions.GetLogger().info("Brewing: {} {} {}", item.getItem().getRegistryName().toString(), recipe.BaseFluid.getOrCreateTag().getString("BasePotion"), recipe.ResultFluid.getOrCreateTag().getString("BasePotion"));
+			//Concoctions.GetLogger().info("Brewing: {} {} {}", item.getItem().getRegistryName().toString(), recipe.BaseFluid.getOrCreateTag().getString("Potion"), recipe.ResultFluid.getOrCreateTag().getString("Potion"));
 			
 			if( recipe.matches(item, baseFluid) )
 				return recipe.generate(baseFluid);
@@ -646,7 +630,7 @@ public class BrewingRecipes
 		
 		for(BrewingRecipe recipe : RECIPES)
 		{
-			//Concoctions.GetLogger().info("Brewing: {} {} {}", item.getItem().getRegistryName().toString(), recipe.BaseFluid.getOrCreateTag().getString("BasePotion"), recipe.ResultFluid.getOrCreateTag().getString("BasePotion"));
+			//Concoctions.GetLogger().info("Brewing: {} {} {}", item.getItem().getRegistryName().toString(), recipe.BaseFluid.getOrCreateTag().getString("Potion"), recipe.ResultFluid.getOrCreateTag().getString("Potion"));
 			
 			if( recipe.matches(item, baseFluid) )
 				return recipe.getBrewTime();

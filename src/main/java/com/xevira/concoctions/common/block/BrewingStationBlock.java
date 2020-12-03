@@ -11,6 +11,8 @@ import com.xevira.concoctions.setup.Registry;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
@@ -41,71 +43,76 @@ import net.minecraft.block.BlockState;
 public class BrewingStationBlock extends ModBlock {
 
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-	
-    public BrewingStationBlock() {
-        super(defaultProperties().notSolid().harvestTool(ToolType.PICKAXE));
-        setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH));
-    }
-    
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-    
-    @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
-        builder.add(FACING);
-    }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
-    }
-    
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return Registry.BREWING_STATION_TILE.get().create();
-    }
+	public BrewingStationBlock() {
+		super(Block.Properties
+				.create(new Material(MaterialColor.IRON, false, true, true, false, false, false, PushReaction.NORMAL))
+				.sound(SoundType.METAL).hardnessAndResistance(2.0f, 6.0f).notSolid().harvestTool(ToolType.PICKAXE)
+				.harvestLevel(1));
+		setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.NORTH));
+	}
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-    
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if( newState.getBlock() != this ) {
-            TileEntity tileEntity = worldIn.getTileEntity(pos);
-            if (tileEntity != null) {
-                LazyOptional<IItemHandler> cap = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                cap.ifPresent(handler -> {
-                    for( int i = 0; i < handler.getSlots(); i ++ )
-                        InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
-                });
-            }
-            super.onReplaced(state, worldIn, pos, newState, isMoving);
-        }
-    }
-    
-    @Override
-    @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult blockRayTraceResult) {
-        // Only execute on the server
-        if (worldIn.isRemote)
-            return ActionResultType.SUCCESS;
+	@Override
+	public BlockRenderType getRenderType(BlockState state) {
+		return BlockRenderType.MODEL;
+	}
 
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (! (te instanceof BrewingStationTile))
-        {
-        	
-            return ActionResultType.FAIL;
-        }
+	@Override
+	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+		super.fillStateContainer(builder);
+		builder.add(FACING);
+	}
 
-        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
-        return ActionResultType.SUCCESS;
-    }
+	@Nullable
+	@Override
+	public BlockState getStateForPlacement(BlockItemUseContext context) {
+		return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+	}
+
+	@Nullable
+	@Override
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return Registry.BREWING_STATION_TILE.get().create();
+	}
+
+	@Override
+	public boolean hasTileEntity(BlockState state) {
+		return true;
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (newState.getBlock() != this) {
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			if (tileEntity != null) {
+				LazyOptional<IItemHandler> cap = tileEntity
+						.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+				cap.ifPresent(handler -> {
+					for (int i = 0; i < handler.getSlots(); i++)
+						InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(),
+								handler.getStackInSlot(i));
+				});
+			}
+			super.onReplaced(state, worldIn, pos, newState, isMoving);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
+			Hand hand, BlockRayTraceResult blockRayTraceResult) {
+		// Only execute on the server
+		if (worldIn.isRemote)
+			return ActionResultType.SUCCESS;
+
+		TileEntity te = worldIn.getTileEntity(pos);
+		if (!(te instanceof BrewingStationTile)) {
+
+			return ActionResultType.FAIL;
+		}
+
+		NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+		return ActionResultType.SUCCESS;
+	}
 }

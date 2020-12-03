@@ -80,8 +80,10 @@ public class Concoctions {
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
 		
 		// Block Render Types
+		RenderTypeLookup.setRenderLayer(Registry.BREWING_STATION.get(), RenderType.getCutout());
 		RenderTypeLookup.setRenderLayer(Registry.LAMENTING_LILY.get(), RenderType.getCutout());
 		
+		// Coloring
 		Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
 			return FilledCauldronItem.getFluidColor(stack, tintIndex);
 		}, Registry.FILLED_CAULDRON_ITEM.get());

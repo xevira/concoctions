@@ -1,0 +1,48 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "concoctions:filled_cauldron",
+          "functions": [
+          	{
+          		"function": "minecraft:copy_nbt",
+          		"source": "block_entity",
+          		"ops": [
+          			{
+          				"source": "fluid",
+          				"target": "BlockEntityTag.fluid",
+          				"op": "replace"
+          			}
+          		]
+          	},
+          	{
+          		"function": "minecraft:copy_state",
+          		"block": "concoctions:filled_cauldron",
+          		"properties": [
+          			"level"
+          		]
+          	},
+            {
+              "function": "minecraft:set_contents",
+              "entries": [
+                {
+                  "type": "minecraft:dynamic",
+                  "name": "minecraft:contents"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

@@ -191,12 +191,12 @@ public class PotionFluid extends Fluid {
 				return super.getDisplayName(stack);
 			
 			CompoundNBT tag = stack.getTag();
-			if( tag.contains("BasePotion"))
+			if(tag.contains("Potion"))
 			{
 				if( tag.contains("CustomPotionName"))
 					return new TranslationTextComponent("item.concoctions.potion.prefix", tag.getString("CustomPotionName"));
 				else
-					return new TranslationTextComponent(Potion.getPotionTypeForName(tag.getString("BasePotion")).getNamePrefixed("item.minecraft.potion.effect."));
+					return new TranslationTextComponent(Potion.getPotionTypeForName(tag.getString("Potion")).getNamePrefixed("item.minecraft.potion.effect."));
 			}
 			else if( tag.contains("CustomPotionName"))
 				return new TranslationTextComponent("item.concoctions.solution.prefix", tag.getString("CustomPotionName"));

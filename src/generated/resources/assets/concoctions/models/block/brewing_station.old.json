@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "side": "concoctions:block/brewing_station_side",
+    "front": "concoctions:block/brewing_station_front",
+    "bottom": "concoctions:block/brewing_station_bottom",
+    "top": "concoctions:block/brewing_station_top"
+  }
+}

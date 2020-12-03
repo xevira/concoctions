@@ -1,0 +1,16 @@
+{
+	"name": "Lamenting Lily",
+	"category": "concoctions:imbuing",
+	"icon": "concoctions:lamenting_lily",
+	"sortnum": 1,
+	"pages": [
+		{
+			"type": "concoctions:imbuing_recipe",
+			"header": "Lamenting Lily",
+			"text": "",
+			"ingredient": "minecraft:lily_of_the_valley",
+			"base": "concoctions:filled_cauldron{BlockEntityTag:{fluid:{Potion:\"minecraft:regeneration\"}},BlockStateTag:{level:\"5\"}}",
+			"result": "concoctions:lamenting_lily"
+		}
+	]
+}
