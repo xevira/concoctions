@@ -83,9 +83,13 @@ public class Registry {
     public static final RegistryObject<Effect> AMOROUS_EFFECT = EFFECTS.register("amorous", () -> new AmorousEffect(EffectType.NEUTRAL, 0xFF0000));
     public static final RegistryObject<Effect> BOUNCY_EFFECT = EFFECTS.register("bouncy", () -> new BouncyEffect(EffectType.NEUTRAL, 0x00ff00));
     public static final RegistryObject<Effect> DANGER_SENSE_EFFECT = EFFECTS.register("danger_sense", () -> new DangerSenseEffect(EffectType.BENEFICIAL, 0x39c239));
+    public static final RegistryObject<Effect> FLOURISH_EFFECT = EFFECTS.register("flourish", () -> new FlourishingEffect(EffectType.BENEFICIAL,0x00e696));
     public static final RegistryObject<Effect> GRAVITY_EFFECT = EFFECTS.register("gravity", () -> new GravityEffect(EffectType.HARMFUL, 0x7998d7/*16410214*/));
+    //public static final RegistryObject<Effect> GROWTH_EFFECT = EFFECTS.register("growth", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, true));
     public static final RegistryObject<Effect> INTANGIBLE_EFFECT = EFFECTS.register("intangible", () -> new IntangibleEffectSpectator(EffectType.NEUTRAL, 0x999999));
     public static final RegistryObject<Effect> RECALL_EFFECT = EFFECTS.register("recall", () -> new RecallEffect(EffectType.NEUTRAL, 0x00b5bc));
+    public static final RegistryObject<Effect> TAMING_EFFECT = EFFECTS.register("taming", () -> new TamingEffect(EffectType.NEUTRAL, 0xff8484));
+    //public static final RegistryObject<Effect> SHRINK_EFFECT = EFFECTS.register("shrink", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, false));
     public static final RegistryObject<Effect> VOID_EFFECT = EFFECTS.register("void", () -> new VoidEffect(EffectType.HARMFUL, 0x080808));
     
     // Fluids
@@ -196,6 +200,13 @@ public class Registry {
     public static final RegistryObject<Potion> VOID_POTION = POTIONS.register("void", () -> new Potion(new EffectInstance(Registry.VOID_EFFECT.get(), 600)));
     public static final RegistryObject<Potion> LONG_VOID_POTION = POTIONS.register("long_void", () -> new Potion("void", new EffectInstance(Registry.VOID_EFFECT.get(), 1600)));
     public static final RegistryObject<Potion> STRONG_VOID_POTION = POTIONS.register("strong_void", () -> new Potion("void", new EffectInstance(Registry.VOID_EFFECT.get(), 300, 1)));
+
+    public static final RegistryObject<Potion> FLOURISH_POTION = POTIONS.register("flourish", () -> new Potion(new EffectInstance(Registry.FLOURISH_EFFECT.get(), 3600)));
+    public static final RegistryObject<Potion> LONG_FLOURISH_POTION = POTIONS.register("long_flourish", () -> new Potion("flourish", new EffectInstance(Registry.FLOURISH_EFFECT.get(), 9600)));
+    public static final RegistryObject<Potion> STRONG_FLOURISH_POTION = POTIONS.register("strong_flourish", () -> new Potion("flourish", new EffectInstance(Registry.FLOURISH_EFFECT.get(), 1800, 1)));
+
+    public static final RegistryObject<Potion> TAMING_POTION = POTIONS.register("taming", () -> new Potion(new EffectInstance(Registry.TAMING_EFFECT.get(), 1)));
+    public static final RegistryObject<Potion> STRONG_TAMING_POTION = POTIONS.register("strong_taming", () -> new Potion("taming", new EffectInstance(Registry.TAMING_EFFECT.get(), 1, 1)));
 
     // Properties
     public static final IntegerProperty STAGE_0_3 = IntegerProperty.create("stage", 0, 3);

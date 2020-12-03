@@ -16,6 +16,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class AmorousEffect extends EffectBase {
+	private static final int AMOROUS_SPEED = 30;
 	private static final int BASE_IN_LOVE = 600;
 	private static final int LOVE_PER_LEVEL = 200;
 	private static final int HORIZONTAL_RANGE = 10;
@@ -46,59 +47,42 @@ public class AmorousEffect extends EffectBase {
 				
 				List<AnimalEntity> list = world.getEntitiesWithinAABB(AnimalEntity.class, new AxisAlignedBB(corner1, corner2), (AnimalEntity e) -> {
 					// Only get adults that are ready to breed and aren't enamored already 
-					return (e.getGrowingAge() == 0) && e.canFallInLove();
+					return !e.isChild();
 				});
-				Concoctions.GetLogger().info("Animals Nearby: {}", list.size());
+
 				if( list.size() > 0)
 				{
 					int targetIdx = RNG.nextInt(list.size());
 					AnimalEntity animal = list.get(targetIdx);
 					
-					animal.setInLove(player);
-					
-					// Change the duration of the inLove status based upon the level of the effect
-					if( animal.isInLove() )
-						animal.setInLove(this.getInLove(amplifier));
-					
+					makeAnimalAmorous(animal, player, amplifier);
 				}
 			}
-			else if( livingEntity instanceof AnimalEntity)
+			else if(livingEntity instanceof AnimalEntity)
 			{
 				AnimalEntity animal = (AnimalEntity)livingEntity;
 				
-				if( (animal.getGrowingAge() == 0) && animal.canFallInLove() )
-				{
-					animal.setInLove(null);
-					if( animal.isInLove())
-						animal.setInLove(this.getInLove(amplifier));
-
-				}
+				if(!animal.isChild())
+					makeAnimalAmorous(animal, null, amplifier);
 			}
 		}
 	}
 	
-	/*
-	@Override
-	public void affectEntity(Entity source, Entity indirectSource, LivingEntity livingEntity, int amplifier, double health)
+	private void makeAnimalAmorous(AnimalEntity animal, PlayerEntity player, int amplifier)
 	{
-		if( livingEntity instanceof AnimalEntity )
+		if(animal.getGrowingAge() > 0)
 		{
-			AnimalEntity animal = (AnimalEntity)livingEntity;
-			if(!animal.canFallInLove()) return;
-			
-			PlayerEntity player = null;
-			if(indirectSource instanceof PlayerEntity)
-				player = (PlayerEntity)indirectSource;
-
-			animal.setInLove(player);
-			if( animal.isInLove())
-				animal.setInLove(this.getInLove(amplifier));
+			// Not ready to breed yet, so lets get them closer to that, shall we?
+			animal.setGrowingAge(Math.max(animal.getGrowingAge() - AMOROUS_SPEED * (amplifier + 1), 0));
 		}
-	}
-	*/
-	
-	private int getInLove(int amplifier)
-	{
-		return BASE_IN_LOVE + amplifier * LOVE_PER_LEVEL;
+		else if(animal.canFallInLove())
+		{
+			// Bring out the Barry White music
+			animal.setInLove(player);
+			
+			// Change the duration of the inLove status based upon the level of the effect
+			if( animal.isInLove() )
+				animal.setInLove(BASE_IN_LOVE + amplifier * LOVE_PER_LEVEL);
+		}
 	}
 }

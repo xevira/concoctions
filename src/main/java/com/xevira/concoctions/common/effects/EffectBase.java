@@ -8,7 +8,7 @@ public class EffectBase extends Effect {
 	private final boolean fasterWithAmplify;
 	
 
-	protected EffectBase(EffectType typeIn, int liquidColorIn, int tickRate) {
+	public EffectBase(EffectType typeIn, int liquidColorIn, int tickRate) {
 		this(typeIn, liquidColorIn, tickRate, false);
 	}
 

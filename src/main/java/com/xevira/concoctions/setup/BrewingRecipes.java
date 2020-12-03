@@ -212,8 +212,15 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Items.ENDER_EYE, Potions.AWKWARD, Registry.DANGER_SENSE_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.DANGER_SENSE_POTION.get(), Registry.LONG_DANGER_SENSE_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.DANGER_SENSE_POTION.get(), Registry.STRONG_DANGER_SENSE_POTION.get()));
-		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),800,1))));
-		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),800,1))));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),4800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_DANGER_SENSE_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.DANGER_SENSE_EFFECT.get(),4800,1))));
+
+		//   Flourish
+		RECIPES.add(new BrewingRecipe(Items.BONE_BLOCK, Potions.AWKWARD, Registry.FLOURISH_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.FLOURISH_POTION.get(), Registry.LONG_FLOURISH_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.FLOURISH_POTION.get(), Registry.STRONG_FLOURISH_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.STRONG_FLOURISH_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.FLOURISH_EFFECT.get(),4800,1))));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.LONG_FLOURISH_POTION.get(), generatePotionFluidStack(false, null, new EffectInstance(Registry.FLOURISH_EFFECT.get(),4800,1))));
 
 		//   Gravity
 		RECIPES.add(new BrewingRecipe(Items.IRON_BOOTS, Potions.AWKWARD, Registry.GRAVITY_POTION.get()));
@@ -253,6 +260,11 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Items.WHITE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.YELLOW_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
 		
+		//   Taming
+		RECIPES.add(new BrewingRecipe(Items.BONE, Registry.LOVE_POTION.get(), Registry.TAMING_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.BONE, Registry.STRONG_LOVE_POTION.get(), Registry.STRONG_TAMING_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.TAMING_POTION.get(), Registry.STRONG_TAMING_POTION.get()));
+		
 		//   Void
 		RECIPES.add(new BrewingRecipe(Registry.BOTTLE_VOID_ESSENCE.get(), Potions.AWKWARD, Registry.VOID_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.REDSTONE, Registry.VOID_POTION.get(), Registry.LONG_VOID_POTION.get()));
@@ -274,10 +286,10 @@ public class BrewingRecipes
 		// Add something to SHORTEN the span of a spell's duration for those potions you DON'T want to be up for very long
 
 		// Glowstone Dust: amplifies by one level up to level 3
-		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE_DUST, null, null, 200, -1, 0.5f, 0.0f, 1, 2, 1.0f, 1.0f, EffectVisibilityEnum.KEEP));
+		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE_DUST, null, null, 200, -1, 0.5f, 0.0f, 1, 2, 1.0f, 1.0f, EffectVisibilityEnum.KEEP).setAllowInstant());
 
 		// Glowstone: amplifies by one level from level 3 up to level 5
-		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE, null, null, 100, -1, 0.45f, 0.0f, 2, 4, 1.0f, 1.0f, EffectVisibilityEnum.KEEP).setBrewTime(2*DEFAULT_BREW_TIME));
+		EFFECT_RECIPES.add(new EffectRecipe(Items.GLOWSTONE, null, null, 100, -1, 0.45f, 0.0f, 2, 4, 1.0f, 1.0f, EffectVisibilityEnum.KEEP).setAllowInstant().setBrewTime(2*DEFAULT_BREW_TIME));
 
 		
 		
@@ -810,6 +822,7 @@ public class BrewingRecipes
 		public EffectVisibilityEnum visibility;
 		
 		private int brewTime;
+		private boolean allowInstant;
 		
 		public EffectRecipe(Item ingredient, Effect effect, Effect newEffect, int durMin, int durMax, float durMult, float durMod, int ampMin, int ampMax, float ampMult, float ampMod, EffectVisibilityEnum vis) {
 			this(new ItemStack(ingredient, 1), effect, newEffect, durMin, durMax, durMult, durMod, ampMin, ampMax, ampMult, ampMod, vis);
@@ -829,21 +842,41 @@ public class BrewingRecipes
 			this.amplifierModifier = ampMod;
 			this.visibility = vis;
 			this.brewTime = DEFAULT_BREW_TIME;
+			this.allowInstant = false;
 		}
+		
+		public EffectRecipe setBrewTime(int brewTime)
+		{
+			this.brewTime = Math.max(brewTime, MIN_BREW_TIME);
+			return this;
+		}
+		
+		public EffectRecipe setAllowInstant()
+		{
+			this.allowInstant = true;
+			return this;
+		}
+
 		
 		public boolean matches(@Nonnull ItemStack item, @Nonnull EffectInstance effectInstIn)
 		{
 			if( !this.ingredient.isItemEqual(item) ) return false;
 			
 			if( this.effect != null && this.effect != effectInstIn.getPotion()) return false;
-			
+
 			if( effectInstIn.getAmplifier() < this.amplifierMinimum ) return false;
 			if( this.amplifierMaximum >= 0 && effectInstIn.getAmplifier() > this.amplifierMaximum ) return false;
 
-			if( effectInstIn.getDuration() < this.durationMinimum ) return false;
-			if( this.durationMaximum >= 0 && effectInstIn.getDuration() > this.durationMaximum ) return false;
+			if( effectInstIn.getDuration() > 1)
+			{
+				// Only check non-Instant potions
+				if( effectInstIn.getDuration() < this.durationMinimum ) return false;
+				if( this.durationMaximum >= 0 && effectInstIn.getDuration() > this.durationMaximum ) return false;
 
-			return true;
+				return true;
+			}
+
+			return this.allowInstant;
 		}
 		
 		public EffectInstance generate(@Nonnull EffectInstance effectInstIn)
@@ -861,7 +894,7 @@ public class BrewingRecipes
 			if (oldDuration > 1 && newDuration < 20 )
 				newDuration = 20;
 			// Prevent "instant" effects from changing
-			if( oldDuration <= 1 && newDuration > 1)
+			if(oldDuration <= 1)
 				newDuration = oldDuration;
 			
 			int oldAmplifier = effectInstIn.getAmplifier();
@@ -887,12 +920,6 @@ public class BrewingRecipes
 			effectInstOut.setCurativeItems(List.copyOf(curativeItems));
 			
 			return effectInstOut;
-		}
-		
-		public EffectRecipe setBrewTime(int brewTime)
-		{
-			this.brewTime = Math.max(brewTime, MIN_BREW_TIME);
-			return this;
 		}
 		
 		public int getBrewTime()

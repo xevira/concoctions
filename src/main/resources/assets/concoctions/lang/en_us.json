@@ -1,8 +1,4 @@
 {
-	"concoctions.entry.potions.utility.luck": "Potion of Luck",	
-	"concoctions.page.potions.utility.luck": "Luck",	
-	"concoctions.entry.potions.misc": "Miscellaneous",
-	"concoctions.page.potions.misc.intro": "Introduction",
 	"concoctions.page.potions.misc.splash_bottle": "Splash bottles are used in the Brewing Station to fill Splash potions.",
 	"concoctions.page.potions.misc.lingering_bottle": "Lingering bottles are used in the Brewing Station to fill Lingering potions.",
 	"concoctions.page.potions.misc.arrow": "Arrows can be turned into Tipped arrows inside the Brewing Station",
@@ -14,11 +10,25 @@
 	"death.attack.void": "%1$s was devoured by the Void",
 	"death.attack.void.player": "%1$s was devoured by the Void whilst fighting %2$s",
 
+	"effect.concoctions.amorous": "Amorous",
+	"effect.concoctions.bouncy": "Bouncing",
+	"effect.concoctions.danger_sense": "Danger Sense",
+	"effect.concoctions.flourish": "Flourish",
+	"effect.concoctions.gravity": "Gravity",
+	"effect.concoctions.growth": "Growth",
+	"effect.concoctions.intangible": "Intangible",
+	"effect.concoctions.recall": "Recall",
+	"effect.concoctions.shrink": "Shrink",
+	"effect.concoctions.taming": "Taming",
+	"effect.concoctions.void": "Void",
+
 	"gui.concoctions.empty": "Empty",
 
 	"item.concoctions.apothecary_guide": "Apothecary's Guide",
 	"item.concoctions.bottle_fire": "Bottle of Fire",
 	"item.concoctions.bottle_soul_fire": "Bottle of Soul Fire",
+	"item.concoctions.bottle_sunlight": "Bottle of Sunlight",
+	"item.concoctions.bottle_void_essence": "Bottle of Void Essence",
 	"item.concoctions.dolphin_fin": "Dolphin Fin",
 	"item.concoctions.glimmering_black_dye": "Glimmering Black Dye",
 	"item.concoctions.glimmering_blue_dye": "Glimmering Blue Dye",
@@ -37,6 +47,7 @@
 	"item.concoctions.glimmering_yellow_dye": "Glimmering Yellow Dye",
 	"item.concoctions.lingering_bottle": "Lingering Bottle",
 	"item.concoctions.splash_bottle": "Splash Bottle",
+	
 	"item.minecraft.potion.effect.haste": "Potion of Haste",
 	"item.minecraft.potion.effect.dullness": "Potion of Dullness",
 	"item.minecraft.potion.effect.confusion": "Potion of Confusion",
@@ -58,6 +69,9 @@
 	"item.minecraft.potion.effect.void": "Potion of the Void",
 	"item.minecraft.potion.effect.danger_sense": "Potion of Danger Sensing",
 	"item.minecraft.potion.effect.recall": "Potion of Recall",
+	"item.minecraft.potion.effect.flourish": "Potion of Flourish",
+	"item.minecraft.potion.effect.taming": "Potion of Taming",
+
 	"item.minecraft.splash_potion.effect.haste": "Splash Potion of Haste",
 	"item.minecraft.splash_potion.effect.dullness": "Splash Potion of Dullness",
 	"item.minecraft.splash_potion.effect.confusion": "Splash Potion of Confusion",
@@ -79,6 +93,9 @@
 	"item.minecraft.splash_potion.effect.void": "Splash Potion of the Void",
 	"item.minecraft.splash_potion.effect.danger_sense": "Splash Potion of Danger Sensing",
 	"item.minecraft.splash_potion.effect.recall": "Splash Potion of Recall",
+	"item.minecraft.splash_potion.effect.flourish": "Splash Potion of Flourish",
+	"item.minecraft.splash_potion.effect.taming": "Splash Potion of Taming",
+
 	"item.minecraft.lingering_potion.effect.haste": "Lingering Potion of Haste",
 	"item.minecraft.lingering_potion.effect.dullness": "Lingering Potion of Dullness",
 	"item.minecraft.lingering_potion.effect.confusion": "Lingering Potion of Confusion",
@@ -100,6 +117,9 @@
 	"item.minecraft.lingering_potion.effect.void": "Lingering Potion of the Void",
 	"item.minecraft.lingering_potion.effect.danger_sense": "Lingering Potion of Danger Sensing",
 	"item.minecraft.lingering_potion.effect.recall": "Lingering Potion of Recall",
+	"item.minecraft.lingering_potion.effect.flourish": "Lingering Potion of Flourish",
+	"item.minecraft.lingering_potion.effect.taming": "Lingering Potion of Taming",
+
 	"item.minecraft.tipped_arrow.effect.haste": "Arrow of Haste",
 	"item.minecraft.tipped_arrow.effect.dullness": "Arrow of Dullness",
 	"item.minecraft.tipped_arrow.effect.confusion": "Arrow of Confusion",
@@ -121,6 +141,9 @@
 	"item.minecraft.tipped_arrow.effect.void": "Arrow of the Void",
 	"item.minecraft.tipped_arrow.effect.danger_sense": "Arrow of Danger Sensing",
 	"item.minecraft.tipped_arrow.effect.recall": "Arrow of Recall",
+	"item.minecraft.tipped_arrow.effect.flourish": "Arrow of Flourish",
+	"item.minecraft.tipped_arrow.effect.taming": "Arrow of Taming",
+	
 	"item.concoctions.potion.prefix": "Potion of %s",
 	"item.concoctions.splash_potion.prefix": "Splash Potion of %s",
 	"item.concoctions.lingering_potion.prefix": "Lingering Potion of %s",
@@ -130,11 +153,6 @@
 	"item.concoctions.solution.prefix": "Solution of %s",
 	"item.concoctions.filled_with": "Filled with:",
 	"item.concoctions.fill_level": "Level: %s / 15",
-	"effect.concoctions.amorous": "Amorous",
-	"effect.concoctions.bouncy": "Bouncing",
-	"effect.concoctions.danger_sense": "Danger Sense",
-	"effect.concoctions.gravity": "Gravity",
-	"effect.concoctions.intangible": "Intangible",
-	"effect.concoctions.recall": "Recall",
-	"effect.concoctions.void": "Void"
+
+	"message.concoctions.player.tamed": "You've already tamed yourself!"
 }
