@@ -77,6 +77,7 @@ public class Concoctions {
 		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
 		
 		// Tile Entity Renderers
+		ClientRegistry.bindTileEntityRenderer(Registry.BREWING_STATION_TILE.get(), BrewingStationTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
 		
 		// Block Render Types

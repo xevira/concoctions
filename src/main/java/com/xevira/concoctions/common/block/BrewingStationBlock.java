@@ -30,6 +30,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
@@ -41,7 +42,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 
 public class BrewingStationBlock extends ModBlock {
-
+	public static final VoxelShape SHAPE = makeCuboidShape(3.1, 1.1, 3.1, 12.9, 15.9, 12.9);
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
 	public BrewingStationBlock() {

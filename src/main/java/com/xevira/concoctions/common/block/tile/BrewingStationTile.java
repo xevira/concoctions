@@ -743,4 +743,28 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	{
 		return this.newPotionName;
 	}
+	
+	public FluidStack getFluidStack()
+	{
+		FluidStack stack = FluidStack.EMPTY;
+		
+		if(this.tank.isPresent())
+		{
+			stack = this.tank.resolve().get().getFluid();
+		}
+		
+		return stack;
+	}
+	
+	public int getFluidCapacity()
+	{
+		int capacity = 0;
+		
+		if(this.tank.isPresent())
+		{
+			capacity = this.tank.resolve().get().getCapacity();
+		}
+		
+		return capacity;
+	}
 }

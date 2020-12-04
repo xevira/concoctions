@@ -10,18 +10,23 @@ import com.xevira.concoctions.common.entities.*;
 import com.xevira.concoctions.common.fluids.PotionFluid;
 import com.xevira.concoctions.common.items.*;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemTier;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
@@ -33,6 +38,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
@@ -67,6 +73,10 @@ public class Registry {
     
     // Blocks
     public static final RegistryObject<BrewingStationBlock> BREWING_STATION = BLOCKS.register("brewing_station", BrewingStationBlock::new);
+    public static final RegistryObject<Block> CRACKED_BEDROCK = BLOCKS.register("cracked_bedrock", () -> new BrokenBedrockBlock(500.0F, 12000.0F));
+    public static final RegistryObject<Block> BROKEN_BEDROCK = BLOCKS.register("broken_bedrock", () -> new BrokenBedrockBlock(300.0F, 9000.0F));
+    public static final RegistryObject<Block> CRUMBLING_BEDROCK = BLOCKS.register("crumbling_bedrock", () -> new BrokenBedrockBlock(200.0F, 6000.0F));
+    public static final RegistryObject<Block> SHATTERED_BEDROCK = BLOCKS.register("shattered_bedrock", () -> new BrokenBedrockBlock(100.0F, 2400.0F));
     public static final RegistryObject<FilledCauldronBlock> FILLED_CAULDRON = BLOCKS.register("filled_cauldron", FilledCauldronBlock::new);
     public static final RegistryObject<LamentingLilyBlock> LAMENTING_LILY = BLOCKS.register("lamenting_lily", LamentingLilyBlock::new);
     
@@ -81,9 +91,10 @@ public class Registry {
     
     // Effects
     public static final RegistryObject<Effect> AMOROUS_EFFECT = EFFECTS.register("amorous", () -> new AmorousEffect(EffectType.NEUTRAL, 0xFF0000));
-    public static final RegistryObject<Effect> BOUNCY_EFFECT = EFFECTS.register("bouncy", () -> new BouncyEffect(EffectType.NEUTRAL, 0x00ff00));
-    public static final RegistryObject<Effect> DANGER_SENSE_EFFECT = EFFECTS.register("danger_sense", () -> new DangerSenseEffect(EffectType.BENEFICIAL, 0x39c239));
-    public static final RegistryObject<Effect> FLOURISH_EFFECT = EFFECTS.register("flourish", () -> new FlourishingEffect(EffectType.BENEFICIAL,0x00e696));
+    public static final RegistryObject<Effect> BOUNCY_EFFECT = EFFECTS.register("bouncy", () -> new BouncyEffect(EffectType.NEUTRAL, 0x00FF00));
+    public static final RegistryObject<Effect> CHANNELING_EFFECT = EFFECTS.register("channeling", () -> new ChannelingEffect(EffectType.HARMFUL, 0xBFFFFF));
+    public static final RegistryObject<Effect> DANGER_SENSE_EFFECT = EFFECTS.register("danger_sense", () -> new DangerSenseEffect(EffectType.BENEFICIAL, 0x39C239));
+    public static final RegistryObject<Effect> FLOURISH_EFFECT = EFFECTS.register("flourish", () -> new FlourishingEffect(EffectType.BENEFICIAL,0x00E696));
     public static final RegistryObject<Effect> GRAVITY_EFFECT = EFFECTS.register("gravity", () -> new GravityEffect(EffectType.HARMFUL, 0x7998d7/*16410214*/));
     //public static final RegistryObject<Effect> GROWTH_EFFECT = EFFECTS.register("growth", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, true));
     public static final RegistryObject<Effect> INTANGIBLE_EFFECT = EFFECTS.register("intangible", () -> new IntangibleEffectSpectator(EffectType.NEUTRAL, 0x999999));
@@ -97,11 +108,16 @@ public class Registry {
     
     // Items
     public static final RegistryObject<Item> APOTHECARY_GUIDE = ITEMS.register("apothecary_guide", () -> new ApothecaryGuide());
+    public static final RegistryObject<Item> BEDROCK_SHARD = ITEMS.register("bedrock_shard", () -> new Item(new Item.Properties().group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> BOTTLE_FIRE = ITEMS.register("bottle_fire", () -> new BottleFireItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BOTTLE_SOUL_FIRE = ITEMS.register("bottle_soul_fire", () -> new BottleFireItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BOTTLE_SUNLIGHT = ITEMS.register("bottle_sunlight", () -> new BottleSunlightItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BOTTLE_VOID_ESSENCE = ITEMS.register("bottle_void_essence", () -> new BottleVoidEssenceItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BREWING_STATION_ITEM = ITEMS.register("brewing_station", () -> new BrewingStationItem(BREWING_STATION.get(), Registry.PROPS_BREWING));
+    public static final RegistryObject<Item> CRACKED_BEDROCK_ITEM = ITEMS.register("cracked_bedrock", () -> new BlockItem(Registry.CRACKED_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
+    public static final RegistryObject<Item> BROKEN_BEDROCK_ITEM = ITEMS.register("broken_bedrock", () -> new BlockItem(Registry.BROKEN_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
+    public static final RegistryObject<Item> CRUMBLING_BEDROCK_ITEM = ITEMS.register("crumbling_bedrock", () -> new BlockItem(Registry.CRUMBLING_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
+    public static final RegistryObject<Item> SHATTERED_BEDROCK_ITEM = ITEMS.register("shattered_bedrock", () -> new BlockItem(Registry.SHATTERED_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
     public static final RegistryObject<Item> DOLPHIN_FIN = ITEMS.register("dolphin_fin", () -> new Item((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> FILLED_CAULDRON_ITEM = ITEMS.register("filled_cauldron", () -> new FilledCauldronItem(FILLED_CAULDRON.get(), new Item.Properties()));
     public static final RegistryObject<Item> GLIMMERING_WHITE_DYE = ITEMS.register("glimmering_white_dye", () -> new GlimmeringDyeItem(DyeColor.WHITE, (new Item.Properties()).group(ItemGroup.MATERIALS)));

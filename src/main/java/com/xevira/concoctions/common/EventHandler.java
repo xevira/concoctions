@@ -3,6 +3,7 @@ package com.xevira.concoctions.common;
 import java.util.Random;
 
 import com.xevira.concoctions.Concoctions;
+import com.xevira.concoctions.common.block.BrokenBedrockBlock;
 import com.xevira.concoctions.common.block.FilledCauldronBlock;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
 import com.xevira.concoctions.common.events.BouncingHandler;
@@ -22,12 +23,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -136,9 +140,24 @@ public class EventHandler
 		event.getEntity().setMotion(motion);
 	}
 	*/
+
+	/*
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void handleRightClickItem(PlayerInteractEvent.RightClickItem event)
+	{
+		PlayerEntity player = event.getPlayer();
+		if(player == null)
+			return;
+		
+		World world = event.getWorld();
+		if(world == null)
+			return;
+	}
+	*/
+
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void handleRightClick(PlayerInteractEvent.RightClickBlock event)
+	public void handleRightClickBlock(PlayerInteractEvent.RightClickBlock event)
 	{
 		BlockPos pos = event.getPos();
 		
@@ -161,10 +180,11 @@ public class EventHandler
 		}
 		*/
 		
-
+		
 		BlockState state = world.getBlockState(pos);
 		if(state != null)
 		{
+			Random rand = new Random();
 			
 			//Concoctions.GetLogger().info("Right Clicked on {}", state.getBlock().getRegistryName().toString());
 			
@@ -207,7 +227,6 @@ public class EventHandler
 				
 				ItemStack bottleFire = new ItemStack(Registry.BOTTLE_FIRE.get(), 1);
 				
-				Random rand = new Random();
 				if(!player.abilities.isCreativeMode)
 				{
 					stack.shrink(1);
@@ -235,7 +254,6 @@ public class EventHandler
 				
 				ItemStack bottleFire = new ItemStack(Registry.BOTTLE_SOUL_FIRE.get(), 1);
 				
-				Random rand = new Random();
 				if(!player.abilities.isCreativeMode)
 				{
 					stack.shrink(1);
@@ -254,6 +272,75 @@ public class EventHandler
 					{
 						world.playEvent((PlayerEntity)null, 1009, pos, 0);
 						world.setBlockState(pos, Blocks.AIR.getDefaultState());
+					}
+				}
+			}
+			else if(BrokenBedrockBlock.isValidBlock(state.getBlock()) && event.getItemStack().getItem() == Items.GLASS_BOTTLE)
+			{
+				if(world.getDimensionKey() == World.OVERWORLD && pos.getY() <= 3)
+				{
+					// Determine if this bedrock touches the Void
+					BlockPos under = pos.down();
+					boolean touchesVoid = true;
+					while(under.getY() >= 0)
+					{
+						BlockState underState = world.getBlockState(under);
+						if(!BrokenBedrockBlock.isValidBlock(underState.getBlock()))
+						{
+							touchesVoid = false;
+							break;
+						}
+						under = under.down();
+					}
+					
+					if(touchesVoid)
+					{
+						ItemStack stack = event.getItemStack();
+						
+						ItemStack bottleVoid = new ItemStack(Registry.BOTTLE_VOID_ESSENCE.get(), 1);
+
+						if(!player.abilities.isCreativeMode)
+						{
+							stack.shrink(1);
+							
+							if(stack.isEmpty())
+								player.setHeldItem(event.getHand(), bottleVoid);
+							else if (!player.inventory.addItemStackToInventory(bottleVoid))
+								player.dropItem(bottleVoid, false);
+							else if (player instanceof ServerPlayerEntity)
+								((ServerPlayerEntity)player).sendContainerToPlayer(player.container);
+							player.addStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
+							world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+							
+							BlockState nextState = BrokenBedrockBlock.nextBlockState(state.getBlock());
+							// 5% it will BREAK this and surrounding bedrock
+							if( nextState != null && rand.nextDouble() < 0.05D)
+							{
+								world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F, false);
+								world.setBlockState(pos, nextState);
+								
+								BlockPos minPos = new BlockPos(pos.getX() - 3, 0, pos.getZ() - 3);
+								BlockPos maxPos = new BlockPos(pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3);
+								
+								for(int y = minPos.getY(); y <= maxPos.getY(); y++)
+								{
+									for(int z = minPos.getZ(); z <= maxPos.getZ(); z++)
+									{
+										for(int x = minPos.getX(); x <= maxPos.getX(); x++)
+										{
+											BlockPos thisPos = new BlockPos(x, y, z);
+											if(thisPos.equals(pos)) continue;
+											
+											BlockState thisState = world.getBlockState(thisPos);
+											
+											BlockState newState = BrokenBedrockBlock.nextBlockState(thisState.getBlock());
+											if(newState != null && rand.nextDouble() < 0.1D)
+												world.setBlockState(thisPos, newState);
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}

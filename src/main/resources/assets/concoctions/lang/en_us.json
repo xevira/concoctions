@@ -4,6 +4,10 @@
 	"concoctions.page.potions.misc.arrow": "Arrows can be turned into Tipped arrows inside the Brewing Station",
 
 	"block.concoctions.brewing_station": "Brewing Station",
+	"block.concoctions.broken_bedrock": "Broken Bedrock",
+	"block.concoctions.cracked_bedrock": "Cracked Bedrock",
+	"block.concoctions.crumbling_bedrock": "Crumbling Bedrock",
+	"block.concoctions.shattered_bedrock": "Shattered Bedrock",
 	"block.concoctions.filled_cauldron": "Filled Cauldron",
 	"block.concoctions.lamenting_lily": "Lamenting Lily",
 
@@ -12,6 +16,7 @@
 
 	"effect.concoctions.amorous": "Amorous",
 	"effect.concoctions.bouncy": "Bouncing",
+	"effect.concoctions.channeling": "Channeling",
 	"effect.concoctions.danger_sense": "Danger Sense",
 	"effect.concoctions.flourish": "Flourish",
 	"effect.concoctions.gravity": "Gravity",
@@ -25,6 +30,7 @@
 	"gui.concoctions.empty": "Empty",
 
 	"item.concoctions.apothecary_guide": "Apothecary's Guide",
+	"item.concoctions.bedrock_shard": "Bedrock Shard",
 	"item.concoctions.bottle_fire": "Bottle of Fire",
 	"item.concoctions.bottle_soul_fire": "Bottle of Soul Fire",
 	"item.concoctions.bottle_sunlight": "Bottle of Sunlight",
