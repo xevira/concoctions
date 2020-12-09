@@ -7,9 +7,10 @@
 	"block.concoctions.broken_bedrock": "Broken Bedrock",
 	"block.concoctions.cracked_bedrock": "Cracked Bedrock",
 	"block.concoctions.crumbling_bedrock": "Crumbling Bedrock",
-	"block.concoctions.shattered_bedrock": "Shattered Bedrock",
 	"block.concoctions.filled_cauldron": "Filled Cauldron",
 	"block.concoctions.lamenting_lily": "Lamenting Lily",
+	"block.concoctions.mixer": "Mixer",
+	"block.concoctions.shattered_bedrock": "Shattered Bedrock",
 
 	"death.attack.void": "%1$s was devoured by the Void",
 	"death.attack.void.player": "%1$s was devoured by the Void whilst fighting %2$s",
@@ -23,6 +24,7 @@
 	"effect.concoctions.growth": "Growth",
 	"effect.concoctions.intangible": "Intangible",
 	"effect.concoctions.recall": "Recall",
+	"effect.concoctions.restoration": "Restoration",
 	"effect.concoctions.shrink": "Shrink",
 	"effect.concoctions.taming": "Taming",
 	"effect.concoctions.void": "Void",
@@ -52,6 +54,8 @@
 	"item.concoctions.glimmering_white_dye": "Glimmering White Dye",
 	"item.concoctions.glimmering_yellow_dye": "Glimmering Yellow Dye",
 	"item.concoctions.lingering_bottle": "Lingering Bottle",
+	"item.concoctions.moss": "Moss",
+	"item.concoctions.scraping_knife": "Scraping Knife",
 	"item.concoctions.splash_bottle": "Splash Bottle",
 	
 	"item.minecraft.potion.effect.haste": "Potion of Haste",
@@ -77,6 +81,7 @@
 	"item.minecraft.potion.effect.recall": "Potion of Recall",
 	"item.minecraft.potion.effect.flourish": "Potion of Flourish",
 	"item.minecraft.potion.effect.taming": "Potion of Taming",
+	"item.minecraft.potion.effect.restoration": "Potion of Restoration",
 
 	"item.minecraft.splash_potion.effect.haste": "Splash Potion of Haste",
 	"item.minecraft.splash_potion.effect.dullness": "Splash Potion of Dullness",
@@ -101,6 +106,7 @@
 	"item.minecraft.splash_potion.effect.recall": "Splash Potion of Recall",
 	"item.minecraft.splash_potion.effect.flourish": "Splash Potion of Flourish",
 	"item.minecraft.splash_potion.effect.taming": "Splash Potion of Taming",
+	"item.minecraft.splash_potion.effect.restoration": "Splash Potion of Restoration",
 
 	"item.minecraft.lingering_potion.effect.haste": "Lingering Potion of Haste",
 	"item.minecraft.lingering_potion.effect.dullness": "Lingering Potion of Dullness",
@@ -125,6 +131,7 @@
 	"item.minecraft.lingering_potion.effect.recall": "Lingering Potion of Recall",
 	"item.minecraft.lingering_potion.effect.flourish": "Lingering Potion of Flourish",
 	"item.minecraft.lingering_potion.effect.taming": "Lingering Potion of Taming",
+	"item.minecraft.lingering_potion.effect.restoration": "Lingering Potion of Restoration",
 
 	"item.minecraft.tipped_arrow.effect.haste": "Arrow of Haste",
 	"item.minecraft.tipped_arrow.effect.dullness": "Arrow of Dullness",
@@ -149,6 +156,7 @@
 	"item.minecraft.tipped_arrow.effect.recall": "Arrow of Recall",
 	"item.minecraft.tipped_arrow.effect.flourish": "Arrow of Flourish",
 	"item.minecraft.tipped_arrow.effect.taming": "Arrow of Taming",
+	"item.minecraft.tipped_arrow.effect.restoration": "Arrow of Restoration",
 	
 	"item.concoctions.potion.prefix": "Potion of %s",
 	"item.concoctions.splash_potion.prefix": "Splash Potion of %s",
@@ -160,5 +168,8 @@
 	"item.concoctions.filled_with": "Filled with:",
 	"item.concoctions.fill_level": "Level: %s / 15",
 
-	"message.concoctions.player.tamed": "You've already tamed yourself!"
+	"message.concoctions.player.tamed": "You've already tamed yourself!",
+	
+	"tile.concoctions.brewing_station": "Brewing Station Tile",
+	"tile.concoctions.mixer": "Mixer Tile"
 }

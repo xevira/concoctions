@@ -56,14 +56,14 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 		
 		// Override screen size
 		this.xSize = 176;
-		this.ySize = 180;
+		this.ySize = 199;
 	}
 	
 	private void initFields() {
 		this.minecraft.keyboardListener.enableRepeatEvents(true);
 		int i = (this.width - this.xSize) / 2;
 		int j = (this.height - this.ySize) / 2;
-		this.nameField = new TextFieldWidget(this.font, i + 10, j + 81, 109, 12, new TranslationTextComponent("container.rename"));
+		this.nameField = new TextFieldWidget(this.font, i + 10, j + 100, 109, 12, new TranslationTextComponent("container.rename"));
 		this.nameField.setCanLoseFocus(false);
 		this.nameField.setTextColor(-1);
 		this.nameField.setDisabledTextColour(-1);
@@ -98,7 +98,8 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 			this.setListener(this.nameField);
 		}
 	}
-	
+
+	@Override
 	public void onClose() {
 		super.onClose();
 		this.minecraft.keyboardListener.enableRepeatEvents(false);
@@ -136,11 +137,11 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
         int fuel = this.container.getRemainingFuel();
         int l = MathHelper.clamp((18 * fuel + 20 - 1) / 20, 0, 18);
         if (l > 0) {
-           this.blit(stack, left + 60, top + 68, 176, 29, l, 4);
+           this.blit(stack, left + 60, top + 87, 176, 29, l, 4);
         }
         
         // Draw Name Field background
-        this.blit(stack, left + 7, top + 77, 0, this.ySize + (this.isOutputPotionItemStack() ? 0 : 16), 116, 16);
+        this.blit(stack, left + 7, top + 96, 0, this.ySize + (this.isOutputPotionItemStack() ? 0 : 16), 116, 16);
         
         // Progress bar for brewing
         int brew = this.container.getBrewTime();
@@ -148,17 +149,17 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
         if( brew > 0 && maxbrew > 0 ) {
         	int w = (int)(28.0F * (1.0F - (float)brew / (float)maxbrew));
         	if( w > 0 ) {
-        		this.blit(stack, left + 97, top + 49, 209, 0, w, 9);
+        		this.blit(stack, left + 97, top + 68, 209, 0, w, 9);
         	}
         	
         	int h = BUBBLELENGTHS[(brew / 2 ) % 7];
         	if( h > 0) {
-        		this.blit(stack, left + 63, top + 38 + 29 - h, 185, 29 - h, 12, h);
+        		this.blit(stack, left + 63, top + 57 + 29 - h, 185, 29 - h, 12, h);
         	}
         }
         
         // Draw fluid bar
-        ClientUtils.handleGuiTank(stack, this.container.tile.tankStorage.getFluid(), this.container.tile.tankStorage.getCapacity(), left+130, top+10, 14, 80, 176, 33, 14, 80, mouseX, mouseY, background, null);
+        ClientUtils.handleGuiTank(stack, this.container.tile.tankStorage.getFluid(), this.container.tile.tankStorage.getCapacity(), left+130, top+29, 14, 80, 176, 33, 14, 80, mouseX, mouseY, background, null);
 	}
 	
 	@Override
@@ -177,7 +178,7 @@ public class BrewingStationScreen extends ContainerScreen<BrewingStationContaine
 		// Tooltip for fluids		
 		List<ITextComponent> tooltip = new ArrayList<>();
 		if(mouseX >= (left + 130) && mouseX < (left + 144) &&
-			mouseY >= (top + 10) && mouseY < (top + 90))
+			mouseY >= (top + 29) && mouseY < (top + 109))
 			ClientUtils.addFluidTooltip(this.container.tile.tankStorage.getFluid(), tooltip, this.container.tile.tankStorage.getCapacity());
 		if( !tooltip.isEmpty() )
 			GuiUtils.drawHoveringText(stack, tooltip, mouseX, mouseY, width, height, -1, font);

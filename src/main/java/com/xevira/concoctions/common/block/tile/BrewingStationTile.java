@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.xevira.concoctions.common.container.BrewingStationContainer;
 import com.xevira.concoctions.common.fluids.PotionFluid;
+import com.xevira.concoctions.common.fluids.TargetedFluidTank;
 import com.xevira.concoctions.common.handlers.*;
 import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.BrewingRecipes;
@@ -46,6 +47,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -54,12 +56,15 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+
+// TODO: Change the fluid tank to a custom tank that allows for targeted output to control automation
 public class BrewingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 	public static final int INV_SLOTS = Slots.TOTAL.getId();
 	public static final int FUEL_SLOTS = 1;
-	public static final int ITEM_SLOTS = Slots.QUEUE5.getId() - Slots.ITEM.getId() + 1;
+	public static final int ITEM_SLOTS = Slots.QUEUE10.getId() - Slots.ITEM.getId() + 1;
 	public static final int BOTTLE_IN_SLOTS = 1;
 	public static final int BOTTLE_OUT_SLOTS = 1;
 	
@@ -71,9 +76,14 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		QUEUE3(4),
 		QUEUE4(5),
 		QUEUE5(6),
-		BOTTLE_IN(7),
-		BOTTLE_OUT(8),
-		TOTAL(9);
+		QUEUE6(7),
+		QUEUE7(8),
+		QUEUE8(9),
+		QUEUE9(10),
+		QUEUE10(11),
+		BOTTLE_IN(12),
+		BOTTLE_OUT(13),
+		TOTAL(14);
 		
 		int id;
 		
@@ -87,8 +97,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	}
 	
 	public int fluidColor;
-	public LazyOptional<FluidTank> tank;
-	public FluidTank tankStorage;
+	public LazyOptional<TargetedFluidTank> tank;
+	public TargetedFluidTank tankStorage;
 //	private LazyOptional<ItemStackHandler> inventory  = LazyOptional.of(() -> new ItemStackHandler(BrewingStationTile.INV_SLOTS));
 	
 	private LazyOptional<BrewingFuelItemStackHandler> invFuel = LazyOptional.of(() -> new BrewingFuelItemStackHandler());
@@ -139,7 +149,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	public BrewingStationTile() {
 		super(Registry.BREWING_STATION_TILE.get());
 		
-		this.tankStorage = new FluidTank(10 * FluidAttributes.BUCKET_VOLUME);
+		this.tankStorage = new TargetedFluidTank(10 * FluidAttributes.BUCKET_VOLUME);
 		this.tank = LazyOptional.of(() -> this.tankStorage);
 		this.brewTime = 0;
 		this.maxBrewTime = 0;
@@ -197,14 +207,14 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		}
 
 		
-		int res = this.tankStorage.fill(inFluid, FluidAction.SIMULATE);
+		int res = this.tankStorage.forceFill(inFluid, FluidAction.SIMULATE);
 		if( res < inFluid.getAmount() )
 		{
 			//Concoctions.GetLogger().info("res {} < inFluid.getAmount() {}", res, inFluid.getAmount());
 			return null;
 		}
 		
-		this.tankStorage.fill(inFluid, FluidAction.EXECUTE);
+		this.tankStorage.forceFill(inFluid, FluidAction.EXECUTE);
 		
 		inStack.shrink(1);
 		if( outStack.isEmpty() )
@@ -263,7 +273,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		if( !inFluid.isEmpty() )
 			volume = inFluid.getAmount();
 		
-		FluidStack result = this.tankStorage.drain(volume, FluidAction.SIMULATE);
+		FluidStack result = this.tankStorage.forceDrain(volume, FluidAction.SIMULATE);
 		if( result.isEmpty() || result.getAmount() < volume )
 			return null;	// Not enough room
 		
@@ -283,7 +293,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		if( !outStack.isEmpty() && (!outStack.isStackable() || !resultStack.isStackable()))
 			return null;
 		
-		this.tankStorage.drain(volume, FluidAction.EXECUTE);
+		this.tankStorage.forceDrain(volume, FluidAction.EXECUTE);
 
 		inStack.shrink(1);
 		if( outStack.isEmpty())
@@ -383,6 +393,9 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 	
 	private int canBrew(ItemStackHandler inv)
 	{
+		// When targeting a specific potion for automation, only allow it to brew when the tank is FULL.
+		if(this.tankStorage.isTargeting() && !this.tankStorage.isFull()) return 0;
+		
 		ItemStack stack = inv.getStackInSlot(0);
 		FluidStack fluid = this.tankStorage.getFluid();
 		
@@ -411,8 +424,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 					result.getOrCreateTag().putString("CustomPotionName", root.getString("CustomPotionName"));
 			}
 			
-			this.tankStorage.drain(this.tankStorage.getCapacity(), FluidAction.EXECUTE);
-			this.tankStorage.fill(result, FluidAction.EXECUTE);
+			this.tankStorage.forceDrain(this.tankStorage.getCapacity(), FluidAction.EXECUTE);
+			this.tankStorage.forceFill(result, FluidAction.EXECUTE);
 			
 			BlockPos blockpos = this.getPos();
 			if (stack.hasContainerItem()) {
@@ -521,7 +534,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
         this.invBottleIn.ifPresent(h -> h.deserializeNBT(compound.getCompound("invBIn")));
         this.invBottleOut.ifPresent(h -> h.deserializeNBT(compound.getCompound("invBOut")));
         this.tank.ifPresent(h -> {
-        	h.readFromNBT(compound.getCompound("tank"));
+        	h.deserializeNBT(compound.getCompound("tank"));
         	
         	FluidStack fluid = h.getFluid();
         	if( fluid.getFluid() == Registry.POTION_FLUID.get() && fluid.hasTag() )
@@ -540,23 +553,18 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
         compound.putInt("maxbrew", this.maxBrewTime);
         compound.putInt("fuel", this.fuelRemaining);
         
-        invFuel.ifPresent(h ->  compound.put("invF", h.serializeNBT()));
-        invItems.ifPresent(h ->  compound.put("invI", h.serializeNBT()));
-        invBottleIn.ifPresent(h ->  compound.put("invBIn", h.serializeNBT()));
-        invBottleOut.ifPresent(h ->  compound.put("invBOut", h.serializeNBT()));
-        
-        this.tank.ifPresent(h -> {
-        	CompoundNBT tag = new CompoundNBT();
-        	h.writeToNBT(tag);
-        	compound.put("tank", tag);
-        });
+        this.invFuel.ifPresent(h ->  compound.put("invF", h.serializeNBT()));
+        this.invItems.ifPresent(h ->  compound.put("invI", h.serializeNBT()));
+        this.invBottleIn.ifPresent(h ->  compound.put("invBIn", h.serializeNBT()));
+        this.invBottleOut.ifPresent(h ->  compound.put("invBOut", h.serializeNBT()));
+        this.tank.ifPresent(h -> { compound.put("tank", h.serializeNBT()); });
        
         return super.write(compound);
     }
 	    
 	@Override
 	public ITextComponent getDisplayName() {
-		return new StringTextComponent("Brewing Station Tile");
+		return new TranslationTextComponent("tile.concoctions.brewing_station");
 	}
 	
 	@Nullable
@@ -567,7 +575,8 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 				this.invFuel.orElse(new BrewingFuelItemStackHandler()),
 				this.invItems.orElse(new BrewingQueueItemStackHandler()),
 				this.invBottleIn.orElse(new BrewingBottleInItemStackHandler()),
-				this.invBottleOut.orElse(new BrewingBottleOutItemStackHandler()));
+				this.invBottleOut.orElse(new BrewingBottleOutItemStackHandler()),
+				this.tankStorage);
 	}
 	
 	@Nonnull
@@ -664,7 +673,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 			}
 			else
 			{
-				stack.setDisplayName(new TranslationTextComponent("text.concoctions.solution"));
+				stack.setDisplayName(new TranslationTextComponent("item.concoctions.solution"));
 			}
 		}
 		else
@@ -766,5 +775,21 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		}
 		
 		return capacity;
+	}
+	
+	private void handlerDropItems(IItemHandler handler, World worldIn, BlockPos pos)
+	{
+		for (int i = 0; i < handler.getSlots(); i++)
+			InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(),
+					handler.getStackInSlot(i));
+	}
+	
+	public void dropItems(World worldIn, BlockPos pos)
+	{
+		this.invFuel.ifPresent(handler -> handlerDropItems(handler, worldIn, pos));
+		this.invItems.ifPresent(handler -> handlerDropItems(handler, worldIn, pos));
+		this.invBottleIn.ifPresent(handler -> handlerDropItems(handler, worldIn, pos));
+		this.invBottleOut.ifPresent(handler -> handlerDropItems(handler, worldIn, pos));
+		this.tank.ifPresent(handler -> handlerDropItems(handler, worldIn, pos));
 	}
 }

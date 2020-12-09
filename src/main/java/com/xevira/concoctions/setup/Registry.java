@@ -78,6 +78,7 @@ public class Registry {
     public static final RegistryObject<Block> CRUMBLING_BEDROCK = BLOCKS.register("crumbling_bedrock", () -> new BrokenBedrockBlock(200.0F, 6000.0F));
     public static final RegistryObject<Block> SHATTERED_BEDROCK = BLOCKS.register("shattered_bedrock", () -> new BrokenBedrockBlock(100.0F, 2400.0F));
     public static final RegistryObject<FilledCauldronBlock> FILLED_CAULDRON = BLOCKS.register("filled_cauldron", FilledCauldronBlock::new);
+    public static final RegistryObject<MixerBlock> MIXER = BLOCKS.register("mixer", MixerBlock::new);
     public static final RegistryObject<LamentingLilyBlock> LAMENTING_LILY = BLOCKS.register("lamenting_lily", LamentingLilyBlock::new);
     
     // Containers
@@ -99,6 +100,7 @@ public class Registry {
     //public static final RegistryObject<Effect> GROWTH_EFFECT = EFFECTS.register("growth", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, true));
     public static final RegistryObject<Effect> INTANGIBLE_EFFECT = EFFECTS.register("intangible", () -> new IntangibleEffectSpectator(EffectType.NEUTRAL, 0x999999));
     public static final RegistryObject<Effect> RECALL_EFFECT = EFFECTS.register("recall", () -> new RecallEffect(EffectType.NEUTRAL, 0x00b5bc));
+    public static final RegistryObject<Effect> RESTORATION_EFFECT = EFFECTS.register("restoration", () -> new RestorationEffect(EffectType.NEUTRAL, 0xffb778));
     public static final RegistryObject<Effect> TAMING_EFFECT = EFFECTS.register("taming", () -> new TamingEffect(EffectType.NEUTRAL, 0xff8484));
     //public static final RegistryObject<Effect> SHRINK_EFFECT = EFFECTS.register("shrink", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, false));
     public static final RegistryObject<Effect> VOID_EFFECT = EFFECTS.register("void", () -> new VoidEffect(EffectType.HARMFUL, 0x080808));
@@ -113,7 +115,7 @@ public class Registry {
     public static final RegistryObject<Item> BOTTLE_SOUL_FIRE = ITEMS.register("bottle_soul_fire", () -> new BottleFireItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BOTTLE_SUNLIGHT = ITEMS.register("bottle_sunlight", () -> new BottleSunlightItem((new Item.Properties()).group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> BOTTLE_VOID_ESSENCE = ITEMS.register("bottle_void_essence", () -> new BottleVoidEssenceItem((new Item.Properties()).group(ItemGroup.BREWING)));
-    public static final RegistryObject<Item> BREWING_STATION_ITEM = ITEMS.register("brewing_station", () -> new BrewingStationItem(BREWING_STATION.get(), Registry.PROPS_BREWING));
+    public static final RegistryObject<Item> BREWING_STATION_ITEM = ITEMS.register("brewing_station", () -> new BrewingStationItem(BREWING_STATION.get(), PROPS_BREWING));
     public static final RegistryObject<Item> CRACKED_BEDROCK_ITEM = ITEMS.register("cracked_bedrock", () -> new BlockItem(Registry.CRACKED_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
     public static final RegistryObject<Item> BROKEN_BEDROCK_ITEM = ITEMS.register("broken_bedrock", () -> new BlockItem(Registry.BROKEN_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
     public static final RegistryObject<Item> CRUMBLING_BEDROCK_ITEM = ITEMS.register("crumbling_bedrock", () -> new BlockItem(Registry.CRUMBLING_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
@@ -138,6 +140,9 @@ public class Registry {
     public static final RegistryObject<Item> GLIMMERING_BLACK_DYE = ITEMS.register("glimmering_black_dye", () -> new GlimmeringDyeItem(DyeColor.BLACK, (new Item.Properties()).group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> LAMENTING_LILY_ITEM = ITEMS.register("lamenting_lily", () -> new LamentingLilyItem(LAMENTING_LILY.get(), new Item.Properties().group(ItemGroup.DECORATIONS)));
     public static final RegistryObject<Item> LINGERING_BOTTLE = ITEMS.register("lingering_bottle", () -> new LingeringBottleItem(new Item.Properties().group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> MOSS = ITEMS.register("moss", () -> new Item(new Item.Properties().group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> MIXER_ITEM = ITEMS.register("mixer", () -> new BlockItem(Registry.MIXER.get(), new Item.Properties().group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> SCRAPING_KNIFE = ITEMS.register("scraping_knife", () -> new ScrapingKnife(new Item.Properties().maxDamage(64).group(ItemGroup.TOOLS)));
     public static final RegistryObject<Item> SPLASH_BOTTLE = ITEMS.register("splash_bottle", () -> new SplashBottleItem(new Item.Properties().group(ItemGroup.BREWING)));
 
     // Potions
@@ -224,10 +229,14 @@ public class Registry {
     public static final RegistryObject<Potion> TAMING_POTION = POTIONS.register("taming", () -> new Potion(new EffectInstance(Registry.TAMING_EFFECT.get(), 1)));
     public static final RegistryObject<Potion> STRONG_TAMING_POTION = POTIONS.register("strong_taming", () -> new Potion("taming", new EffectInstance(Registry.TAMING_EFFECT.get(), 1, 1)));
 
+    public static final RegistryObject<Potion> RESTORATION_POTION = POTIONS.register("restoration", () -> new Potion(new EffectInstance(Registry.RESTORATION_EFFECT.get(), 1)));
+    public static final RegistryObject<Potion> STRONG_RESTORATION_POTION = POTIONS.register("strong_restoration", () -> new Potion("restoration", new EffectInstance(Registry.RESTORATION_EFFECT.get(), 1, 1)));
+
     // Properties
     public static final IntegerProperty STAGE_0_3 = IntegerProperty.create("stage", 0, 3);
     
     // Tile Entities
 	public static final RegistryObject<TileEntityType<BrewingStationTile>> BREWING_STATION_TILE = TILES.register("brewing_station", () -> TileEntityType.Builder.create(BrewingStationTile::new, BREWING_STATION.get()).build(null));
 	public static final RegistryObject<TileEntityType<FilledCauldronTile>> FILLED_CAULDRON_TILE = TILES.register("filled_cauldron", () -> TileEntityType.Builder.create(FilledCauldronTile::new, FILLED_CAULDRON.get()).build(null));
+	public static final RegistryObject<TileEntityType<MixerTile>> MIXER_TILE = TILES.register("mixer", () -> TileEntityType.Builder.create(MixerTile::new, MIXER.get()).build(null));
 }

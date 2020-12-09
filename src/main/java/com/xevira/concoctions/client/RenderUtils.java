@@ -1,4 +1,4 @@
-package com.xevira.concoctions.client.ter;
+package com.xevira.concoctions.client;
 
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 

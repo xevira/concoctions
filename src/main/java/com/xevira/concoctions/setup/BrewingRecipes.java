@@ -260,6 +260,11 @@ public class BrewingRecipes
 		RECIPES.add(new BrewingRecipe(Items.WHITE_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.YELLOW_BED, Potions.AWKWARD, Registry.RECALL_POTION.get()));
 		
+		//   Restoration
+		RECIPES.add(new BrewingRecipe(Registry.MOSS.get(), Potions.REGENERATION, Registry.RESTORATION_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Registry.MOSS.get(), Potions.STRONG_REGENERATION, Registry.STRONG_RESTORATION_POTION.get()));
+		RECIPES.add(new BrewingRecipe(Items.GLOWSTONE_DUST, Registry.RESTORATION_POTION.get(), Registry.STRONG_RESTORATION_POTION.get()));
+		
 		//   Taming
 		RECIPES.add(new BrewingRecipe(Items.BONE, Registry.LOVE_POTION.get(), Registry.TAMING_POTION.get()));
 		RECIPES.add(new BrewingRecipe(Items.BONE, Registry.STRONG_LOVE_POTION.get(), Registry.STRONG_TAMING_POTION.get()));

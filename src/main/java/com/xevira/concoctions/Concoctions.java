@@ -1,39 +1,13 @@
 package com.xevira.concoctions;
 
-import com.xevira.concoctions.client.gui.screen.*;
-import com.xevira.concoctions.client.ter.*;
+import com.xevira.concoctions.client.ClientSetup;
 import com.xevira.concoctions.common.EventHandler;
-import com.xevira.concoctions.common.block.FilledCauldronBlock;
-import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
-import com.xevira.concoctions.common.items.FilledCauldronItem;
 import com.xevira.concoctions.common.network.PacketHandler;
-import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.*;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CauldronBlock;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -68,26 +42,14 @@ public class Concoctions {
 	    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_CONFIG);
 	}
 	
-	public void setup (final FMLCommonSetupEvent event){
+	public void setup (final FMLCommonSetupEvent event)
+	{
 		PacketHandler.register();
 	}
 	
-	public void clientSetup(final FMLClientSetupEvent event){
-		// Screens
-		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
-		
-		// Tile Entity Renderers
-		ClientRegistry.bindTileEntityRenderer(Registry.BREWING_STATION_TILE.get(), BrewingStationTileRenderer::new);
-		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
-		
-		// Block Render Types
-		RenderTypeLookup.setRenderLayer(Registry.BREWING_STATION.get(), RenderType.getCutout());
-		RenderTypeLookup.setRenderLayer(Registry.LAMENTING_LILY.get(), RenderType.getCutout());
-		
-		// Coloring
-		Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-			return FilledCauldronItem.getFluidColor(stack, tintIndex);
-		}, Registry.FILLED_CAULDRON_ITEM.get());
+	public void clientSetup(final FMLClientSetupEvent event)
+	{
+		ClientSetup.init();
 	}
 	
 	public void sendImc(InterModEnqueueEvent evt) {

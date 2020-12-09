@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile.Slots;
+import com.xevira.concoctions.common.fluids.TargetedFluidTank;
 import com.xevira.concoctions.common.handlers.*;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketPotionRename;
@@ -56,15 +57,16 @@ public class BrewingStationContainer extends Container {
     public BrewingQueueItemStackHandler invItems;
     public BrewingBottleInItemStackHandler invBottleIn;
     public BrewingBottleOutItemStackHandler invBottleOut;
+    public IItemHandler tankStorage;
 	private boolean hasPotion = false;
     
-    public BrewingStationTile tile;
+    public final BrewingStationTile tile;
     
 	public BrewingStationContainer(int windowId, PlayerInventory playerInventory, PacketBuffer extraData) {
-		this((BrewingStationTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), new IntArray(DATA_SIZE), windowId, playerInventory, new BrewingFuelItemStackHandler(), new BrewingQueueItemStackHandler(), new BrewingBottleInItemStackHandler(), new BrewingBottleOutItemStackHandler());
+		this((BrewingStationTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), new IntArray(DATA_SIZE), windowId, playerInventory, new BrewingFuelItemStackHandler(), new BrewingQueueItemStackHandler(), new BrewingBottleInItemStackHandler(), new BrewingBottleOutItemStackHandler(), new ItemStackHandler());
 	}
 	
-	public BrewingStationContainer(@Nullable BrewingStationTile tile, IIntArray brewingStationData, int windowId, PlayerInventory playerInventory, BrewingFuelItemStackHandler invFuel, BrewingQueueItemStackHandler invItems, BrewingBottleInItemStackHandler invBottleIn, BrewingBottleOutItemStackHandler invBottleOut) {
+	public BrewingStationContainer(@Nullable BrewingStationTile tile, IIntArray brewingStationData, int windowId, PlayerInventory playerInventory, BrewingFuelItemStackHandler invFuel, BrewingQueueItemStackHandler invItems, BrewingBottleInItemStackHandler invBottleIn, BrewingBottleOutItemStackHandler invBottleOut, IItemHandler tankStorage) {
 		super(Registry.BREWING_STATION_CONTAINER.get(), windowId);
 		assert(brewingStationData.size() == DATA_SIZE);
 		
@@ -72,6 +74,7 @@ public class BrewingStationContainer extends Container {
         this.invItems = invItems;
         this.invBottleIn = invBottleIn;
         this.invBottleOut = invBottleOut;
+        this.tankStorage = tankStorage;
         this.tile = tile;
         this.newPotionName = tile.getPotionName();
 
@@ -83,25 +86,31 @@ public class BrewingStationContainer extends Container {
 
 	public void setup(PlayerInventory inventory) {
 		// Brewing Station
-		addSlot(new BrewingStationFuelSlot(invFuel, 0, 17, 41));
-		addSlot(new BrewingStationQueueSlot(invItems, 0, 79, 41));
-		addSlot(new BrewingStationQueueSlot(invItems, 1, 89, 17));
-		addSlot(new BrewingStationQueueSlot(invItems, 2, 71, 17));
-		addSlot(new BrewingStationQueueSlot(invItems, 3, 53, 17));
-		addSlot(new BrewingStationQueueSlot(invItems, 4, 35, 17));
-		addSlot(new BrewingStationQueueSlot(invItems, 5, 17, 17));
-		addSlot(new BrewingStationBottleInSlot(invBottleIn, 0, 152, 8));
-		addSlot(new BrewingStationBottleOutSlot(invBottleOut, 0, 152, 76, this));
+		addSlot(new BrewingStationFuelSlot(invFuel, 0, 17, 60));
+		addSlot(new BrewingStationQueueSlot(invItems, 0, 79, 60));
+		addSlot(new BrewingStationQueueSlot(invItems, 1, 89, 36));
+		addSlot(new BrewingStationQueueSlot(invItems, 2, 71, 36));
+		addSlot(new BrewingStationQueueSlot(invItems, 3, 53, 36));
+		addSlot(new BrewingStationQueueSlot(invItems, 4, 35, 36));
+		addSlot(new BrewingStationQueueSlot(invItems, 5, 17, 36));
+		addSlot(new BrewingStationQueueSlot(invItems, 6, 17, 18));
+		addSlot(new BrewingStationQueueSlot(invItems, 7, 35, 18));
+		addSlot(new BrewingStationQueueSlot(invItems, 8, 53, 18));
+		addSlot(new BrewingStationQueueSlot(invItems, 9, 71, 18));
+		addSlot(new BrewingStationQueueSlot(invItems, 10, 89, 18));
+		addSlot(new BrewingStationBottleInSlot(invBottleIn, 0, 152, 27));
+		addSlot(new BrewingStationBottleOutSlot(invBottleOut, 0, 152, 95, this));
+		addSlot(new SlotItemHandler(tankStorage, 0, 129, 8));
 
 		// Player Inventory
         //   Hotbar
         for (int col = 0; col < 9; ++col) {
-            addSlot(new Slot(inventory, col, 8 + col * 18, 156));
+            addSlot(new Slot(inventory, col, 8 + col * 18, 175));
         }
         //   Main inventory
         for (int row = 1; row < 4; ++ row) {
             for (int col = 0; col < 9; ++ col) {
-                addSlot(new Slot(inventory, col + row * 9, 8 + col * 18, row * 18 + 80));
+                addSlot(new Slot(inventory, col + row * 9, 8 + col * 18, row * 18 + 99));
             }
         }
 	}
@@ -192,6 +201,16 @@ public class BrewingStationContainer extends Container {
     		this.container.renameItemName();
     		this.container.detectValidPotionChanges();
 	    }
+	}
+	
+	static class BrewingStationTargetSlot extends SlotItemHandler {
+		private final TargetedFluidTank tank;
+		
+		public BrewingStationTargetSlot(TargetedFluidTank tank, int slot, int xPos, int yPos) {
+			super(tank, slot, xPos, yPos);
+			
+			this.tank = tank;
+		}
 	}
 	
 	public int getBrewTime() {

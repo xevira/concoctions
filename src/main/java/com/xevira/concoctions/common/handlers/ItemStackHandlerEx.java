@@ -21,7 +21,8 @@ public class ItemStackHandlerEx extends ItemStackHandler
         super(stacks);
     }
 	
-    public ItemStack forceExtractItem(int slot, int amount, boolean simulate)
+    // This circumvents the restrictions placed upon derived classes in extractItem
+    public final ItemStack forceExtractItem(int slot, int amount, boolean simulate)
     {
     	return super.extractItem(slot, amount, simulate);
     }

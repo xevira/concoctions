@@ -85,15 +85,9 @@ public class BrewingStationBlock extends ModBlock {
 	@SuppressWarnings("deprecation")
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (newState.getBlock() != this) {
-			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			BrewingStationTile tileEntity = (BrewingStationTile)worldIn.getTileEntity(pos);
 			if (tileEntity != null) {
-				LazyOptional<IItemHandler> cap = tileEntity
-						.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-				cap.ifPresent(handler -> {
-					for (int i = 0; i < handler.getSlots(); i++)
-						InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-								handler.getStackInSlot(i));
-				});
+				tileEntity.dropItems(worldIn, pos);
 			}
 			super.onReplaced(state, worldIn, pos, newState, isMoving);
 		}

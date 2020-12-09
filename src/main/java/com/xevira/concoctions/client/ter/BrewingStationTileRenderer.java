@@ -2,6 +2,7 @@ package com.xevira.concoctions.client.ter;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.xevira.concoctions.client.RenderUtils;
 import com.xevira.concoctions.common.block.BrewingStationBlock;
 import com.xevira.concoctions.common.block.tile.BrewingStationTile;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
