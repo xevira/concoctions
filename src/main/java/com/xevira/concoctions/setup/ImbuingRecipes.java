@@ -19,6 +19,7 @@ public class ImbuingRecipes
 	public static void postInit()
 	{
 		RECIPES.add(new ImbuingRecipe(Items.LILY_OF_THE_VALLEY, Registry.LAMENTING_LILY_ITEM.get(), Effects.REGENERATION, 1, 3, true));
+		RECIPES.add(new ImbuingRecipe(Items.POPPY, Registry.FIREBLOSSOM_ITEM.get(), Effects.FIRE_RESISTANCE, 0, 3, true));
 	}
 	
 	public static ImbuingRecipe findImbuingRecipe(ItemStack item, FluidStack fluid, int level)

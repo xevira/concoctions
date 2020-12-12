@@ -15,6 +15,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 public class ClientSetup {
 	private static Block[] Cutouts = new Block[] {
 			Registry.BREWING_STATION.get(),
+			Registry.FIREBLOSSOM.get(),
 			Registry.LAMENTING_LILY.get(),
 			Registry.MIXER.get()
 	};
@@ -29,10 +30,12 @@ public class ClientSetup {
 	{
 		// Screens
 		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
+		ScreenManager.registerFactory(Registry.MIXER_CONTAINER.get(), MixerScreen::new);
 		
 		// Tile Entity Renderers
 		ClientRegistry.bindTileEntityRenderer(Registry.BREWING_STATION_TILE.get(), BrewingStationTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
+		ClientRegistry.bindTileEntityRenderer(Registry.MIXER_TILE.get(), MixerTileRenderer::new);
 		
 		// Block Render Types
 		setRenderLayers(Cutouts, RenderType.getCutout());

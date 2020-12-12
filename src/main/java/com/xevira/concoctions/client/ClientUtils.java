@@ -1,5 +1,6 @@
 package com.xevira.concoctions.client;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.xevira.concoctions.common.fluids.PotionFluid;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderState.AlphaState;
 import net.minecraft.client.renderer.RenderState.TextureState;
@@ -21,6 +23,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.IFormattableTextComponent;
@@ -223,4 +226,10 @@ public class ClientUtils {
 			tooltip.add(applyFormat(new StringTextComponent(fluid.getAmount()+"mB"), TextFormatting.GRAY));
 	}
 
+
+	public static void drawCenterStringNoShadow(MatrixStack matrixStack, FontRenderer fontRenderer, ITextComponent text, int x, int y, int color)
+	{
+		IReorderingProcessor ireorderingprocessor = text.func_241878_f();
+		fontRenderer.drawString(matrixStack, text.getString(), (x - fontRenderer.func_243245_a(ireorderingprocessor) / 2), y, Color.DARK_GRAY.getRGB());
+	}
 }

@@ -15,7 +15,11 @@ public class MixerFillingItemStackHandler extends ItemStackHandlerEx
 	@Override
 	public boolean isItemValid(int slot, @Nonnull ItemStack stack)
 	{
-		return !stack.isEmpty() && stack.getItem() == Items.POTION;
+		return !stack.isEmpty() &&
+				(stack.getItem() == Items.POTION ||
+				stack.getItem() == Items.GLASS_BOTTLE ||
+	    		//stack.getItem() == Items.BUCKET ||
+        		stack.getItem() == Items.SPONGE);
 	}
 
     @Override

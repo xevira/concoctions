@@ -1,13 +1,49 @@
 package com.xevira.concoctions.client;
 
+import java.awt.Color;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.text.ITextComponent;
 
 public class RenderUtils {
+	public static void renderTextureCuboid(IVertexBuilder renderer, MatrixStack matrixStack, TextureAtlasSprite sprite, AxisAlignedBB box, int color, int brightness, boolean flowing)
+	{
+		renderTextureCuboid(renderer, matrixStack, sprite, box, color, brightness, flowing, false, false, true, true, true, true, true, true);
+	}
+	
+	public static void renderTextureCuboid(IVertexBuilder renderer, MatrixStack matrixStack, TextureAtlasSprite sprite, AxisAlignedBB box, int color, int brightness, boolean flowing, boolean flipHorizontally, boolean flipVertically)
+	{
+		renderTextureCuboid(renderer, matrixStack, sprite, box, color, brightness, flowing, flipHorizontally, flipVertically, true, true, true, true, true, true);
+	}
+	
+	public static void renderTextureCuboid(IVertexBuilder renderer, MatrixStack matrixStack, TextureAtlasSprite sprite, AxisAlignedBB box, int color, int brightness, boolean flowing, boolean flipHorizontally, boolean flipVertically, boolean north, boolean south, boolean east, boolean west, boolean up, boolean down)
+	{
+		matrixStack.push();
+		matrixStack.translate(box.minX, box.minY, box.minZ);
+		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		
+		float w = (float)box.getXSize();
+		float h = (float)box.getYSize();
+		float d = (float)box.getZSize();
+		
+		if(north)	putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.NORTH, color, brightness, flowing, flipHorizontally, flipVertically);
+		if(south)	putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.SOUTH, color, brightness, flowing, flipHorizontally, flipVertically);
+		if(east)	putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.EAST, color, brightness, flowing, flipHorizontally, flipVertically);
+		if(west)	putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.WEST, color, brightness, flowing, flipHorizontally, flipVertically);
+		if(up)		putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.UP, color, brightness, flowing, flipHorizontally, flipVertically);
+		if(down)	putTexturedQuad(renderer, matrix, sprite, w, h, d, Direction.DOWN, color, brightness, flowing, flipHorizontally, flipVertically);
+	
+		matrixStack.pop();
+	}
 
     /**
      * Adds a quad to the renderer
@@ -277,5 +313,4 @@ public class RenderUtils {
                 break;
         }
     }
-
 }

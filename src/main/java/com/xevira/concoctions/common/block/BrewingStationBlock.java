@@ -94,7 +94,6 @@ public class BrewingStationBlock extends ModBlock {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand hand, BlockRayTraceResult blockRayTraceResult) {
 		// Only execute on the server
