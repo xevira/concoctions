@@ -43,7 +43,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class BrewingStationContainer extends Container {
+public class BrewingStationContainer extends Container implements IContainerPotionRenamer {
 	private static final int SLOTS = BrewingStationTile.INV_SLOTS;
 	private static final int DATA_SIZE = 6;
 	private static final int OUTPUT_SLOT = BrewingStationTile.Slots.BOTTLE_OUT.getId();

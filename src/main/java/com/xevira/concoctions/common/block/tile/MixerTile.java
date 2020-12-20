@@ -1,10 +1,18 @@
 package com.xevira.concoctions.common.block.tile;
 
+import java.awt.image.ComponentSampleModel;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
 import com.xevira.concoctions.Concoctions;
 import com.xevira.concoctions.common.block.MixerBlock;
 import com.xevira.concoctions.common.container.MixerContainer;
@@ -25,8 +33,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -49,7 +62,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class MixerTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider
+public class MixerTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider, ITilePotionRenamer, IFluidTankCallbacks
 {
 	public static final int NORTH_TANK = 0;
 	public static final int SOUTH_TANK = 1;
@@ -59,10 +72,16 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 	public static final int CENTER_TANK = 4;
 	public static final int TOTAL_TANKS = 5;
 	
-	public static final int TOTAL_DATA = TOTAL_INPUTS + 3;
+	public static final int TOTAL_DATA = TOTAL_INPUTS + 4;
+	
+	public static final int MAX_EFFECT_COUNT = 4;
 	
 	public static final int ERROR_NONE = 0;
-	public static final int ERROR_TOO_MANY_EFFECTS = 1;
+	public static final int ERROR_NO_RECIPE = 1;		// Nothing to mix
+	public static final int ERROR_TOO_MANY_EFFECTS = 2;	// Total number of effects is too great
+	public static final int ERROR_NOT_ENOUGH = 3;		// Number of potions mixed isn't enough (requires 2+)
+	public static final int ERROR_NO_FLUID = 4;			// Not enough input fluids to mix
+	public static final int ERROR_NO_SPACE = 5;			// Not enough space in output tank
 	
 	private static final String NBT_FIELDS[] = new String[] {
 		"north",
@@ -84,10 +103,13 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 	private final MixerReservoir tanks[];
 	private final LazyOptional<MixerOutputItemStackHandler> output;		// Outputs are shared across all tank I/O
 	private final int valves[];
+	private int mixingTimeTotal = 0;
 	private int mixingTime = 0;
 	private FluidStack mixingTarget;
 	private boolean centerValveOpen = false;
 	private int mixingStatus = 0;
+	private MixerResult mixingResult = null;
+	private String newPotionName = "";
 	
     public final IIntArray mixerData = new IIntArray() {
         @Override
@@ -104,6 +126,8 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
                 	return MixerTile.this.centerValveOpen ? 1 : 0;
                 case TOTAL_INPUTS+2:
                 	return MixerTile.this.mixingStatus;
+                case TOTAL_INPUTS+3:
+                	return MixerTile.this.mixingTimeTotal;
                 default:
                     throw new IllegalArgumentException("Invalid index: " + index);
             }
@@ -126,7 +150,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		super(Registry.MIXER_TILE.get());
 		
 		tanks = new MixerReservoir[TOTAL_TANKS];
-		tanks[CENTER_TANK] = new MixerReservoir(10, true);
+		tanks[CENTER_TANK] = new MixerReservoir(10, true, this);
 		tanks[NORTH_TANK] = new MixerReservoir(10, false);
 		tanks[SOUTH_TANK] = new MixerReservoir(10, false);
 		tanks[EAST_TANK] = new MixerReservoir(10, false);
@@ -150,7 +174,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 	public Container createMenu(int i, PlayerInventory inventory, PlayerEntity player)
 	{
 		assert world != null;
-		return new MixerContainer(this, i, inventory);
+		return new MixerContainer(this, this.mixerData, i, inventory);
 	}
 	
 	public MixerReservoir[] getReservoirs()
@@ -248,14 +272,11 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		ItemStack outputStack = ItemStack.EMPTY;
 		
 		
-		if( item == Items.WATER_BUCKET ) {
-			fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
-			outputStack = new ItemStack(Items.BUCKET, 1);
-		} else if( item == Items.LAVA_BUCKET ) {
-			fluidStack = new FluidStack(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME);
-			outputStack = new ItemStack(Items.BUCKET, 1);
-		} else if( item == Items.POTION ) {
+		if( item == Items.POTION ) {
 			fluidStack = Utils.getPotionFluidFromNBT(inStack.getTag());
+			if(fluidStack.getFluid() != Registry.POTION_FLUID.get())
+				return false;
+			
 			outputStack = new ItemStack(Items.GLASS_BOTTLE, 1);
 		}
 
@@ -265,7 +286,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 			
 			if( outStack != null )
 			{
-				output.setStackInSlot(0, outStack);
+				output.setStackInSlot(slot, outStack);
 				this.markDirty();
 				this.markContainingBlockForUpdate(null);
 				
@@ -323,9 +344,125 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return outStack;
 	}
 
-	private void tryEmptyInputTank(int slot, FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
+	private boolean tryEmptyInputTank(int slot, FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
 	{
 		ItemStack outStack = output.getStackInSlot(slot);
+		
+		Item item = inStack.getItem();
+		FluidStack fluidStack = FluidStack.EMPTY;
+		ItemStack outputStack = ItemStack.EMPTY;
+
+		FluidStack tankFluid = tank.getFluid();
+		if( tankFluid.isEmpty() )
+			return false;
+		
+		if( item == Items.SPONGE)
+		{
+			fluidStack = new FluidStack(Registry.POTION_FLUID.get(), Math.min(tankFluid.getAmount(),FluidAttributes.BUCKET_VOLUME));
+			outputStack = new ItemStack(Items.WET_SPONGE, 1);
+		}
+		else if( item == Items.GLASS_BOTTLE ) {
+			if( tankFluid.getFluid() != Registry.POTION_FLUID.get())
+				return false;
+
+			outputStack = new ItemStack(Items.POTION, 1);
+		}
+		
+		if( !outputStack.isEmpty() ) {
+			outStack = emptyInputTank(tank, inStack, outStack, fluidStack, outputStack);
+			
+			if( outStack != null ) {
+				output.setStackInSlot(slot, outStack);
+				this.markDirty();
+				this.markContainingBlockForUpdate(null);
+
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean processInputTank(int tank)
+	{
+		if(tank < 0 || tank >= TOTAL_INPUTS)
+			return false;
+		
+		MixerReservoir reservoir = this.tanks[tank];
+		
+		if(!reservoir.tank.isPresent())
+			return false;
+		
+		if(!reservoir.input.isPresent())
+			return false;
+		
+		if(!this.output.isPresent())
+			return false;
+		
+		ItemStack inStack = reservoir.input.resolve().get().getStackInSlot(0);
+		FluidTank inTank = reservoir.tank.resolve().get();
+		MixerOutputItemStackHandler outHandler = this.output.resolve().get();
+		
+		if(tryFillInputTank(tank, inTank, inStack, outHandler))
+			return true;
+		if(tryEmptyInputTank(tank, inTank, inStack, outHandler))
+			return true;
+		
+		return false;
+	}
+	
+
+	private ItemStack emptyOutputTank(FluidTank tank, ItemStack inStack, ItemStack outStack, FluidStack inFluid, ItemStack resultStack)
+	{
+		if( resultStack.isEmpty())
+			return null;
+
+		FluidStack tankFluid = tank.getFluid();
+		
+		if( !tankFluid.isEmpty() && !inFluid.isEmpty() && tankFluid.getFluid() != inFluid.getFluid())
+			return null;	// Not the same fluid
+		
+		int volume = FluidAttributes.BUCKET_VOLUME;
+		if( !inFluid.isEmpty() )
+			volume = inFluid.getAmount();
+		
+		FluidStack result = tank.drain(volume, FluidAction.SIMULATE);
+		if( result.isEmpty() || result.getAmount() < volume )
+			return null;	// Not enough room
+		
+		Utils.addPotionEffectsToItemStack(result, resultStack);
+		renameItemName(resultStack);
+
+		// Check if result and current output stack are compatible
+		if( !outStack.isEmpty() && !areItemStacksEqual(outStack, resultStack))
+			return null;	// Not the same result
+		
+		// Check if the output pile can handle more items
+		int newSize = outStack.getCount() + 1; 
+		if( newSize > resultStack.getMaxStackSize() )
+				return null;
+		
+		// Can they even stack properly?
+		if( !outStack.isEmpty() && (!outStack.isStackable() || !resultStack.isStackable()))
+			return null;
+		
+		tank.drain(volume, FluidAction.EXECUTE);
+
+		inStack.shrink(1);
+		if( outStack.isEmpty())
+		{
+			outStack = resultStack.copy();
+			outStack.setCount(1);
+		}
+		else
+			outStack.grow(1);
+		
+		return outStack;
+	}
+
+	private void tryEmptyOutputTank(FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
+	{
+		ItemStack outStack = output.getStackInSlot(CENTER_TANK);
 		
 		Item item = inStack.getItem();
 		FluidStack fluidStack = FluidStack.EMPTY;
@@ -350,13 +487,48 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 			{
 				outputStack = new ItemStack(Items.POTION, 1);
 			}
+			
+		} else if( item == Registry.SPLASH_BOTTLE.get() ) {
+			if( tankFluid.getFluid() == Fluids.WATER )
+			{
+				fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+				outputStack = new ItemStack(Items.SPLASH_POTION, 1);
+			}
+			else if( tankFluid.getFluid() == Registry.POTION_FLUID.get())
+			{
+				outputStack = new ItemStack(Items.SPLASH_POTION, 1);
+			}
+			
+		} else if( item == Registry.LINGERING_BOTTLE.get() ) {
+			if( tankFluid.getFluid() == Fluids.WATER )
+			{
+				fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+				outputStack = new ItemStack(Items.LINGERING_POTION, 1);
+			}
+			else if( tankFluid.getFluid() == Registry.POTION_FLUID.get())
+			{
+				outputStack = new ItemStack(Items.LINGERING_POTION, 1);
+			}
+			
+		} else if( item == Items.ARROW ) {
+			if( tankFluid.getFluid() == Fluids.WATER )
+			{
+				fluidStack = new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+				outputStack = new ItemStack(Items.LINGERING_POTION, 1);
+			}
+			else if( tankFluid.getFluid() == Registry.POTION_FLUID.get())
+			{
+				fluidStack = new FluidStack(Registry.POTION_FLUID.get(), 125);	// BUCKET_VOLUME / 8
+				outputStack = new ItemStack(Items.TIPPED_ARROW, 1);
+			}
 		}
 		
 		if( !outputStack.isEmpty() ) {
-			outStack = emptyInputTank(tank, inStack, outStack, fluidStack, outputStack);
+			outStack = emptyOutputTank(tank, inStack, outStack, fluidStack, outputStack);
 			
 			if( outStack != null ) {
-				output.setStackInSlot(slot, outStack);
+				output.setStackInSlot(CENTER_TANK, outStack);
+				
 				this.markDirty();
 				this.markContainingBlockForUpdate(null);
 
@@ -365,13 +537,9 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		}
 	}
 
-	
-	private void processInputTank(int tank)
+	private void processOutputTank()
 	{
-		if(tank < 0 || tank >= TOTAL_INPUTS)
-			return;
-		
-		MixerReservoir reservoir = this.tanks[tank];
+		MixerReservoir reservoir = this.tanks[CENTER_TANK];
 		
 		if(!reservoir.tank.isPresent())
 			return;
@@ -386,22 +554,352 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		FluidTank inTank = reservoir.tank.resolve().get();
 		MixerOutputItemStackHandler outHandler = this.output.resolve().get();
 		
-		if(!tryFillInputTank(tank, inTank, inStack, outHandler))
-			tryEmptyInputTank(tank, inTank, inStack, outHandler);
+		boolean wasEmpty = inTank.isEmpty();
+		
+		tryEmptyOutputTank(inTank, inStack, outHandler);
+		
+		if(!wasEmpty && inTank.isEmpty())
+		{
+			if(this.mixingResult == null || this.mixingResult.code != ERROR_NONE)
+			{
+				handleOnEmpty();
+			}
+		}
+	}
+	
+	private List<EffectInstance> getEffectCount(FluidStack fluidStack, int valve)
+	{
+		List<EffectInstance> effects = new ArrayList<EffectInstance>();
+		
+		if(fluidStack.getFluid() != Registry.POTION_FLUID.get())
+			return effects;
+		
+		List<EffectInstance> rawEffects = PotionUtils.getEffectsFromTag(fluidStack.getTag());
+		
+		for(EffectInstance rawEffect : rawEffects)
+		{
+			int duration = rawEffect.getDuration();
+			if(duration >= 20)
+				duration = Math.max(duration * valve / 100, 20);	// Reduce duration by valve percentage
+			
+			EffectInstance effect = new EffectInstance(rawEffect.getPotion(), duration, rawEffect.getAmplifier(), rawEffect.isAmbient(), rawEffect.doesShowParticles(), rawEffect.isShowIcon());
+			effects.add(effect);
+		}
+		
+		return effects;
+	}
+	
+	// TODO: MERGE effects, combine durations
+	private List<EffectInstance> mergeEffects(List<EffectInstance> effects)
+	{
+		HashMap<Effect, MixerEffect> effectMap = new HashMap<Effect, MixerEffect>();
+		ArrayList<Effect> priority = new ArrayList<Effect>();
+		
+		// Tally up all effects
+		for(EffectInstance effect : effects)
+		{
+			if(effectMap.containsKey(effect.getPotion()))
+			{
+				MixerEffect me = effectMap.get(effect.getPotion());
+				
+				if(me.addEffect(effect))
+				{
+					// Force it to the end of the list
+					priority.remove(effect.getPotion());
+					priority.add(effect.getPotion());
+				}
+			}
+			else
+			{
+				effectMap.put(effect.getPotion(), new MixerEffect(effect));
+				priority.add(effect.getPotion());
+			}
+		}
+		
+		List<EffectInstance> merged = Lists.newArrayList();
+		for(Effect e : priority)
+		{
+			MixerEffect me = effectMap.getOrDefault(e, null);
+			if(me == null)
+				continue;
+			
+			// Average durations
+			int duration = me.duration;
+			if(me.count > 1)
+				duration = me.duration / me.count;
+			
+			EffectInstance effect = new EffectInstance(e, duration, me.amplifier, me.ambient, me.showParticles, me.showIcon);
+			merged.add(effect);
+		}
+		
+		// Prune all instant effects until there are atmost MAX_EFFECT_COUNT effects or there are no more instant effects
+		
+		while(merged.size() > MAX_EFFECT_COUNT)
+		{
+			boolean removed = false;
+			for(int i = merged.size() - 1; i >= 0; i--)
+			{
+				EffectInstance effect = merged.get(i);
+				
+				if(effect.getDuration() >= 20)
+					continue;
+				
+				merged.remove(i);
+				removed = true;
+				break;
+			}
+			
+			if(!removed)
+				break;
+		}
+
+		/*
+		merged.sort(new Comparator<EffectInstance>() {
+			@Override
+			public int compare(EffectInstance a, EffectInstance b)
+			{
+				return Integer.compare(b.getDuration(), a.getDuration());
+			}
+		});
+		*/
+		
+		return merged;
+	}
+	
+	// TODO
+	private MixerResult _canMixFluids()
+	{
+		for(int i = 0; i < TOTAL_INPUTS; i++)
+		{
+			if(!this.tanks[i].tank.isPresent())
+				return new MixerResult(ERROR_NO_RECIPE);
+			
+			if(this.valves[i] > 0)
+			{
+				int volume = this.valves[i] * 10;
+				if(this.tanks[i].getFluidAmount() < volume)
+					return new MixerResult(ERROR_NO_FLUID);
+			}
+		}
+		
+		int total = 0;
+		List<EffectInstance> totalEffects = new ArrayList<EffectInstance>();
+		ArrayList<MixerComponent> components = new ArrayList<MixerComponent>();
+		
+		for(int i = 0; i < TOTAL_INPUTS; i++)
+		{
+			if(this.valves[i] > 0)
+			{
+				MixerReservoir reservoir = this.tanks[i];
+				int volume = this.valves[i] * 10;
+				
+				if(reservoir.getFluidAmount() >= volume)
+				{
+					List<EffectInstance> effects = getEffectCount(reservoir.getFluid(), this.valves[i]);
+					
+					if(effects.size() > 0)
+					{
+						components.add(new MixerComponent(i, reservoir.getFluid(), this.valves[i]));
+						total += this.valves[i];
+						totalEffects.addAll(effects);
+					}
+				}
+			}
+		}
+		
+		if(components.size() < 2)
+			return new MixerResult(ERROR_NOT_ENOUGH);
+		
+		totalEffects = mergeEffects(totalEffects);
+		if(totalEffects.size() > MAX_EFFECT_COUNT)
+			return new MixerResult(ERROR_TOO_MANY_EFFECTS);
+
+		FluidStack resultFluid = Utils.getPotionFluidFromEffects(totalEffects);
+		if(!this.newPotionName.isEmpty())
+		{
+			CompoundNBT root = resultFluid.getOrCreateTag();
+			root.putString("CustomPotionName", this.newPotionName);
+		}
+		resultFluid.setAmount(total * 10);
+		
+		FluidTank center = this.tanks[CENTER_TANK].tank.resolve().get();
+		FluidStack centerFluid = center.getFluid();
+		if(!centerFluid.isEmpty() && !centerFluid.isFluidEqual(resultFluid))
+			return new MixerResult(-5);
+		
+		if(center.fill(resultFluid, FluidAction.SIMULATE) != resultFluid.getAmount())
+			return new MixerResult(ERROR_NO_SPACE);
+		
+		return new MixerResult(totalEffects.size(), components, resultFluid);
+	}
+	
+	private MixerResult canMixFluids()
+	{
+		MixerResult result = _canMixFluids();
+		
+		this.mixingStatus = Math.max(result.code, ERROR_NONE);
+		
+		return result; 
+	}
+	
+	private boolean canStillMixFluids()
+	{
+		for(int i = 0; i < TOTAL_INPUTS; i++)
+		{
+			if(!this.tanks[i].tank.isPresent())
+			{
+				this.mixingResult = new MixerResult(ERROR_NO_RECIPE);
+				return false;
+			}
+			
+			if(this.valves[i] > 0)
+			{
+				int volume = this.valves[i] * 10;
+				if(this.tanks[i].getFluidAmount() < volume)
+				{
+					this.mixingResult = new MixerResult(ERROR_NO_FLUID);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void processMixing(MixerResult result)
+	{
+		for(MixerComponent component : result.components)
+		{
+			MixerReservoir reservoir = this.tanks[component.tank];
+			
+			if(!reservoir.tank.isPresent())
+				return;
+		}
+		
+		for(MixerComponent component : result.components)
+		{
+			MixerReservoir reservoir = this.tanks[component.tank];
+			
+			reservoir.tank.resolve().get().drain(component.valve * 10, FluidAction.EXECUTE);
+		}
+		
+		FluidTank center = this.tanks[CENTER_TANK].tank.resolve().get();
+		center.fill(result.fluid, FluidAction.EXECUTE);
+	}
+	
+	public void handleOnEmpty()
+	{
+		this.mixingResult = canMixFluids();
+		
 	}
 	
 	@Override
 	public void tick()
 	{
 		// TODO
-		
-		for(int i = 0; i < TOTAL_INPUTS; i++)
-			processInputTank(i);
+		processOutputTank();
 		
 		if(this.centerValveOpen)
 		{
+			/*
+			if(this.mixingResult != null)
+			{
+				Concoctions.GetLogger().info("this.mixingResult.code = {}", this.mixingResult.code);
+			}
+			else
+			{
+				Concoctions.GetLogger().info("this.mixingResult is null");
+			}
+			*/
 			
+			if(this.mixingResult != null && this.mixingResult.code == ERROR_NONE)
+			{
+				//Concoctions.GetLogger().info("this.mixingTime = {}", mixingTime);
+				if(this.mixingTime > 0)
+				{
+					--this.mixingTime;
+					
+					if(this.mixingTime <= 0)
+					{
+						processMixing(mixingResult);
+						this.mixingTime = 0;
+						this.markDirty();
+						this.markContainingBlockForUpdate(null);
+					}
+				}
+				else if(canStillMixFluids())
+				{
+					this.mixingTimeTotal = 100 * mixingResult.totalEffects;
+					this.mixingTime = this.mixingTimeTotal;
+					this.markDirty();
+					this.markContainingBlockForUpdate(null);
+				}
+				else
+				{
+					this.mixingResult = null;
+					this.mixingTime = 0;
+				}
+
+			}
 			
+			/*
+			if(this.mixingTime > 0 && mixingResult != null)
+			{
+				if(mixingResult.code == ERROR_NONE)
+				{
+					--this.mixingTime;
+					
+					if(this.mixingTime <= 0)
+					{
+						processMixing(mixingResult);
+						this.mixingResult = null;
+						this.mixingTime = 0;
+						this.markDirty();
+						this.markContainingBlockForUpdate(null);
+					}
+				}
+				else
+				{
+					this.mixingTime = 0;
+				}
+			}
+			else
+			{
+				this.mixingResult = canMixFluids();
+				this.mixingStatus = Math.max(mixingResult.code, ERROR_NONE);
+				
+				if(mixingResult.code == ERROR_NONE)
+				{
+					this.mixingTimeTotal = 100 * mixingResult.totalEffects;
+					this.mixingTime = this.mixingTimeTotal;
+					this.markDirty();
+					this.markContainingBlockForUpdate(null);
+				}
+				else
+				{
+					this.mixingTime = 0;
+				}
+			}
+			*/
+		}
+		else
+		{
+			boolean updated = false;
+			
+			for(int i = 0; i < TOTAL_INPUTS; i++)
+			{
+				if(processInputTank(i))
+					updated = true;
+			}
+			
+			if(updated)
+			{
+				this.mixingResult = canMixFluids();
+
+//				if(this.mixingResult != null)
+//				{
+//					Concoctions.GetLogger().info("this.mixingResult.code = {}", this.mixingResult.code);
+//				}
+			}
 		}
 	}
 	
@@ -492,6 +990,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
         super.read(stateIn, compound);
         
         this.mixingTime = compound.getInt("time");
+        this.mixingTimeTotal = compound.getInt("total");
         this.mixingTarget = FluidStack.loadFluidStackFromNBT(compound.getCompound("target"));
         this.centerValveOpen = compound.getBoolean("open");
         
@@ -502,12 +1001,22 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 
         for(int i = 0; i < TOTAL_INPUTS; i++)
         	valves[i] = compound.getInt("valve_" + NBT_FIELDS[i]);
+        
+        if(compound.contains("mr"))
+        	this.mixingResult = MixerResult.read(compound.getCompound("mr"));
+        else
+        	this.mixingResult = new MixerResult(ERROR_NO_RECIPE);
+
+        this.mixingStatus = Math.max(this.mixingResult.code, ERROR_NONE);
+        
+        this.newPotionName = compound.getString("name");
     }
     
     @Override
     public CompoundNBT write(CompoundNBT compound)
     {
     	compound.putInt("time", this.mixingTime);
+    	compound.putInt("total", this.mixingTimeTotal);
     	compound.put("target", this.mixingTarget.writeToNBT(new CompoundNBT()));
     	compound.putBoolean("open", this.centerValveOpen);
     	
@@ -518,6 +1027,13 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 
         for(int i = 0; i < TOTAL_INPUTS; i++)
         	compound.putInt("valve_" + NBT_FIELDS[i], valves[i]);
+        
+        if(mixingResult != null)
+        {
+        	compound.put("mr", mixingResult.write());
+        }
+        
+        compound.putString("name", this.newPotionName);
 
         return super.write(compound);
     }
@@ -563,6 +1079,14 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return stacks;
 	}
 	
+	public FluidStack getTargetFluid()
+	{
+		if( this.mixingResult != null && this.mixingResult.code == ERROR_NONE )
+			return this.mixingResult.fluid;
+		
+		return FluidStack.EMPTY;
+	}
+	
 	private void handlerDropItems(IItemHandler handler, World worldIn, BlockPos pos)
 	{
 		for (int i = 0; i < handler.getSlots(); i++)
@@ -580,36 +1104,318 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 	
 	public void setValve(int valve, int value)
 	{
-		Concoctions.GetLogger().info("[{}] setValve({},{})", this.world.isRemote?"CLIENT":"SERVER", valve, value);
+		//Concoctions.GetLogger().info("[{}] setValve({},{})", this.world.isRemote?"CLIENT":"SERVER", valve, value);
 		
 		if(valve >= 0 && valve < TOTAL_INPUTS)
 		{
-			this.valves[valve] = MathHelper.clamp(value, 0, 100);
-			this.markContainingBlockForUpdate(null);
-			
-			if(this.world.isRemote)
-				PacketHandler.sendToServer(new PacketMixerValveChanges((byte)valve, (byte)this.valves[valve]));
+			if(!this.centerValveOpen)
+			{
+				int v = MathHelper.clamp(value, 0, 100);
+//				if( this.valves[valve] != v)
+//				{
+					this.valves[valve] = v;
+					this.markContainingBlockForUpdate(null);
+					
+					if(this.world.isRemote)
+						PacketHandler.sendToServer(new PacketMixerValveChanges((byte)valve, (byte)this.valves[valve]));
+					else
+						this.mixingResult = canMixFluids();
+//				}
+			}
 		}
-		else if( valve == CENTER_TANK)
+		else if(valve == CENTER_TANK)
 		{
 			this.centerValveOpen = value != 0;
 			this.mixingTime = 0;
+			this.mixingTimeTotal = 0;
 			this.markContainingBlockForUpdate(null);
 
 			if(this.world.isRemote)
 				PacketHandler.sendToServer(new PacketMixerValveChanges((byte)valve, (byte)(this.centerValveOpen ? 1 : 0)));
 		}
 	}
+	
+	private void setCustomPotionName(ItemStack stack, String prefix)
+	{
+		if( StringUtils.isBlank(this.newPotionName))
+		{
+			boolean isBasePotion = false;
+			if(stack.hasTag())
+			{
+				CompoundNBT root = stack.getTag();
+				if( root.contains("CustomPotionName") )
+					root.remove("CustomPotionName");
+				
+				isBasePotion = root.contains("Potion");
+			}
+			
+			if( isBasePotion )
+			{
+				stack.clearCustomName();
+			}
+			else if (stack.getItem() == Items.TIPPED_ARROW )
+			{
+				stack.setDisplayName(new TranslationTextComponent("item.concoctions.tipped_arrow.solution"));
+			}
+			else
+			{
+				stack.setDisplayName(new TranslationTextComponent("item.concoctions.solution"));
+			}
+		}
+		else
+		{
+			CompoundNBT root = stack.getOrCreateTag();
+			root.putString("CustomPotionName", this.newPotionName);
+			
+			stack.setDisplayName(new TranslationTextComponent(prefix, this.newPotionName));
+		}
+	}
+	
+	private void renameItemName(ItemStack stack)
+	{
+		if( stack.isEmpty() )
+			return;
+		
+		if( stack.getItem() == Items.POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.potion.prefix");
+		}
+		else if( stack.getItem() == Items.SPLASH_POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.splash_potion.prefix");
+		}
+		else if( stack.getItem() == Items.LINGERING_POTION )
+		{
+			setCustomPotionName(stack, "item.concoctions.lingering_potion.prefix");
+		}
+		else if( stack.getItem() == Items.TIPPED_ARROW )
+		{
+			setCustomPotionName(stack, "item.concoctions.tipped_arrow.prefix");
+		}
+	}
 
+	private void renameItemName()
+	{
+		ItemStackHandler inv = this.output.orElse(null);
+		
+		if( inv != null )
+		{
+			ItemStack stack = inv.getStackInSlot(CENTER_TANK);
+			renameItemName(stack);
+		}
+	}
+	
+	private void updatePotionName(FluidStack fluid, String name)
+	{
+		if(fluid.getFluid() == Registry.POTION_FLUID.get())
+		{
+			CompoundNBT root = fluid.getTag();
+			if(StringUtils.isBlank(name))
+			{
+				if(root.contains("CustomPotionName"))
+					root.remove("CustomPotionName");
+			}
+			else
+			{
+				root.putString("CustomPotionName", name);
+			}
+		}
+	}
+	
+	public void updatePotionName(String name)
+	{
+		if( this.hasWorld() )
+		{
+			this.newPotionName = name;
+			this.renameItemName();
+			
+			this.tanks[CENTER_TANK].tank.ifPresent(t -> {
+				updatePotionName(t.getFluid(), name);
+			});
+			
+			if(this.mixingResult != null && !this.mixingResult.fluid.isEmpty())
+			{
+				updatePotionName(this.mixingResult.fluid, name);
+			}
+			
+		}
+	}
+	
+	public String getPotionName()
+	{
+		return this.newPotionName;
+	}
+
+
+	private static class MixerComponent
+	{
+		public final int tank;
+		public final FluidStack fluid;
+		public final int valve;
+		
+		public MixerComponent(int tank, FluidStack fluid, int valve)
+		{
+			this.tank = tank;
+			this.fluid = fluid;
+			this.valve = valve;
+		}
+		
+		public static MixerComponent read(CompoundNBT nbt)
+		{
+			int t = nbt.getInt("t");
+			FluidStack f = FluidStack.loadFluidStackFromNBT(nbt.getCompound("f"));
+			int v = nbt.getInt("v");
+			
+			return new MixerComponent(t, f, v);
+		}
+		
+		public CompoundNBT write()
+		{
+			CompoundNBT nbt = new CompoundNBT();
+			
+			nbt.putInt("t", this.tank);
+			nbt.put("f", fluid.writeToNBT(new CompoundNBT()));
+			nbt.putInt("v", this.valve);
+			
+			return nbt;
+		}
+	}
+	
+	private static class MixerEffect
+	{
+		public int amplifier;
+		public int duration;
+		public boolean ambient;
+		public boolean showParticles;
+		public boolean showIcon;
+		
+		public int count;
+		
+		public MixerEffect(EffectInstance effect)
+		{
+			setEffect(effect);
+		}
+		
+		private void setEffect(EffectInstance effect)
+		{
+			this.amplifier = effect.getAmplifier();
+			this.duration = effect.getDuration();
+			this.ambient = effect.isAmbient();
+			this.showParticles = effect.doesShowParticles();
+			this.showIcon = effect.isShowIcon();
+			this.count = 1;
+		}
+		
+		public boolean addEffect(EffectInstance effect)
+		{
+			if(effect.getAmplifier() > this.amplifier)
+			{
+				setEffect(effect);
+				return true;
+			}
+			else if(effect.getAmplifier() == this.amplifier)
+			{
+				if(this.duration >= 20 && effect.getDuration() >= 20)
+				{
+					this.duration += effect.getDuration();
+					this.count++;
+				}
+				
+				this.ambient = this.ambient || effect.isAmbient();
+				this.showParticles = this.showParticles || effect.doesShowParticles();
+				this.showIcon = this.showIcon || effect.isShowIcon();
+			}
+			return false;
+		}
+		
+	}
+	
+	private static class MixerResult
+	{
+		public final int code;
+		public final int totalEffects;
+		public final List<MixerComponent> components;
+		public final FluidStack fluid;
+		
+		public MixerResult(int code)
+		{
+			this.code = code;
+			this.totalEffects = 0;
+			this.components = Lists.newArrayList();
+			this.fluid = FluidStack.EMPTY;
+		}
+		
+		public MixerResult(int totalEffects, List<MixerComponent> components, FluidStack fluid)
+		{
+			this.code = ERROR_NONE;
+			this.totalEffects = totalEffects;
+			this.components = components;
+			this.fluid = fluid;
+		}
+		
+		public static MixerResult read(CompoundNBT nbt)
+		{
+			int c = nbt.getInt("c");
+			if(c != ERROR_NONE)
+				return new MixerResult(c);
+			
+			int te = nbt.getInt("te");
+			
+			List<MixerComponent> lc = Lists.newArrayList();
+			ListNBT lstNBT = nbt.getList("lc", 10);	// list of compounds
+			for(INBT inbt : lstNBT)
+			{
+				if(!(inbt instanceof CompoundNBT))
+					return null;
+				
+				lc.add(MixerComponent.read((CompoundNBT)inbt));
+			}
+			
+			FluidStack f = FluidStack.loadFluidStackFromNBT(nbt.getCompound("f"));
+			
+			return new MixerResult(te, lc, f);
+		}
+		
+		public CompoundNBT write()
+		{
+			CompoundNBT nbt = new CompoundNBT();
+			
+			nbt.putInt("c", this.code);
+			
+			if(this.code == ERROR_NONE)
+			{
+				nbt.putInt("te", this.totalEffects);
+				
+				if(this.components.size() > 0)
+				{
+					ListNBT lstNBT = new ListNBT();
+					for(MixerComponent mc : components)
+						lstNBT.add(mc.write());
+					nbt.put("lc", lstNBT);
+				}
+				nbt.put("f", this.fluid.writeToNBT(new CompoundNBT()));
+			}
+			
+			return nbt;
+		}
+	}
 	
 	public static class MixerReservoir implements IFluidHandler, IFluidTank
 	{
+	
 		public final LazyOptional<FluidTank> tank;
 		public final LazyOptional<ItemStackHandlerEx> input;
 		private final boolean isOutput;
 		public final LazyOptional<MixerReservoir> lazy;
 		
-		public MixerReservoir(int capacity, boolean isOutput)
+	    protected IFluidTankCallbacks callbacks;
+	    
+	    public MixerReservoir(int capacity, boolean isOutput)
+	    {
+	    	this(capacity, isOutput, null);
+	    }
+		
+		public MixerReservoir(int capacity, boolean isOutput, IFluidTankCallbacks callbacks)
 		{
 			this.tank = LazyOptional.of(() -> new FluidTank(capacity * FluidAttributes.BUCKET_VOLUME));
 			if(isOutput)
@@ -622,6 +1428,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 			}
 			this.isOutput = isOutput;
 			this.lazy = LazyOptional.of(() -> this);
+			this.callbacks = callbacks;
 		}
 		
 		public void deserializeNBT(CompoundNBT nbt)
@@ -639,6 +1446,12 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 			
 			return nbt;
 		}
+		
+	    protected void onEmpty()
+	    {
+	    	if(this.callbacks != null)
+	    		this.callbacks.handleOnEmpty();
+	    }
 
 		@Override
 		public FluidStack getFluid() {
@@ -715,7 +1528,15 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		@Override
 		public FluidStack drain(FluidStack resource, FluidAction action) {
 			if(this.isOutput && this.tank.isPresent())
-				return this.tank.resolve().get().drain(resource, action);
+			{
+				FluidTank t = this.tank.resolve().get(); 
+				FluidStack fs = t.drain(resource, action);
+				
+				if(t.isEmpty())
+					onEmpty();
+				
+				return fs;
+			}
 
 			return FluidStack.EMPTY;
 		}
@@ -723,7 +1544,15 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		@Override
 		public FluidStack drain(int maxDrain, FluidAction action) {
 			if(this.isOutput && this.tank.isPresent())
-				return this.tank.resolve().get().drain(maxDrain, action);
+			{
+				FluidTank t = this.tank.resolve().get(); 
+				FluidStack fs = t.drain(maxDrain, action);
+				
+				if(t.isEmpty())
+					onEmpty();
+				
+				return fs;
+			}
 
 			return FluidStack.EMPTY;
 		}

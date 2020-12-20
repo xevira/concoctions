@@ -61,7 +61,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 
 // TODO: Change the fluid tank to a custom tank that allows for targeted output to control automation
-public class BrewingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public class BrewingStationTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider, ITilePotionRenamer {
 	public static final int INV_SLOTS = Slots.TOTAL.getId();
 	public static final int FUEL_SLOTS = 1;
 	public static final int ITEM_SLOTS = Slots.QUEUE10.getId() - Slots.ITEM.getId() + 1;
@@ -719,6 +719,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		}
 	}
 	
+	@Override
 	public void updatePotionName(String name)
 	{
 		if( this.hasWorld() )
@@ -748,6 +749,7 @@ public class BrewingStationTile extends TileEntity implements ITickableTileEntit
 		}
 	}
 	
+	@Override
 	public String getPotionName()
 	{
 		return this.newPotionName;

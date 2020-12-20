@@ -31,6 +31,29 @@ public class Utils
 					stack.getItem() == Items.TIPPED_ARROW);
 	}
 	
+	public static FluidStack getPotionFluidFromEffects(List<EffectInstance> effects)
+	{
+		FluidStack fluidStack = new FluidStack(Registry.POTION_FLUID.get(), FluidAttributes.BUCKET_VOLUME);
+		
+		if(effects.size() > 0)
+		{
+			CompoundNBT root = new CompoundNBT();
+			
+			ListNBT listNBT = new ListNBT();
+			
+			for(EffectInstance effect : effects)
+			{
+				listNBT.add(effect.write(new CompoundNBT()));
+			}
+			
+			root.put("CustomPotionEffects", listNBT);
+
+			fluidStack.setTag(root);
+		}
+		
+		return fluidStack;
+	}
+	
 	public static FluidStack getPotionFluidFromNBT(CompoundNBT root)
 	{
 		FluidStack fluidStack = new FluidStack(Registry.POTION_FLUID.get(), FluidAttributes.BUCKET_VOLUME);
@@ -41,7 +64,8 @@ public class Utils
 		List<EffectInstance> effects = PotionUtils.getEffectsFromTag(root);
 		CompoundNBT tag = new CompoundNBT();
 
-		if( root.contains("Potion")) {
+		if(root.contains("Potion"))
+		{
 			String basePotion = root.getString("Potion");
 			
 			Potion potion = Potion.getPotionTypeForName(basePotion);
@@ -56,27 +80,25 @@ public class Utils
 		else
 		{
 			ListNBT listNBT = new ListNBT();
-			for(EffectInstance effect : effects) {
+			for(EffectInstance effect : effects)
+			{
 				CompoundNBT tagEffect = new CompoundNBT();
-				
-//				Concoctions.GetLogger().info("Potion: {} {} {}", effect.getEffectName(), effect.getAmplifier(), effect.getDuration());
-			
 				effect.write(tagEffect);
 				listNBT.add(tagEffect);
 			}
 			tag.put("CustomPotionEffects", listNBT);
 		}
 		
-		if( root.contains("DyedPotion") && root.contains("CustomPotionColor"))
+		if(root.contains("DyedPotion") && root.contains("CustomPotionColor"))
 		{
-			if( root.getBoolean("DyedPotion"))
+			if(root.getBoolean("DyedPotion"))
 			{
 				tag.putInt("CustomPotionColor", root.getInt("CustomPotionColor"));
 				tag.putBoolean("DyedPotion", true);
 			}
 		}
 		
-		if( root.contains("CustomPotionName") )
+		if(root.contains("CustomPotionName"))
 			tag.putString("CustomPotionName", root.getString("CustomPotionName"));
 
 		fluidStack.setTag(tag);
@@ -96,13 +118,18 @@ public class Utils
 			return;
 		}
 		
+		CompoundNBT srcRoot = inFluid.getTag();
 		CompoundNBT root = outStack.getOrCreateTag();
 		
-		if(!inFluid.getTag().contains("Potion"))
+		if(srcRoot.contains("Potion"))
 		{
-			if( inFluid.getTag().contains("CustomPotionEffects", 9))
+			root.putString("Potion", srcRoot.getString("Potion"));
+		}
+		else
+		{
+			if(srcRoot.contains("CustomPotionEffects", 9))
 			{
-				ListNBT effects = inFluid.getTag().getList("CustomPotionEffects", 10);
+				ListNBT effects = srcRoot.getList("CustomPotionEffects", 10);
 				root.put("CustomPotionEffects", effects.copy());
 				
 				Fluid fluid = inFluid.getFluid();
@@ -116,15 +143,15 @@ public class Utils
 			}
 		}
 
-		if( inFluid.getTag().contains("CustomPotionColor") )
+		if(srcRoot.contains("CustomPotionColor"))
 		{
-			root.putInt("CustomPotionColor", inFluid.getTag().getInt("CustomPotionColor"));
-			root.putBoolean("DyedPotion", inFluid.getTag().getBoolean("DyedPotion"));
+			root.putInt("CustomPotionColor", srcRoot.getInt("CustomPotionColor"));
+			root.putBoolean("DyedPotion", srcRoot.getBoolean("DyedPotion"));
 		}
 		
-		if( inFluid.getTag().contains("CustomPotionName"))
+		if(srcRoot.contains("CustomPotionName"))
 		{
-			root.putString("CustomPotionName", inFluid.getTag().getString("CustomPotionName"));
+			root.putString("CustomPotionName", srcRoot.getString("CustomPotionName"));
 		}
 	}
 

@@ -18,12 +18,12 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class MixerTileRenderer extends TileEntityRenderer<MixerTile> {
 	private static final AxisAlignedBB TANKS[] = new AxisAlignedBB[] {
-		new AxisAlignedBB(6.1D, 5.1D, -0.9D, 9.9D, 14.9D, 2.9D),	// North	
-		new AxisAlignedBB(6.1D, 5.1D, 13.1D, 9.9D, 14.9D, 16.9D),	// South
-		new AxisAlignedBB(13.1D, 5.1D, 6.1D, 16.9D, 14.9D, 9.9D),	// East
-		new AxisAlignedBB(-0.9D, 5.1D, 6.1D, 2.9D, 14.9D, 9.9D),	// West
+		new AxisAlignedBB(6.1D/16.0D, 5.1D/16.0D, -0.9D/16.0D, 9.9D/16.0D, 14.9D/16.0D, 2.9D/16.0D),	// North	
+		new AxisAlignedBB(6.1D/16.0D, 5.1D/16.0D, 13.1D/16.0D, 9.9D/16.0D, 14.9D/16.0D, 16.9D/16.0D),	// South
+		new AxisAlignedBB(13.1D/16.0D, 5.1D/16.0D, 6.1D/16.0D, 16.9D/16.0D, 14.9D/16.0D, 9.9D/16.0D),	// East
+		new AxisAlignedBB(-0.9D/16.0D, 5.1D/16.0D, 6.1D/16.0D, 2.9D/16.0D, 14.9D/16.0D, 9.9D/16.0D),	// West
 	};
-	private static final AxisAlignedBB CENTER = new AxisAlignedBB(5.1D, 1.1D, 5.1D, 10.9D, 15.9D, 10.9D);
+	private static final AxisAlignedBB CENTER = new AxisAlignedBB(5.1D/16.0D, 1.1D/16.0D, 5.1D/16.0D, 10.9D/16.0D, 15.9D/16.0D, 10.9D/16.0D);
 
 
 	public MixerTileRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {

@@ -41,7 +41,12 @@
 	"gui.concoctions.tank_left": "Left",
 	"gui.concoctions.tank_right": "Right",
 	"gui.concoctions.tank_center": "Center",
-	"gui.concoctions.mixer.error1": "Too many effects to combine.",
+	"gui.concoctions.mixer.error1": "Nothing to mix.",
+	"gui.concoctions.mixer.error2": "Too many effects to mix.",
+	"gui.concoctions.mixer.error3": "Not enough potions to mix.  Please fill two or more tanks, or open more valves.",
+	"gui.concoctions.mixer.error4": "Insufficient fluids to mix.",
+	"gui.concoctions.mixer.error5": "Insufficient space in output tank.",
+	"gui.concoctions.mixing_result": "Mixing Result:",
 
 	"item.concoctions.apothecary_guide": "Apothecary's Guide",
 	"item.concoctions.bedrock_shard": "Bedrock Shard",

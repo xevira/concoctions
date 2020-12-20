@@ -16,6 +16,7 @@ import com.xevira.concoctions.common.container.MixerContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -26,7 +27,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 
@@ -52,6 +55,8 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 
 	private final MixerContainer container;
 	private SliderVertical sliderTanks[];
+	private TextFieldWidget nameField;
+	private String nameText;
 	private boolean wasValveOpen;
 
 	public MixerScreen(MixerContainer container, PlayerInventory playerInventory, ITextComponent title) {
@@ -59,25 +64,36 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 		this.container = container;
 
 		// Override screen size
-		this.xSize = 216;
-		this.ySize = 196;
+		this.xSize = 217;
+		this.ySize = 219;
 
 		this.sliderTanks = new SliderVertical[MixerTile.TOTAL_INPUTS];
 	}
 
 	private void initFields() {
-		int left = (this.width - this.xSize) / 2;
-		int top = (this.height - this.ySize) / 2;
-		
 		this.wasValveOpen = this.container.isCenterValveOpen();
 
 		for (int i = 0; i < this.sliderTanks.length; i++) {
-			this.sliderTanks[i] = new SliderVertical(left + COLUMNS[i] + 14, top + 43, 18, 46, StringTextComponent.EMPTY,
+			this.sliderTanks[i] = new SliderVertical(guiLeft + COLUMNS[i] + 14, guiTop + 46, 18, 46, StringTextComponent.EMPTY,
 					StringTextComponent.EMPTY, 0, 100, 5, this.container.getValve(i), false, false, s -> {
 					}, this);
 			this.sliderTanks[i].active = !this.wasValveOpen;
 			addButton(this.sliderTanks[i]);
 		}
+		
+		this.minecraft.keyboardListener.enableRepeatEvents(true);
+		this.nameField = new TextFieldWidget(this.font, guiLeft + xSize - 120, guiTop + 119, 109, 12, new TranslationTextComponent("container.rename"));
+		this.nameField.setCanLoseFocus(false);
+		this.nameField.setTextColor(-1);
+		this.nameField.setDisabledTextColour(-1);
+		this.nameField.setEnableBackgroundDrawing(false);
+		this.nameField.setMaxStringLength(35);
+		this.nameField.setText(this.container.getPotionName());
+		this.nameField.setEnabled(!this.wasValveOpen);
+		this.nameField.setResponder(this::renameItem);
+		this.nameText = this.container.getPotionName();
+		this.children.add(this.nameField);
+		this.setFocusedDefault(this.nameField);
 	}
 
 	@Override
@@ -90,20 +106,32 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 	@Override
 	public void onClose() {
 		super.onClose();
+		this.minecraft.keyboardListener.enableRepeatEvents(false);
 		this.container.removeListener(this);
+	}
+
+	private void renameItem(String name) {
+		if (!name.equals(this.nameText)) {
+			this.nameText = name;
+			this.container.updateItemName(name);
+		}
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
+		this.nameField.tick();
 		
 		boolean isValveOpen = this.container.isCenterValveOpen();
 		if(this.wasValveOpen != isValveOpen)
 		{
-			this.wasValveOpen = isValveOpen;
-
+			this.nameField.setEnabled(wasValveOpen);
+			this.setListener(this.nameField);
+			
 			for(int i = 0; i < this.sliderTanks.length; i++)
-				this.sliderTanks[i].active = !this.wasValveOpen;
+				this.sliderTanks[i].active = this.wasValveOpen;
+			
+			this.wasValveOpen = isValveOpen;
 		}
 	}
 
@@ -112,24 +140,30 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 		RenderSystem.color4f(1, 1, 1, 1);
 		getMinecraft().getTextureManager().bindTexture(background);
 		this.blit(stack, guiLeft, guiTop, 0, 0, xSize, ySize);
-		int left = (this.width - this.xSize) / 2;
-		int top = (this.height - this.ySize) / 2;
 
 		int mixingTime = this.container.getMixingTime();
-		if (mixingTime > 0) {
-			int h = 80 * mixingTime / 400;
+		int mixingTimeTotal = this.container.getMixingTimeTotal();
+		if (mixingTime > 0 && mixingTimeTotal > 0) {
+			int h = 80 * mixingTime / mixingTimeTotal;
 
 			if (h > 0)
-				fill(stack, left + 171, top + 106 - h, left + 172, top + 105, 0x3F7FFF);
+				fill(stack, guiLeft + 171, guiTop + 109 - h, guiLeft + 173, guiTop + 108, 0xFF3F7FFF);
 		}
+		
+        // Draw Name Field background
+        this.blit(stack, guiLeft + xSize - 123, guiTop + 116, 0, this.ySize + (this.container.isCenterValveOpen() ? 16 : 0), 116, 16);
 		
 		for(int i = 0; i < MixerTile.TOTAL_TANKS; i++)
 		{
-			ClientUtils.handleGuiTank(stack, this.container.getFluid(i), this.container.getCapacity(i), left + COLUMNS[i], top + 48, 10, 80, xSize, 36, 10, 80, mouseX, mouseY, background, null);
+			ClientUtils.handleGuiTank(stack, this.container.getFluid(i), this.container.getCapacity(i), guiLeft + COLUMNS[i], guiTop + 29, 10, 80, xSize, 36, 10, 80, mouseX, mouseY, background, null);
 		}
 		
-		this.blit(stack, left + 192, top + 43, xSize + (this.container.isCenterValveOpen() ? 18 : 0), 0, 18, 18);
-		this.blit(stack, left + 192, top + 71, xSize + ((this.container.getMixerStatus() == MixerTile.ERROR_NONE) ? 18 : 0), 18, 18, 18);
+		this.blit(stack, guiLeft + 192, guiTop + 46, xSize + (this.container.isCenterValveOpen() ? 18 : 0), 0, 18, 18);
+		this.blit(stack, guiLeft + 192, guiTop + 74, xSize + ((this.container.getMixerStatus() == MixerTile.ERROR_NONE) ? 18 : 0), 18, 18, 18);
+	}
+	
+	public void renderNameField(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		this.nameField.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -137,17 +171,20 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 		this.renderBackground(stack);
 		super.render(stack, mouseX, mouseY, partialTicks);
 		
+        RenderSystem.disableBlend();
+        this.renderNameField(stack, mouseX, mouseY, partialTicks);
+		
         // Tooltip for items
 		this.renderHoveredTooltip(stack, mouseX, mouseY);
 
 		// Tooltip for fluids		
 		List<ITextComponent> tooltip = new ArrayList<>();
 
-		if( isPointInRegion(192, 43, 18, 18, mouseX, mouseY) )
+		if( isPointInRegion(192, 46, 18, 18, mouseX, mouseY) )
 		{
 			tooltip.add(new TranslationTextComponent(this.container.isCenterValveOpen() ? "gui.concoctions.turn_off" : "gui.concoctions.turn_on"));
 		}
-		else if(isPointInRegion(192, 71, 18, 18, mouseX, mouseY))
+		else if(isPointInRegion(192, 74, 18, 18, mouseX, mouseY))
 		{
 			int status = this.container.getMixerStatus();
 			
@@ -160,7 +197,7 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 			{
 				Slider slider = this.sliderTanks[i];
 				
-				if(isPointInRegion(COLUMNS[i] + 14, 43, 18, 46, mouseX, mouseY))
+				if(isPointInRegion(COLUMNS[i] + 14, 46, 18, 46, mouseX, mouseY))
 				{
 					int value = slider.getValueInt();
 					
@@ -173,14 +210,28 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 				}
 			}
 			
-			for(int i = 0; i < MixerTile.TOTAL_TANKS; i++)
+			for(int i = 0; i < MixerTile.TOTAL_INPUTS; i++)
 			{
-				if(isPointInRegion(COLUMNS[i], 26, 10, 80, mouseX, mouseY))
+				if(isPointInRegion(COLUMNS[i], 29, 10, 80, mouseX, mouseY))
 				{
 					ClientUtils.addFluidTooltip(this.container.reservoirs[i].getFluid(), tooltip, this.container.reservoirs[i].getCapacity());
 				}
-				
 			}
+			
+			if(isPointInRegion(COLUMNS[MixerTile.CENTER_TANK], 29, 10, 80, mouseX, mouseY))
+			{
+				ClientUtils.addFluidTooltip(this.container.reservoirs[MixerTile.CENTER_TANK].getFluid(), tooltip, this.container.reservoirs[MixerTile.CENTER_TANK].getCapacity());
+				
+				// Show target fluid
+				FluidStack targetFluid = this.container.getTargetFluid();
+				if(!targetFluid.isEmpty())
+				{
+					tooltip.add(new StringTextComponent(""));
+					tooltip.add(new TranslationTextComponent("gui.concoctions.mixing_result"));
+					ClientUtils.addFluidTooltip(targetFluid, tooltip, 0);
+				}
+			}
+			
 		}
 		if( !tooltip.isEmpty() )
 			GuiUtils.drawHoveringText(stack, tooltip, mouseX, mouseY, width, height, -1, font);
@@ -188,21 +239,20 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(MatrixStack stack, int mouseX, int mouseY) {
-		int left = (this.width - this.xSize) / 2;
-		int top = (this.height - this.ySize) / 2;
-
 		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-		fontRenderer.drawString(stack, I18n.format("block.concoctions.mixer"), 17, 6, Color.DARK_GRAY.getRGB());
+		ClientUtils.drawCenterStringNoShadow(stack, fontRenderer, new TranslationTextComponent("block.concoctions.mixer"), xSize / 2, 6, Color.DARK_GRAY.getRGB());
+		
+		//fontRenderer.drawString(stack, I18n.format("block.concoctions.mixer"), 17, 6, Color.DARK_GRAY.getRGB());
 
 		for (int i = 0; i < LABELS.length; i++) {
 			ClientUtils.drawCenterStringNoShadow(stack, fontRenderer,
-					new TranslationTextComponent(LABELS[i]), COLUMNS[i] + 15, 14, Color.GRAY.getRGB());
+					new TranslationTextComponent(LABELS[i]), COLUMNS[i] + 15, 17, Color.GRAY.getRGB());
 		}
 	}
 	
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if(isPointInRegion(192, 43, 18, 18, mouseX, mouseY))
+		if(isPointInRegion(192, 46, 18, 18, mouseX, mouseY))
 		{
 			if(this.container.getMixerStatus() == MixerTile.ERROR_NONE)
 			{

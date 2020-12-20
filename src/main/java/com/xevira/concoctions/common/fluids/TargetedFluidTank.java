@@ -30,12 +30,11 @@ public class TargetedFluidTank implements IFluidHandler, IFluidTank, IItemHandle
     @Nonnull
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
-
     
-	public TargetedFluidTank(int capacity)
-	{
-		this(capacity, e -> true);
-	}
+    public TargetedFluidTank(int capacity)
+    {
+    	this(capacity, e -> true);
+    }
 
     public TargetedFluidTank(int capacity, Predicate<FluidStack> validator)
     {
@@ -56,7 +55,7 @@ public class TargetedFluidTank implements IFluidHandler, IFluidTank, IItemHandle
         }
         return this;
     }
-
+    
     
 	public int forceFill(FluidStack resource, FluidAction action) {
         if (resource.isEmpty() || !isFluidValid(resource))

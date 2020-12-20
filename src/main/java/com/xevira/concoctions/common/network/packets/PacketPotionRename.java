@@ -2,7 +2,7 @@ package com.xevira.concoctions.common.network.packets;
 
 import java.util.function.Supplier;
 
-import com.xevira.concoctions.common.container.BrewingStationContainer;
+import com.xevira.concoctions.common.container.IContainerPotionRenamer;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -36,9 +36,9 @@ public class PacketPotionRename {
 				if(player == null)
 					return;
 				
-				if(player.openContainer instanceof BrewingStationContainer )
+				if(player.openContainer instanceof IContainerPotionRenamer )
 				{
-					((BrewingStationContainer)player.openContainer).updateItemName(pkt.name);
+					((IContainerPotionRenamer)player.openContainer).updateItemName(pkt.name);
 				}
 			});
 			
