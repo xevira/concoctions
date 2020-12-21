@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "has_incense=false": {
+      "model": "concoctions:block/incense_burner_empty"
+    },
+    "has_incense=true": {
+      "model": "concoctions:block/incense_burner_loaded"
+    }
+  }
+}

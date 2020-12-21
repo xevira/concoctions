@@ -11,6 +11,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 
@@ -313,4 +314,103 @@ public class RenderUtils {
                 break;
         }
     }
+    
+    
+    
+	public static void putTexturedQuad(IVertexBuilder renderer, Matrix4f matrix, TextureAtlasSprite sprite, Vector3f from, Vector3f to, Vector2f u, Vector2f v, Direction face, int color, int brightness, int rotation) {
+        final double size = 16;
+        // start with texture coordinates
+        float x1 = from.getX(), y1 = from.getY(), z1 = from.getZ();
+        float x2 = to.getX(), y2 = to.getY(), z2 = to.getZ();
+        // if rotating by 90 or 270, swap U and V
+        float minU, maxU, minV, maxV;
+        if ((rotation % 180) == 90) {
+            minU = sprite.getInterpolatedU(u.y * size);
+            maxU = sprite.getInterpolatedU(v.y * size);
+            minV = sprite.getInterpolatedV(u.x * size);
+            maxV = sprite.getInterpolatedV(v.x * size);
+        } else {
+            minU = sprite.getInterpolatedU(u.x * size);
+            maxU = sprite.getInterpolatedU(v.x * size);
+            minV = sprite.getInterpolatedV(u.y * size);
+            maxV = sprite.getInterpolatedV(v.y * size);
+        }
+        // based on rotation, put coords into place
+        float u1, u2, v1, v2;
+        float u3, u4, v3, v4;
+        switch(rotation) {
+            case 0:
+            default:
+                u1 = minU; v1 = maxV;
+                u2 = minU; v2 = minV;
+                u3 = maxU; v3 = minV;
+                u4 = maxU; v4 = maxV;
+                break;
+            case 90:
+                u1 = minU; v1 = minV;
+                u2 = maxU; v2 = minV;
+                u3 = maxU; v3 = maxV;
+                u4 = minU; v4 = maxV;
+                break;
+            case 180:
+                u1 = maxU; v1 = minV;
+                u2 = maxU; v2 = maxV;
+                u3 = minU; v3 = maxV;
+                u4 = minU; v4 = minV;
+                break;
+            case 270:
+                u1 = maxU; v1 = maxV;
+                u2 = minU; v2 = maxV;
+                u3 = minU; v3 = minV;
+                u4 = maxU; v4 = minV;
+                break;
+        }
+        // add quads
+        int light2 = brightness >> 0x10 & 0xFFFF;
+        int light1 = brightness & 0xFFFF;
+        
+        int a = color >> 24 & 0xFF;
+        int r = color >> 16 & 0xFF;
+        int g = color >> 8 & 0xFF;
+        int b = color & 0xFF;
+        switch (face) {
+            case DOWN:
+                renderer.pos(matrix, x1, y1, z2).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y1, z1).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y1, z1).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y1, z2).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+            case UP:
+                renderer.pos(matrix, x1, y2, z1).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y2, z2).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z2).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z1).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+            case NORTH:
+                renderer.pos(matrix, x1, y1, z1).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y2, z1).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z1).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y1, z1).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+            case SOUTH:
+                renderer.pos(matrix, x2, y1, z2).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z2).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y2, z2).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y1, z2).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+            case WEST:
+                renderer.pos(matrix, x1, y1, z2).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y2, z2).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y2, z1).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x1, y1, z1).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+            case EAST:
+                renderer.pos(matrix, x2, y1, z1).color(r, g, b, a).tex(u1, v1).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z1).color(r, g, b, a).tex(u2, v2).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y2, z2).color(r, g, b, a).tex(u3, v3).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                renderer.pos(matrix, x2, y1, z2).color(r, g, b, a).tex(u4, v4).lightmap(light1, light2).normal(1, 0, 0).endVertex();
+                break;
+        }
+    }
+
 }

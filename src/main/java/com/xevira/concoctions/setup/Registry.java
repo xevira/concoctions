@@ -8,6 +8,7 @@ import com.xevira.concoctions.common.container.*;
 import com.xevira.concoctions.common.effects.*;
 import com.xevira.concoctions.common.entities.*;
 import com.xevira.concoctions.common.fluids.PotionFluid;
+import com.xevira.concoctions.common.inventory.crafting.IncenseRecipe;
 import com.xevira.concoctions.common.items.*;
 
 import net.minecraft.block.AbstractBlock;
@@ -55,6 +56,7 @@ public class Registry {
 	public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Concoctions.MOD_ID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Concoctions.MOD_ID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, Concoctions.MOD_ID);
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Concoctions.MOD_ID);
     public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Concoctions.MOD_ID);
 
     public static void init(IEventBus event) {
@@ -65,6 +67,7 @@ public class Registry {
 		ITEMS.register(event);
 		FLUIDS.register(event);
 		POTIONS.register(event);
+		RECIPE_SERIALIZERS.register(event);
 		TILES.register(event);
     }
     
@@ -78,6 +81,7 @@ public class Registry {
     public static final RegistryObject<Block>				CRUMBLING_BEDROCK	= BLOCKS.register("crumbling_bedrock", () -> new BrokenBedrockBlock(200.0F, 6000.0F));
     public static final RegistryObject<FilledCauldronBlock>	FILLED_CAULDRON		= BLOCKS.register("filled_cauldron", FilledCauldronBlock::new);
     public static final RegistryObject<FireBlossomBlock>	FIREBLOSSOM			= BLOCKS.register("fireblossom", FireBlossomBlock::new);
+    public static final RegistryObject<IncenseBurnerBlock>	INCENSE_BURNER		= BLOCKS.register("incense_burner", IncenseBurnerBlock::new);
     public static final RegistryObject<LamentingLilyBlock>	LAMENTING_LILY		= BLOCKS.register("lamenting_lily", LamentingLilyBlock::new);
     public static final RegistryObject<MixerBlock>			MIXER				= BLOCKS.register("mixer", MixerBlock::new);
     public static final RegistryObject<Block>				SHATTERED_BEDROCK	= BLOCKS.register("shattered_bedrock", () -> new BrokenBedrockBlock(100.0F, 2400.0F));
@@ -140,6 +144,8 @@ public class Registry {
     public static final RegistryObject<Item> GLIMMERING_GREEN_DYE		= ITEMS.register("glimmering_green_dye", () -> new GlimmeringDyeItem(DyeColor.GREEN, (new Item.Properties()).group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> GLIMMERING_RED_DYE			= ITEMS.register("glimmering_red_dye", () -> new GlimmeringDyeItem(DyeColor.RED, (new Item.Properties()).group(ItemGroup.MATERIALS)));
     public static final RegistryObject<Item> GLIMMERING_BLACK_DYE		= ITEMS.register("glimmering_black_dye", () -> new GlimmeringDyeItem(DyeColor.BLACK, (new Item.Properties()).group(ItemGroup.MATERIALS)));
+    public static final RegistryObject<Item> INCENSE_ITEM				= ITEMS.register("incense", () -> new IncenseItem());
+    public static final RegistryObject<Item> INCENSE_BURNER_ITEM		= ITEMS.register("incense_burner", () -> new BlockItem(INCENSE_BURNER.get(), new Item.Properties().group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> LAMENTING_LILY_ITEM		= ITEMS.register("lamenting_lily", () -> new BlockItem(LAMENTING_LILY.get(), new Item.Properties().group(ItemGroup.DECORATIONS)));
     public static final RegistryObject<Item> LINGERING_BOTTLE			= ITEMS.register("lingering_bottle", () -> new LingeringBottleItem(new Item.Properties().group(ItemGroup.BREWING)));
     public static final RegistryObject<Item> MIXER_ITEM					= ITEMS.register("mixer", () -> new BlockItem(Registry.MIXER.get(), new Item.Properties().group(ItemGroup.BREWING)));
@@ -238,8 +244,12 @@ public class Registry {
     // Properties
     public static final IntegerProperty STAGE_0_3 = IntegerProperty.create("stage", 0, 3);
     
+    // Recipe Serializers
+    public static final RegistryObject<SpecialRecipeSerializer<IncenseRecipe>> INCENSE_RECIPE		= RECIPE_SERIALIZERS.register("crafting_special_incense", () -> new SpecialRecipeSerializer<>(IncenseRecipe::new));
+    
     // Tile Entities
 	public static final RegistryObject<TileEntityType<BrewingStationTile>> BREWING_STATION_TILE	= TILES.register("brewing_station", () -> TileEntityType.Builder.create(BrewingStationTile::new, BREWING_STATION.get()).build(null));
 	public static final RegistryObject<TileEntityType<FilledCauldronTile>> FILLED_CAULDRON_TILE	= TILES.register("filled_cauldron", () -> TileEntityType.Builder.create(FilledCauldronTile::new, FILLED_CAULDRON.get()).build(null));
+	public static final RegistryObject<TileEntityType<IncenseBurnerTile>> INCENSE_BURNER_TILE	= TILES.register("incense_burner", () -> TileEntityType.Builder.create(IncenseBurnerTile::new, INCENSE_BURNER.get()).build(null));
 	public static final RegistryObject<TileEntityType<MixerTile>> MIXER_TILE					= TILES.register("mixer", () -> TileEntityType.Builder.create(MixerTile::new, MIXER.get()).build(null));
 }

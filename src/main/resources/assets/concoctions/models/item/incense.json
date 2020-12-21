@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "concoctions:item/incense_tip",
+    "layer1": "concoctions:item/incense_base"
+  }
+}

@@ -7,6 +7,7 @@ import com.xevira.concoctions.common.block.BrokenBedrockBlock;
 import com.xevira.concoctions.common.block.FilledCauldronBlock;
 import com.xevira.concoctions.common.block.tile.FilledCauldronTile;
 import com.xevira.concoctions.common.events.BouncingHandler;
+import com.xevira.concoctions.common.inventory.crafting.Recipes;
 import com.xevira.concoctions.common.items.FilledCauldronItem;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketBounce;
@@ -23,26 +24,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Mod;
 
 public class EventHandler
 {
@@ -351,16 +345,4 @@ public class EventHandler
 	{
 		
 	}
-
-	/*
-	@SubscribeEvent
-	public void handleColorEvent(ColorHandlerEvent.Item event)
-	{
-		Concoctions.GetLogger().info("handleColorEvent called");
-		event.getItemColors().register((stack, tintIndex) -> {
-			return FilledCauldronItem.getFluidColor(stack, tintIndex);
-		}, Registry.FILLED_CAULDRON_ITEM.get());
-	}
-	*/
-
 }

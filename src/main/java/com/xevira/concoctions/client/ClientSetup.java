@@ -10,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class ClientSetup {
@@ -26,6 +28,19 @@ public class ClientSetup {
 			RenderTypeLookup.setRenderLayer(block, type);
 	}
 	
+	private static void setupItemColors()
+	{
+		ItemColors ic = Minecraft.getInstance().getItemColors();
+
+		ic.register((stack, tintIndex) -> {
+			return FilledCauldronItem.getFluidColor(stack, tintIndex);
+		}, Registry.FILLED_CAULDRON_ITEM.get());
+		
+		ic.register((stack, tintIndex) -> {
+			return (tintIndex == 0) ? PotionUtils.getColor(stack) : -1;
+		}, Registry.INCENSE_ITEM.get());
+	}
+	
 	public static void init()
 	{
 		// Screens
@@ -35,6 +50,7 @@ public class ClientSetup {
 		// Tile Entity Renderers
 		ClientRegistry.bindTileEntityRenderer(Registry.BREWING_STATION_TILE.get(), BrewingStationTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
+		ClientRegistry.bindTileEntityRenderer(Registry.INCENSE_BURNER_TILE.get(), IncenseBurnerTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.MIXER_TILE.get(), MixerTileRenderer::new);
 		
 		// Block Render Types
@@ -44,10 +60,7 @@ public class ClientSetup {
 		//RenderTypeLookup.setRenderLayer(Registry.MIXER.get(), RenderType.getCutout());
 		
 		// Coloring
-		Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-			return FilledCauldronItem.getFluidColor(stack, tintIndex);
-		}, Registry.FILLED_CAULDRON_ITEM.get());
-
+		setupItemColors();
 	}
 
 }
