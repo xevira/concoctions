@@ -15,6 +15,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -138,7 +139,7 @@ public class IncenseBurnerBlock extends Block {
 			{
 				if(!state.get(HAS_INCENSE))
 				{
-					if(!worldIn.isRemote && tile.setIncense(itemstack))
+					if(tile.setIncense(itemstack))
 					{
 				        worldIn.playSound(player, pos, SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 						worldIn.setBlockState(pos, state.with(HAS_INCENSE, Boolean.valueOf(true)), 11);
@@ -154,11 +155,11 @@ public class IncenseBurnerBlock extends Block {
 			{
 				if(state.get(HAS_INCENSE) && !state.get(LIT))
 				{
-					if(!worldIn.isRemote && tile.setLit())
+					if(tile.setLit())
 					{
 				        worldIn.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 						worldIn.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), 11);
-						if (!player.isCreative())
+						if (player instanceof ServerPlayerEntity && !player.isCreative())
 						{
 							itemstack.damageItem(1, player, (player1) -> { player1.sendBreakAnimation(handIn); });
 						}
@@ -166,7 +167,6 @@ public class IncenseBurnerBlock extends Block {
 					return ActionResultType.func_233537_a_(worldIn.isRemote);
 				}
 			}
-			
 		}
 		return ActionResultType.PASS;
 	}
@@ -206,5 +206,22 @@ public class IncenseBurnerBlock extends Block {
 			}
 		}
 	}
-
+	
+	@Override
+	public boolean hasComparatorInputOverride(BlockState state) {
+		return true;
+	}
+	
+	@Override
+	public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+		if(blockState.get(HAS_INCENSE))
+		{
+			if(blockState.get(LIT))
+				return 2;
+			else
+				return 1;
+		}
+		
+		return 0;
+	}
 }

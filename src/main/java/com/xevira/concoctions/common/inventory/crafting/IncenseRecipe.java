@@ -1,5 +1,6 @@
 package com.xevira.concoctions.common.inventory.crafting;
 
+import com.xevira.concoctions.common.utils.Utils;
 import com.xevira.concoctions.setup.Registry;
 
 import net.minecraft.inventory.CraftingInventory;
@@ -8,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -61,6 +63,20 @@ public class IncenseRecipe extends SpecialRecipe {
 		ItemStack itemstack1 = new ItemStack(Registry.INCENSE_ITEM.get(), 8);
 		PotionUtils.addPotionToItemStack(itemstack1, PotionUtils.getPotionFromItem(itemstack));
 		PotionUtils.appendEffects(itemstack1, PotionUtils.getFullEffectsFromItem(itemstack));
+		
+		CompoundNBT root = itemstack.getTag();
+		CompoundNBT dest = itemstack1.getTag();
+		if( root != null && dest != null )
+		{
+			if(root.contains("CustomPotionColor"))
+				dest.putInt("CustomPotionColor", root.getInt("CustomPotionColor"));
+
+			if(root.contains("CustomPotionName"))
+				dest.putString("CustomPotionName", root.getString("CustomPotionName"));
+		}
+		
+		Utils.renamePotionStack(itemstack1);
+		
 		return itemstack1;
 	}
 

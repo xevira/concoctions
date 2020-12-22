@@ -50,8 +50,6 @@ public class IncenseBurnerTileRenderer extends TileEntityRenderer<IncenseBurnerT
 		// No need to do anything if it doesn't have any incense
 		if(!tileEntityIn.hasIncense()) return;
 		
-		Concoctions.GetLogger().info("combinedLightsIn = {}", Integer.toHexString(combinedLightIn));
-		
         TextureAtlasSprite flame = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(torch);
 		
         int light = combinedLightIn;

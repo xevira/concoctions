@@ -1,6 +1,8 @@
 package com.xevira.concoctions;
 
 import com.xevira.concoctions.client.ClientSetup;
+import com.xevira.concoctions.common.CustomFlintAndSteelDispenser;
+import com.xevira.concoctions.common.CustomIncenseDispenser;
 import com.xevira.concoctions.common.EventHandler;
 import com.xevira.concoctions.common.inventory.crafting.Recipes;
 import com.xevira.concoctions.common.network.PacketHandler;
@@ -77,6 +79,8 @@ public class Concoctions {
 	public void loadComplete(final FMLLoadCompleteEvent event) {
 		BrewingRecipes.postInit();
 		ImbuingRecipes.postInit();
+		CustomFlintAndSteelDispenser.register();
+		CustomIncenseDispenser.register();
 	}
 	
 	public static Logger GetLogger() {

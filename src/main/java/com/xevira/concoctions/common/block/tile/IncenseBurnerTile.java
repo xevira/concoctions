@@ -36,6 +36,7 @@ public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 	private static final int BURNING_TIME = 20*60*30;		// 30 minute duration
 	private static final int EFFECT_TIME = 20*10;			// 10 seconds
 	private static final int EFFECT_RANGE = 16;
+	private static final int MAX_TAXI_DIST = 3 * EFFECT_RANGE;
 	
 	private List<EffectInstance> effects = Lists.newArrayList();
 	private int color = -1;
@@ -65,7 +66,10 @@ public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 				{
 					for(EffectInstance effect : this.effects)
 					{
-						player.addPotionEffect(new EffectInstance(effect));
+						if( effect.getPotion().isInstant())
+							effect.getPotion().affectEntity(player, player, player, effect.getAmplifier(), 1.0D);
+						else
+							player.addPotionEffect(new EffectInstance(effect));
 					}
 				}
 			}
@@ -171,6 +175,9 @@ public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 	
 	public boolean setIncense(ItemStack incense)
 	{
+		if(!incenseItem.isEmpty())
+			return false;
+		
 		if(incense.isEmpty())
 			return false;
 		
@@ -198,6 +205,8 @@ public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 			if(effects.size() > 0)
 			{
 				color = PotionUtils.getColor(incense);
+				incenseItem = incense.copy();
+				incenseItem.setCount(1);
 				return true;
 			}
 		}
