@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.xevira.concoctions.common.block.IncenseBurnerBlock;
+import com.xevira.concoctions.setup.Config;
 import com.xevira.concoctions.setup.Registry;
 
 import net.minecraft.block.BlockState;
@@ -33,7 +34,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 {
-	private static final int BURNING_TIME = 20*60*30;		// 30 minute duration
+	private static final int BURNING_TIME = 20*60;			// 10 minute duration
 	private static final int EFFECT_TIME = 20*10;			// 10 seconds
 	private static final int EFFECT_RANGE = 16;
 	private static final int MAX_TAXI_DIST = 3 * EFFECT_RANGE;
@@ -160,7 +161,7 @@ public class IncenseBurnerTile extends TileEntity implements ITickableTileEntity
 	{
 		if(effects.size() > 0)
 		{
-			this.burningTime = BURNING_TIME;
+			this.burningTime = BURNING_TIME * Config.INCENSE_BURNER_DURATION.get();
 			this.incenseItem = ItemStack.EMPTY;
 			return true;
 		}

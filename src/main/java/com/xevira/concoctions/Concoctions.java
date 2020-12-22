@@ -34,6 +34,7 @@ public class Concoctions {
 	
 	public Concoctions(){
 		IEventBus event = FMLJavaModLoadingContext.get().getModEventBus();
+	    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_CONFIG);
 
 		Registry.init(event);
 	
@@ -46,7 +47,6 @@ public class Concoctions {
 	    MinecraftForge.EVENT_BUS.register(this);
 	    MinecraftForge.EVENT_BUS.register(new EventHandler());
 	
-	    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_CONFIG);
 	}
 	
 	public void setup (final FMLCommonSetupEvent event)
