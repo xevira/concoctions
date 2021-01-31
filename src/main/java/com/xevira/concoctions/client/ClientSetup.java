@@ -19,7 +19,8 @@ public class ClientSetup {
 			Registry.BREWING_STATION.get(),
 			Registry.FIREBLOSSOM.get(),
 			Registry.LAMENTING_LILY.get(),
-			Registry.MIXER.get()
+			Registry.MIXER.get(),
+			Registry.SYNTHESIZER.get()
 	};
 	
 	private static void setRenderLayers(Block[] blocks, RenderType type)
@@ -46,12 +47,14 @@ public class ClientSetup {
 		// Screens
 		ScreenManager.registerFactory(Registry.BREWING_STATION_CONTAINER.get(), BrewingStationScreen::new);
 		ScreenManager.registerFactory(Registry.MIXER_CONTAINER.get(), MixerScreen::new);
+		ScreenManager.registerFactory(Registry.SYNTHESIZER_CONTAINER.get(), SynthesizerScreen::new);
 		
 		// Tile Entity Renderers
 		ClientRegistry.bindTileEntityRenderer(Registry.BREWING_STATION_TILE.get(), BrewingStationTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.FILLED_CAULDRON_TILE.get(), FilledCauldronTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.INCENSE_BURNER_TILE.get(), IncenseBurnerTileRenderer::new);
 		ClientRegistry.bindTileEntityRenderer(Registry.MIXER_TILE.get(), MixerTileRenderer::new);
+		//ClientRegistry.bindTileEntityRenderer(Registry.SYNTHESIZER_TILE.get(), SynthesizerTileRenderer::new);
 		
 		// Block Render Types
 		setRenderLayers(Cutouts, RenderType.getCutout());

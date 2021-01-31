@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "concoctions:block/synthesizer"
+    },
+    "facing=south": {
+      "model": "concoctions:block/synthesizer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "concoctions:block/synthesizer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "concoctions:block/synthesizer",
+      "y": 90
+    }
+  }
+}

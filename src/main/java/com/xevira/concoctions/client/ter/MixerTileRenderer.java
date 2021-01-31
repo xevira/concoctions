@@ -18,12 +18,12 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class MixerTileRenderer extends TileEntityRenderer<MixerTile> {
 	private static final AxisAlignedBB TANKS[] = new AxisAlignedBB[] {
-		new AxisAlignedBB(6.1D/16.0D, 5.1D/16.0D, -0.9D/16.0D, 9.9D/16.0D, 14.9D/16.0D, 2.9D/16.0D),	// North	
-		new AxisAlignedBB(6.1D/16.0D, 5.1D/16.0D, 13.1D/16.0D, 9.9D/16.0D, 14.9D/16.0D, 16.9D/16.0D),	// South
-		new AxisAlignedBB(13.1D/16.0D, 5.1D/16.0D, 6.1D/16.0D, 16.9D/16.0D, 14.9D/16.0D, 9.9D/16.0D),	// East
-		new AxisAlignedBB(-0.9D/16.0D, 5.1D/16.0D, 6.1D/16.0D, 2.9D/16.0D, 14.9D/16.0D, 9.9D/16.0D),	// West
+		new AxisAlignedBB( 6.35D/16.0D,	5.00D/16.0D,	 0.60D/16.0D,	 9.65D/16.0D,	13.9D/16.0D,	 3.90D/16.0D),	// North	
+		new AxisAlignedBB( 6.35D/16.0D,	5.00D/16.0D,	12.10D/16.0D,	 9.65D/16.0D,	13.9D/16.0D,	15.40D/16.0D),	// South
+		new AxisAlignedBB(12.10D/16.0D,	5.00D/16.0D,	 6.35D/16.0D,	15.40D/16.0D,	13.9D/16.0D,	 9.65D/16.0D),	// East
+		new AxisAlignedBB( 0.60D/16.0D,	5.00D/16.0D,	 6.35D/16.0D,	 3.90D/16.0D,	13.9D/16.0D,	 9.65D/16.0D),	// West
 	};
-	private static final AxisAlignedBB CENTER = new AxisAlignedBB(5.1D/16.0D, 1.1D/16.0D, 5.1D/16.0D, 10.9D/16.0D, 15.9D/16.0D, 10.9D/16.0D);
+	private static final AxisAlignedBB CENTER = new AxisAlignedBB(6.10D/16.0D, 1.10D/16.0D, 6.10D/16.0D, 9.90D/16.0D, 15.50D/16.0D, 9.90D/16.0D);
 
 
 	public MixerTileRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -36,8 +36,8 @@ public class MixerTileRenderer extends TileEntityRenderer<MixerTile> {
 	{
 		FluidStack[] fluids = tile.getFluids();
 		int[] capacities = tile.getCapacities();
-		assert fluids.length == TANKS.length;
-		assert capacities.length == TANKS.length;
+		assert fluids.length == (TANKS.length + 1);
+		assert capacities.length == (TANKS.length + 1);
 		
 		IVertexBuilder builder = bufferIn.getBuffer(RenderType.getSolid());
 		

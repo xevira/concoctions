@@ -1,19 +1,7 @@
 {
   "variants": {
-    "facing=north": {
+    "": {
       "model": "concoctions:block/mixer"
-    },
-    "facing=south": {
-      "model": "concoctions:block/mixer",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "concoctions:block/mixer",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "concoctions:block/mixer",
-      "y": 90
     }
   }
 }

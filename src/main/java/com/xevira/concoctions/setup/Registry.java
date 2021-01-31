@@ -85,10 +85,12 @@ public class Registry {
     public static final RegistryObject<LamentingLilyBlock>	LAMENTING_LILY		= BLOCKS.register("lamenting_lily", LamentingLilyBlock::new);
     public static final RegistryObject<MixerBlock>			MIXER				= BLOCKS.register("mixer", MixerBlock::new);
     public static final RegistryObject<Block>				SHATTERED_BEDROCK	= BLOCKS.register("shattered_bedrock", () -> new BrokenBedrockBlock(100.0F, 2400.0F));
+    public static final RegistryObject<SynthesizerBlock>	SYNTHESIZER			= BLOCKS.register("synthesizer", SynthesizerBlock::new);
     
     // Containers
     public static final RegistryObject<ContainerType<BrewingStationContainer>> BREWING_STATION_CONTAINER	= CONTAINERS.register("brewing_station_container", () -> IForgeContainerType.create(BrewingStationContainer::new));
-    public static final RegistryObject<ContainerType<MixerContainer>> MIXER_CONTAINER	= CONTAINERS.register("mixer_container", () -> IForgeContainerType.create(MixerContainer::new));
+    public static final RegistryObject<ContainerType<MixerContainer>> MIXER_CONTAINER						= CONTAINERS.register("mixer_container", () -> IForgeContainerType.create(MixerContainer::new));
+    public static final RegistryObject<ContainerType<SynthesizerContainer>> SYNTHESIZER_CONTAINER			= CONTAINERS.register("synthesizer_container", () -> IForgeContainerType.create(SynthesizerContainer::new));
     
     // Damage Sources
     public static final DamageSource VOID_DAMAGE = new DamageSource("void").setDamageBypassesArmor().setDamageAllowedInCreativeMode();
@@ -107,6 +109,7 @@ public class Registry {
     public static final RegistryObject<Effect> INTANGIBLE_EFFECT		= EFFECTS.register("intangible", () -> new IntangibleEffectSpectator(EffectType.NEUTRAL, 0x999999));
     public static final RegistryObject<Effect> RECALL_EFFECT			= EFFECTS.register("recall", () -> new RecallEffect(EffectType.NEUTRAL, 0x00b5bc));
     public static final RegistryObject<Effect> RESTORATION_EFFECT		= EFFECTS.register("restoration", () -> new RestorationEffect(EffectType.NEUTRAL, 0xffb778));
+    public static final RegistryObject<Effect> REVEAL_EFFECT			= EFFECTS.register("reveal", () -> new RevealEffect(EffectType.NEUTRAL, 0xC0C0C0));
     public static final RegistryObject<Effect> TAMING_EFFECT			= EFFECTS.register("taming", () -> new TamingEffect(EffectType.NEUTRAL, 0xff8484));
     //public static final RegistryObject<Effect> SHRINK_EFFECT			= EFFECTS.register("shrink", () -> new ResizeEntityEffect(EffectType.NEUTRAL, 0x777777, false));
     public static final RegistryObject<Effect> VOID_EFFECT				= EFFECTS.register("void", () -> new VoidEffect(EffectType.HARMFUL, 0x080808));
@@ -153,6 +156,7 @@ public class Registry {
     public static final RegistryObject<Item> SCRAPING_KNIFE				= ITEMS.register("scraping_knife", () -> new ScrapingKnife(new Item.Properties().maxDamage(64).group(ItemGroup.TOOLS)));
     public static final RegistryObject<Item> SHATTERED_BEDROCK_ITEM		= ITEMS.register("shattered_bedrock", () -> new BlockItem(Registry.SHATTERED_BEDROCK.get(), new Item.Properties().group(ItemGroup.BUILDING_BLOCKS)));
     public static final RegistryObject<Item> SPLASH_BOTTLE				= ITEMS.register("splash_bottle", () -> new SplashBottleItem(new Item.Properties().group(ItemGroup.BREWING)));
+    public static final RegistryObject<Item> SYNTHESIZER_ITEM			= ITEMS.register("synthesizer", () -> new BlockItem(Registry.SYNTHESIZER.get(), new Item.Properties().group(ItemGroup.BREWING)));
 
     // Potions
     public static final RegistryObject<Potion> HASTE_POTION				= POTIONS.register("haste", () -> new Potion(new EffectInstance(Effects.HASTE, 3600)));
@@ -241,6 +245,8 @@ public class Registry {
     public static final RegistryObject<Potion> RESTORATION_POTION			= POTIONS.register("restoration", () -> new Potion(new EffectInstance(Registry.RESTORATION_EFFECT.get(), 1)));
     public static final RegistryObject<Potion> STRONG_RESTORATION_POTION	= POTIONS.register("strong_restoration", () -> new Potion("restoration", new EffectInstance(Registry.RESTORATION_EFFECT.get(), 1, 1)));
 
+    public static final RegistryObject<Potion> REVEAL_POTION				= POTIONS.register("reveal", () -> new Potion(new EffectInstance(Registry.REVEAL_EFFECT.get(), 1)));
+
     // Properties
     public static final IntegerProperty STAGE_0_3 = IntegerProperty.create("stage", 0, 3);
     
@@ -252,4 +258,5 @@ public class Registry {
 	public static final RegistryObject<TileEntityType<FilledCauldronTile>> FILLED_CAULDRON_TILE	= TILES.register("filled_cauldron", () -> TileEntityType.Builder.create(FilledCauldronTile::new, FILLED_CAULDRON.get()).build(null));
 	public static final RegistryObject<TileEntityType<IncenseBurnerTile>> INCENSE_BURNER_TILE	= TILES.register("incense_burner", () -> TileEntityType.Builder.create(IncenseBurnerTile::new, INCENSE_BURNER.get()).build(null));
 	public static final RegistryObject<TileEntityType<MixerTile>> MIXER_TILE					= TILES.register("mixer", () -> TileEntityType.Builder.create(MixerTile::new, MIXER.get()).build(null));
+	public static final RegistryObject<TileEntityType<SynthesizerTile>> SYNTHESIZER_TILE		= TILES.register("synthesizer", () -> TileEntityType.Builder.create(SynthesizerTile::new, SYNTHESIZER.get()).build(null));
 }

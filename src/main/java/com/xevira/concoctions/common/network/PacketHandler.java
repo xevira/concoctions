@@ -32,6 +32,7 @@ public class PacketHandler {
     	HANDLER.registerMessage(id++, PacketPlayerCaps.class,			PacketPlayerCaps::encode,				PacketPlayerCaps::decode,				PacketPlayerCaps.Handler::handle);
     	HANDLER.registerMessage(id++, PacketTamedAnimal.class,			PacketTamedAnimal::encode,				PacketTamedAnimal::decode,				PacketTamedAnimal.Handler::handle);
     	HANDLER.registerMessage(id++, PacketMixerValveChanges.class,	PacketMixerValveChanges::encode,		PacketMixerValveChanges::decode,		PacketMixerValveChanges.Handler::handle);
+    	HANDLER.registerMessage(id++, PacketRedstoneBehavior.class,		PacketRedstoneBehavior::encode,			PacketRedstoneBehavior::decode,			PacketRedstoneBehavior.Handler::handle);
     }
     
     public static void sendTo(Object msg, ServerPlayerEntity player) {

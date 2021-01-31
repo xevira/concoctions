@@ -6,11 +6,11 @@ import com.xevira.concoctions.common.block.tile.MixerTile;
 
 import net.minecraft.item.ItemStack;
 
-public class MixerOutputItemStackHandler extends ItemStackHandlerEx
+public class OutputItemStackHandler extends ItemStackHandlerEx
 {
-	public MixerOutputItemStackHandler()
+	public OutputItemStackHandler(int slots)
 	{
-		super(MixerTile.TOTAL_TANKS);
+		super(slots);
 	}
 	
 	@Override

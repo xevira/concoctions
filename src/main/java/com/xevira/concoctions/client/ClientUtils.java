@@ -159,6 +159,26 @@ public class ClientUtils {
 				addFluidTooltip(fluid, tooltip, capacity);
 		}
 	}
+	public static void handleGuiFluid(MatrixStack transform, FluidStack fluid, int x, int y, int w, int h, int mX, int mY, ResourceLocation originalTexture, List<ITextComponent> tooltip)
+	{
+		if(tooltip==null)
+		{
+			if(fluid!=null&&fluid.getFluid()!=null&&!fluid.isEmpty())
+			{
+				transform.push();
+				IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+				drawRepeatedFluidSpriteGui(buffer, transform, fluid, x, y, w, h);
+				RenderSystem.color3f(1, 1, 1);
+				buffer.finish();
+				transform.pop();
+			}
+		}
+		else
+		{
+			if(mX >= x&&mX < x+w&&mY >= y&&mY < y+h)
+				addFluidTooltip(fluid, tooltip);
+		}
+	}
 	
 	public static void drawTexturedRect(IVertexBuilder builder, MatrixStack transform, float x, float y, float w, float h,
 			float r, float g, float b, float alpha, float u0, float u1, float v0, float v1) {
@@ -206,7 +226,7 @@ public class ClientUtils {
 		return component.deepCopy().mergeStyle(style);
 	}
 	
-	public static void addFluidTooltip(FluidStack fluid, List<ITextComponent> tooltip, int tankCapacity)
+	public static void addFluidTooltip(FluidStack fluid, List<ITextComponent> tooltip)
 	{
 		if(!fluid.isEmpty()) {
 			tooltip.add(applyFormat(
@@ -219,6 +239,11 @@ public class ClientUtils {
 			}
 		} else
 			tooltip.add(new TranslationTextComponent("gui.concoctions.empty"));
+	}
+	
+	public static void addFluidTooltip(FluidStack fluid, List<ITextComponent> tooltip, int tankCapacity)
+	{
+		addFluidTooltip(fluid, tooltip);
 
 		if(tankCapacity > 0)
 			tooltip.add(applyFormat(new StringTextComponent(fluid.getAmount()+"/"+tankCapacity+"mB"), TextFormatting.GRAY));

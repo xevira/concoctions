@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import com.xevira.concoctions.common.block.tile.MixerTile;
 import com.xevira.concoctions.common.block.tile.MixerTile.MixerReservoir;
 import com.xevira.concoctions.common.handlers.ItemStackHandlerEx;
-import com.xevira.concoctions.common.handlers.MixerOutputItemStackHandler;
+import com.xevira.concoctions.common.handlers.OutputItemStackHandler;
 import com.xevira.concoctions.common.network.PacketHandler;
 import com.xevira.concoctions.common.network.packets.PacketPotionRename;
 import com.xevira.concoctions.setup.Registry;
@@ -41,7 +41,7 @@ public class MixerContainer extends Container implements IContainerPotionRenamer
 	public final IIntArray data;
 	public final MixerTile tile;
 	public final MixerReservoir reservoirs[];
-	public final MixerOutputItemStackHandler outputs;
+	public final OutputItemStackHandler outputs;
 
 	public MixerContainer(int windowId, PlayerInventory playerInventory, PacketBuffer extraData) {
 		this((MixerTile) playerInventory.player.world.getTileEntity(extraData.readBlockPos()), null, windowId, playerInventory);

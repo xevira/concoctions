@@ -13,6 +13,7 @@
 	"block.concoctions.lamenting_lily": "Lamenting Lily",
 	"block.concoctions.mixer": "Mixer",
 	"block.concoctions.shattered_bedrock": "Shattered Bedrock",
+	"block.concoctions.synthesizer": "Synthesizer",
 
 	"death.attack.void": "%1$s was devoured by the Void",
 	"death.attack.void.player": "%1$s was devoured by the Void whilst fighting %2$s",
@@ -27,6 +28,7 @@
 	"effect.concoctions.intangible": "Intangible",
 	"effect.concoctions.recall": "Recall",
 	"effect.concoctions.restoration": "Restoration",
+	"effect.concoctions.reveal": "Revealing",
 	"effect.concoctions.shrink": "Shrink",
 	"effect.concoctions.taming": "Taming",
 	"effect.concoctions.void": "Void",
@@ -48,6 +50,22 @@
 	"gui.concoctions.mixer.error4": "Insufficient fluids to mix.",
 	"gui.concoctions.mixer.error5": "Insufficient space in output tank.",
 	"gui.concoctions.mixing_result": "Mixing Result:",
+	"gui.concoctions.energy_stored": "%d / %d FE",
+	"gui.concoctions.energy_stored_label": "Energy Stored:",
+	"gui.concoctions.burn_second_remaining": "< 1 second remaining",
+	"gui.concoctions.burn_seconds_remaining": "%d seconds remaining",
+	"gui.concoctions.off_when_powered": "Needs Redstone Low",
+	"gui.concoctions.on_when_powered": "Needs Redstone High",
+	"gui.concoctions.ignores_redstone": "Ignores Redstone",
+	"gui.concoctions.synthesizing.get_recipes": "Get Recipes",
+	"gui.concoctions.synthesizing.time.prefix": "Time Remaining: ",
+	"gui.concoctions.synthesizing.time.second": "1s",
+	"gui.concoctions.synthesizing.time.seconds": "%ds",
+	"gui.concoctions.synthesizing.consume.item": "Consuming Item: ",
+	"gui.concoctions.synthesizing.consume.energy": "Consuming Energy: ",
+	"gui.concoctions.synthesizing.consume.energy.value": "%d FE",
+	"gui.concoctions.synthesizing.consume.fluid": "Producing: ",
+	"gui.concoctions.synthesizing.consume.fluid.value": " %dmb",
 
 	"item.concoctions.apothecary_guide": "Apothecary's Guide",
 	"item.concoctions.bedrock_shard": "Bedrock Shard",
@@ -97,6 +115,7 @@
 	"item.minecraft.potion.effect.void": "Potion of the Void",
 	"item.minecraft.potion.effect.danger_sense": "Potion of Danger Sensing",
 	"item.minecraft.potion.effect.recall": "Potion of Recall",
+	"item.minecraft.potion.effect.reveal": "Potion of Revealing",
 	"item.minecraft.potion.effect.flourish": "Potion of Flourish",
 	"item.minecraft.potion.effect.taming": "Potion of Taming",
 	"item.minecraft.potion.effect.restoration": "Potion of Restoration",
@@ -125,6 +144,7 @@
 	"item.minecraft.splash_potion.effect.flourish": "Splash Potion of Flourish",
 	"item.minecraft.splash_potion.effect.taming": "Splash Potion of Taming",
 	"item.minecraft.splash_potion.effect.restoration": "Splash Potion of Restoration",
+	"item.minecraft.splash_potion.effect.reveal": "Splash Potion of Revealing",
 
 	"item.minecraft.lingering_potion.effect.haste": "Lingering Potion of Haste",
 	"item.minecraft.lingering_potion.effect.dullness": "Lingering Potion of Dullness",
@@ -150,6 +170,7 @@
 	"item.minecraft.lingering_potion.effect.flourish": "Lingering Potion of Flourish",
 	"item.minecraft.lingering_potion.effect.taming": "Lingering Potion of Taming",
 	"item.minecraft.lingering_potion.effect.restoration": "Lingering Potion of Restoration",
+	"item.minecraft.lingering_potion.effect.reveal": "Lingering Potion of Revealing",
 
 	"item.minecraft.tipped_arrow.effect.haste": "Arrow of Haste",
 	"item.minecraft.tipped_arrow.effect.dullness": "Arrow of Dullness",
@@ -175,6 +196,7 @@
 	"item.minecraft.tipped_arrow.effect.flourish": "Arrow of Flourish",
 	"item.minecraft.tipped_arrow.effect.taming": "Arrow of Taming",
 	"item.minecraft.tipped_arrow.effect.restoration": "Arrow of Restoration",
+	"item.minecraft.tipped_arrow.effect.reveal": "Arrow of Revealing",
 	
 	"item.concoctions.incense": "Incense",
 	"item.concoctions.incense.effect.empty": "Uncraftable Incense",
@@ -219,6 +241,7 @@
 	"item.concoctions.incense.effect.flourish": "Incense of Flourish",
 	"item.concoctions.incense.effect.taming": "Incense of Taming",
 	"item.concoctions.incense.effect.restoration": "Incense of Restoration",
+	"item.concoctions.incense.effect.reveal": "Incense of Revealing",
 	"item.concoctions.incense.prefix": "Incense of %s",
 	"item.concoctions.incense.solution.": "Incense of Solution",
 	
@@ -235,5 +258,6 @@
 	"message.concoctions.player.tamed": "You've already tamed yourself!",
 	
 	"tile.concoctions.brewing_station": "Brewing Station Tile",
-	"tile.concoctions.mixer": "Mixer Tile"
+	"tile.concoctions.mixer": "Mixer Tile",
+	"tile.concoctions.synthesizer": "Synthesizer Tile"
 }

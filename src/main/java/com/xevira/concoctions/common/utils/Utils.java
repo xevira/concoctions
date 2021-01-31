@@ -295,5 +295,17 @@ public class Utils
 		}
 	}
 	
-	
+	public static boolean areItemStacksEqual(ItemStack a, ItemStack b) {
+		// same functionality as ItemStack.areItemStackEqual(a,b) but ignoring item count
+		if( a.isEmpty() && b.isEmpty() ) {
+			return true;
+		} else if (a.getItem() != b.getItem()) {
+			return false;
+		} else if (a.getTag() == null && b.getTag() != null) {
+			return false;
+		} else {
+			return (a.getTag() == null || a.getTag().equals(b.getTag())) && a.areCapsCompatible(b);
+		}
+	}
+
 }

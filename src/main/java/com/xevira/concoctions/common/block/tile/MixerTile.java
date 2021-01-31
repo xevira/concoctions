@@ -91,17 +91,8 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		"center"
 	};
 	
-	private static final HashMap<Direction, int[]> FACINGS = new HashMap<Direction, int[]>();
-	
-	static {
-		FACINGS.put(Direction.NORTH, new int[] {NORTH_TANK, SOUTH_TANK, EAST_TANK, WEST_TANK, CENTER_TANK});
-		FACINGS.put(Direction.SOUTH, new int[] {SOUTH_TANK, NORTH_TANK, WEST_TANK, EAST_TANK, CENTER_TANK});
-		FACINGS.put(Direction.EAST,  new int[] {EAST_TANK, WEST_TANK, NORTH_TANK, SOUTH_TANK, CENTER_TANK});
-		FACINGS.put(Direction.WEST,  new int[] {WEST_TANK, EAST_TANK, SOUTH_TANK, NORTH_TANK, CENTER_TANK});
-	}
-	
 	private final MixerReservoir tanks[];
-	private final LazyOptional<MixerOutputItemStackHandler> output;		// Outputs are shared across all tank I/O
+	private final LazyOptional<OutputItemStackHandler> output;		// Outputs are shared across all tank I/O
 	private final int valves[];
 	private int mixingTimeTotal = 0;
 	private int mixingTime = 0;
@@ -156,7 +147,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		tanks[EAST_TANK] = new MixerReservoir(10, false);
 		tanks[WEST_TANK] = new MixerReservoir(10, false);
 		
-		output = LazyOptional.of(() -> new MixerOutputItemStackHandler());
+		output = LazyOptional.of(() -> new OutputItemStackHandler(TOTAL_TANKS));
 		
 		valves = new int[TOTAL_INPUTS];
 		valves[NORTH_TANK] = 0;
@@ -182,9 +173,9 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return this.tanks;
 	}
 	
-	public MixerOutputItemStackHandler getOutputItemHandler()
+	public OutputItemStackHandler getOutputItemHandler()
 	{
-		return this.output.orElse(new MixerOutputItemStackHandler());
+		return this.output.orElse(new OutputItemStackHandler(TOTAL_TANKS));
 	}
 
 	@Override
@@ -263,7 +254,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return outStack;
 	}
 
-	private boolean tryFillInputTank(int slot, FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
+	private boolean tryFillInputTank(int slot, FluidTank tank, ItemStack inStack, OutputItemStackHandler output)
 	{
 		ItemStack outStack = output.getStackInSlot(slot);
 		
@@ -344,7 +335,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return outStack;
 	}
 
-	private boolean tryEmptyInputTank(int slot, FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
+	private boolean tryEmptyInputTank(int slot, FluidTank tank, ItemStack inStack, OutputItemStackHandler output)
 	{
 		ItemStack outStack = output.getStackInSlot(slot);
 		
@@ -401,7 +392,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		
 		ItemStack inStack = reservoir.input.resolve().get().getStackInSlot(0);
 		FluidTank inTank = reservoir.tank.resolve().get();
-		MixerOutputItemStackHandler outHandler = this.output.resolve().get();
+		OutputItemStackHandler outHandler = this.output.resolve().get();
 		
 		if(tryFillInputTank(tank, inTank, inStack, outHandler))
 			return true;
@@ -460,7 +451,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		return outStack;
 	}
 
-	private void tryEmptyOutputTank(FluidTank tank, ItemStack inStack, MixerOutputItemStackHandler output)
+	private void tryEmptyOutputTank(FluidTank tank, ItemStack inStack, OutputItemStackHandler output)
 	{
 		ItemStack outStack = output.getStackInSlot(CENTER_TANK);
 		
@@ -552,7 +543,7 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		
 		ItemStack inStack = reservoir.input.resolve().get().getStackInSlot(0);
 		FluidTank inTank = reservoir.tank.resolve().get();
-		MixerOutputItemStackHandler outHandler = this.output.resolve().get();
+		OutputItemStackHandler outHandler = this.output.resolve().get();
 		
 		boolean wasEmpty = inTank.isEmpty();
 		
@@ -1055,11 +1046,8 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		
 		int[] caps = new int[TOTAL_TANKS];
 		
-		BlockState state = this.world.getBlockState(this.pos);
-		int[] order = FACINGS.get(state.get(MixerBlock.FACING));
-		
 		for(int i = 0; i < TOTAL_TANKS; i++)
-			caps[i] = this.tanks[order[i]].getCapacity();
+			caps[i] = this.tanks[i].getCapacity();
 		
 		return caps;
 	}
@@ -1070,11 +1058,8 @@ public class MixerTile extends TileEntity implements ITickableTileEntity, INamed
 		
 		FluidStack[] stacks = new FluidStack[TOTAL_TANKS];
 		
-		BlockState state = this.world.getBlockState(this.pos);
-		int[] order = FACINGS.get(state.get(MixerBlock.FACING));
-		
 		for(int i = 0; i < TOTAL_TANKS; i++)
-			stacks[i] = this.tanks[order[i]].getFluid();
+			stacks[i] = this.tanks[i].getFluid();
 		
 		return stacks;
 	}

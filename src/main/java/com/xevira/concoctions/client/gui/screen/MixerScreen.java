@@ -34,8 +34,7 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 
 public class MixerScreen extends ContainerScreen<MixerContainer> implements IContainerListener, Slider.ISlider {
-	private static final ResourceLocation background = new ResourceLocation(Concoctions.MOD_ID,
-			"textures/gui/mixer.png");
+	private static final ResourceLocation background = new ResourceLocation(Concoctions.MOD_ID, "textures/gui/mixer.png");
 
 	private static final int COLUMNS[] = new int[] {
 			10,
@@ -257,7 +256,7 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 			if(this.container.getMixerStatus() == MixerTile.ERROR_NONE)
 			{
 				this.container.setValve(MixerTile.CENTER_TANK, this.container.isCenterValveOpen() ? 0 : 1);
-				Concoctions.GetLogger().info("Center On set to {}", !this.container.isCenterValveOpen());
+				//Concoctions.GetLogger().info("Center On set to {}", !this.container.isCenterValveOpen());
 			}
 			return true;
 		}
@@ -289,7 +288,7 @@ public class MixerScreen extends ContainerScreen<MixerContainer> implements ICon
 			slider.dragging = false;
 
 			this.container.setValve(slot,  slider.getValueInt());
-			Concoctions.GetLogger().info("Slider[{}]: {}", slot, slider.getValueInt());
+			//Concoctions.GetLogger().info("Slider[{}]: {}", slot, slider.getValueInt());
 		}
 	}
 
